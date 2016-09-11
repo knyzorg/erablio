@@ -13,8 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
-    "imap": "^0.8.17",
-    "nodemailer": "^0.7.1"
+    "request": "^2.74.0"
   }
 }

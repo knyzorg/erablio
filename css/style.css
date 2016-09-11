@@ -165,7 +165,7 @@ main p, li {
   font-size: 1.4rem;
   line-height: 1.6;
   color: #ddd;
-  text-align: left;
+  text-align: center;
 }
 li {
   margin: 1px auto ;
@@ -257,6 +257,7 @@ li {
 .cd-about .cd-loading-bar::before {
   background-color: #4089a6;
 }
+
 .cd-loading-bar::before {
   /* this is the progress bar inside the loading bar */
   content: '';
