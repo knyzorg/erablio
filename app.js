@@ -4,17 +4,45 @@ var fs = require('fs')
 var Crypto = require('crypto')
 var app = express();
 var request = require('request');
+var passport = require('passport');
+var bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+
 function newToken() {
     return Crypto.randomBytes(8).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/\=/g, '');
 }
 
 
 app.use(cookieParser())
+app.use(passport.initialize());
+app.use(passport.session())
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
 
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
 
-function randomInt(min,max)
-{
-    return Math.floor(Math.random()*(max-min+1)+min);
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function login(username, password, callback) {
+    var login = "https://portail.csdraveurs.qc.ca/Anonym/Login.aspx?lnrid=636091206172586869&_lnPageGuid=869878df-59f3-43c9-a5e3-5c54a05e24ef&__EGClientState=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=&__EVENTVALIDATION=%2FwEWCAL%2BraDpAgKN1azYCQLr3en9AwLXgqWzDwLMwYL7CQLvtfAUArqPkNEEApvk0uoCCFdFmooPyvnZcMHRMqny4KXERvg%3D&ctlUserCode=" + username + "&ctlUserPassword=" + password + "&ctlLogon=Connexion";
+    console.log("Logging in for", username, password);
+    request(login, function(error, response, body) {
+        if (!error && response.statusCode == 200 && body.includes("Chargement en cours")) {
+            callback(true);
+            console.log("Logged in");
+        } else {
+            callback(false);
+            console.log("Log in failed");
+        }
+    })
 }
 
 var quizfile = fs.readFileSync(__dirname + "/quiz.html");
@@ -34,11 +62,39 @@ app.get('/js/:file', function(req, res) {
 app.get('/css/:file', function(req, res) {
     res.sendFile(__dirname + "/css/" + req.params.file);
 });
-app.get('/answer.html', function(req, res) {
-    fs.readFile(__dirname + "/questions/" + req.query.q + ".json", function (err, data){
-        if (!err){
+
+var LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        login(username, password, function(status) {
+            if (status) {
+                //Logged in
+                return done(null, {
+                    username: username
+                });
+            } else {
+                //Failed to login
+                return done(null, false);
+            }
+        });
+    }
+));
+
+
+var auth = function(req, res, next) {
+    if (!req.isAuthenticated())
+        res.sendFile(__dirname + "/login.html");
+    else
+        next();
+};
+
+
+app.get('/answer.html', auth, function(req, res) {
+    fs.readFile(__dirname + "/questions/" + req.query.q + ".json", function(err, data) {
+        if (!err) {
             qdata = JSON.parse(data);
-            if (qdata.answer != req.query.a){
+            if (qdata.answer != req.query.a) {
                 //Wrong answer
                 res.send(`
                 <!doctype html>
@@ -121,16 +177,16 @@ app.get('/answer.html', function(req, res) {
 
     })
 });
-app.get('/quiz.html', function(req, res) {
+app.get('/quiz.html', auth, function(req, res) {
     //Question endpoint
-    fs.readdir(__dirname + "/questions", function (err, files){
+    fs.readdir(__dirname + "/questions", function(err, files) {
         if (err) throw err;
         var index = randomInt(0, files.length - 1);
 
         console.log(index);
 
         var filename = files[index];
-        fs.readFile(__dirname + "/questions/" + filename, function (err, data){
+        fs.readFile(__dirname + "/questions/" + filename, function(err, data) {
             qdata = JSON.parse(data);
 
 
@@ -169,21 +225,18 @@ app.post('/science', function(req, res) {
 });
 
 
-app.post("/login", function(req, res) {
+app.get("/login.html", function(req, res) {
 
-    var username = req.query.username;
-    var password = req.query.password;
+    res.sendFile(__dirname + "/login.html");
+});
 
-    var login = "https://portail.csdraveurs.qc.ca/Anonym/Login.aspx?lnrid=636091206172586869&_lnPageGuid=869878df-59f3-43c9-a5e3-5c54a05e24ef&__EGClientState=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=&__EVENTVALIDATION=%2FwEWCAL%2BraDpAgKN1azYCQLr3en9AwLXgqWzDwLMwYL7CQLvtfAUArqPkNEEApvk0uoCCFdFmooPyvnZcMHRMqny4KXERvg%3D&ctlUserCode=" + username + "&ctlUserPassword=" + password + "&ctlLogon=Connexion";
-
-    request(login, function(error, response, body) {
-        if (!error && response.statusCode == 200 && body.includes("Chargement en cours")) {
-            console.log("Logged in");
-        } else {
-            console.log("Failed to login");
-        }
-    })
-
+app.post("/login.html", passport.authenticate('local', {
+    //failureRedirect: '/login.html',
+    successRedirect: '/'
+}), function(req, res) {
+    res.send(req.user);
+    //var username = req.query.username;
+    //var password = req.query.password;
 });
 
 app.listen(process.env.PORT || 3000, function() {
