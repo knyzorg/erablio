@@ -1,0 +1,6 @@
+{
+  "question": "Blah blah blah?",
+  "options": ["bonne reponse", "mauvaise reponse", "mauvaise reponse", "mauvase reponse"],
+  "wrong": "La bonne reponse est blah blah blah parce blah blah blah et blah blah blah mais pas blah blah blah",
+  "right": "blah blah est la bonne reponse parce que blah"
+}

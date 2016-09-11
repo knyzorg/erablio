@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" class="no-js">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+
+	<link rel="stylesheet" href="css/reset.css">
+	<!-- CSS reset -->
+	<link rel="stylesheet" href="css/style.css">
+	<!-- Resource style -->
+	<script src="js/modernizr.js"></script>
+	<!-- Modernizr -->
+
+	<title>Etude Etude</title>
+</head>
+
+<body>
+	<main>
+		<div class="cd-index cd-main-content">
+			<div>
+				<form action="POST" target="/quiz" style="display:none;">
+					<input type="text" id="qid" name="qid" value="0">
+					<input type="text" id="time-end" name="time-end" value="0">
+					<input type="text" id="time-start" name="time-start" value="0">
+					<input type="text" id="user" name="user" value="0">
+					<input type="text" id="key" name="key" value="0">
+					<input type="text" id="alt-tab" name="alt-tab" value="0">
+					<input type="text" id="answer" name="answer" value="0">
+				</form>
+				<h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question</h2>
+				<h1 style=" padding-bottom: 1em;">What is the correct answer?</h1>
+				<a class="cd-btn" href="answer.html" data-option="1" data-type="answer">Bonne reponse</a>
+				<a class="cd-btn" href="answer.html" data-option="2" data-type="answer">Mauvaise reponse</a>
+				<a class="cd-btn" href="answer.html" data-option="3" data-type="answer">Mauvaise reponse</a>
+				<a class="cd-btn" href="answer.html" data-option="4" data-type="answer">Mauvaise reponse</a>
+			</div>
+		</div>
+	</main>
+
+	<div class="cd-cover-layer"></div>
+	<div class="cd-loading-bar"></div>
+	<script src="js/jquery-2.1.1.js"></script>
+	<script src="js/main.js"></script>
+	<script src="http://malsup.github.com/jquery.form.js"></script>
+	<!-- Resource jQuery -->
+</body>
+
+</html>
