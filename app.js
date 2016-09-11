@@ -145,10 +145,10 @@ app.get('/quiz.html', function(req, res) {
                 </form>
                 <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question</h2>
                 <h1 style=" padding-bottom: 1em;">${qdata.question}</h1>
-                <a class="cd-btn" href="answer.html" data-option="1" data-type="answer">${qdata.options[0]}</a>
-                <a class="cd-btn" href="answer.html" data-option="2" data-type="answer">${qdata.options[1]}</a>
-                <a class="cd-btn" href="answer.html" data-option="3" data-type="answer">${qdata.options[2]}</a>
-                <a class="cd-btn" href="answer.html" data-option="4" data-type="answer">${qdata.options[3]}</a>
+                <a class="cd-btn" href="answer.html" data-option="0" data-type="answer">${qdata.options[0]}</a>
+                <a class="cd-btn" href="answer.html" data-option="1" data-type="answer">${qdata.options[1]}</a>
+                <a class="cd-btn" href="answer.html" data-option="2" data-type="answer">${qdata.options[2]}</a>
+                <a class="cd-btn" href="answer.html" data-option="3" data-type="answer">${qdata.options[3]}</a>
             </div>`;
             res.send(quizfile.toString().replace("{{{data}}}", element));
         });
