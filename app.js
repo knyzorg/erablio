@@ -88,8 +88,9 @@ passport.use(new LocalStrategy(
 ));
 
 var auth = function(req, res, next) {
+    console.log(req.url);
     if (!req.user) {
-        req.session.returnTo = req.path;
+        req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
     } else {
         next();
@@ -99,6 +100,9 @@ var auth = function(req, res, next) {
 
 
 app.get('/answer.html', auth, function(req, res) {
+    if (!req.query.q || !req.query.a){
+        res.sendFile(__dirname + "/index.html");
+    }
     fs.readFile(__dirname + "/questions/" + req.query.q + ".json", function(err, data) {
         if (!err) {
             qdata = JSON.parse(data);
@@ -122,6 +126,7 @@ app.get('/answer.html', auth, function(req, res) {
                 <body class="cd-about">
                 	<main>
                 		<div class="cd-about cd-main-content">
+                        <a href="/logout.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button></a>
                 			<div>
 
                 				<h1>Mauvaise Reponse!</h1>
@@ -161,6 +166,7 @@ app.get('/answer.html', auth, function(req, res) {
                 <body class="cd-about">
                 	<main>
                 		<div class="cd-about cd-main-content">
+                        <a href="/logout.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button></a>
                 			<div>
 
                 				<h1>Bonne Reponse!</h1>
@@ -234,6 +240,11 @@ app.post('/science', auth, function(req, res) {
 
 
 app.get("/login.html", function(req, res) {
+    res.sendFile(__dirname + "/login.html");
+});
+app.get("/logout.html", function(req, res) {
+    req.logout();
+    req.session.destroy();
     res.sendFile(__dirname + "/login.html");
 });
 
