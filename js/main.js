@@ -6,7 +6,7 @@ jQuery(document).ready(function(event){
     //trigger smooth transition from the actual page to the new one
     $('main').on('click', '[data-type="answer"]', function(event){
       event.preventDefault();
-      
+
       $("#answer").val($(this).data('option'));
       //detect which page has been selected
       var newPage = $(this).attr('href') + "?a=" + $(this).data('option') + "&q=" + $("#qid").val();
@@ -66,7 +66,7 @@ jQuery(document).ready(function(event){
       // load new content and replace <main> content with the new one
       $('main').html(section);
       //if browser doesn't support CSS transitions - dont wait for the end of transitions
-      var delay = ( transitionsSupported() ) ? 1200 : 0;
+      var delay = ( transitionsSupported() ) ? 100 : 0;
       setTimeout(function(){
         //wait for the end of the transition on the loading bar before revealing the new content
         $('body').removeClass('page-is-changing');

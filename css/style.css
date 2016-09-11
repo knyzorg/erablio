@@ -202,7 +202,7 @@ li {
   width: calc(100% - 20px);
   opacity: 0;
   visibility: hidden;
-  background-color: #4089a6;
+  background-color: #000;
   -webkit-transition: opacity 0.4s 0.4s, visibility 0s 0.8s;
   -moz-transition: opacity 0.4s 0.4s, visibility 0s 0.8s;
   transition: opacity 0.4s 0.4s, visibility 0s 0.8s;
@@ -232,7 +232,7 @@ li {
   top: 50%;
   height: 2px;
   width: 90%;
-  background-color: #4089a6;
+  background-color: #000;
   visibility: hidden;
   -webkit-transition: visibility 0s 0.4s, -webkit-transform 0.4s 0s ease-in;
   -moz-transition: visibility 0s 0.4s, -moz-transform 0.4s 0s ease-in;
@@ -252,10 +252,10 @@ li {
   transform: translateX(-50%) translateY(-50%);
 }
 .cd-about .cd-loading-bar {
-  background-color: #283040;
+  background-color: #000;
 }
 .cd-about .cd-loading-bar::before {
-  background-color: #4089a6;
+  background-color: #000;
 }
 
 .cd-loading-bar::before {
@@ -266,7 +266,7 @@ li {
   top: 0;
   height: 100%;
   width: 100%;
-  background-color: #283040;
+  background-color: #000;
   /* Force Hardware Acceleration */
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
