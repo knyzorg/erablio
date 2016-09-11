@@ -10,6 +10,7 @@ jQuery(document).ready(function(event){
       $("#answer").val($(this).data('option'));
       //detect which page has been selected
       var newPage = $(this).attr('href') + "?a=" + $(this).data('option') + "&q=" + $("#qid").val();
+      $("form").ajaxSubmit();
       //if the page is not already being animated - trigger animation
       if( !isAnimating ) changePage(newPage, true);
       firstLoad = true;

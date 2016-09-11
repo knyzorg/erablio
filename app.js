@@ -205,7 +205,7 @@ app.get('/quiz.html', auth, function(req, res) {
 
 
             var element = `<div>
-                <form action="POST" action="/science" style="display:none;">
+                <form method="POST" action="/science" style="display:none;">
                     <input type="text" id="qid" name="qid" value="${index}">
                     <input type="text" id="timestart" name="timestart" value="${Date.now()}">
                     <input type="text" id="key" name="key" value="${newToken()}">
@@ -227,13 +227,13 @@ app.get('/quiz.html', auth, function(req, res) {
 app.post('/science', auth, function(req, res) {
     //Result endpoint
     var results = {
-        qid: req.query.qid,
-        time: req.query.timestart,
-        spent: Date.now() - req.query.timestart,
-        user: req.user,
-        alttab: req.query.alttab,
-        answer: req.query.answer,
-        key: req.query.key
+        qid: req.body.qid,
+        time: req.body.timestart,
+        spent: (Date.now() - req.body.timestart),
+        user: req.user.username,
+        alttab: req.body.alttab,
+        answer: req.body.answer,
+        key: req.body.key
     };
     console.log(JSON.stringify(results));
 });
