@@ -49,9 +49,9 @@ app.get('/answer.html', function(req, res) {
 
                 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
 
-                	<link rel="stylesheet" href="css/reset.css"> <!-- CSS reset -->
-                	<link rel="stylesheet" href="css/style.css"> <!-- Resource style -->
-                	<script src="js/modernizr.js"></script> <!-- Modernizr -->
+                	<link rel="stylesheet" href="/css/reset.css"> <!-- CSS reset -->
+                	<link rel="stylesheet" href="/css/style.css"> <!-- Resource style -->
+                	<script src="/js/modernizr.js"></script> <!-- Modernizr -->
 
                 	<title>Etude, Etude</title>
                 </head>
@@ -72,8 +72,8 @@ app.get('/answer.html', function(req, res) {
                 	</main>
                 	<div class="cd-cover-layer"></div>
                 	<div class="cd-loading-bar"></div>
-                <script src="js/jquery-2.1.1.js"></script>
-                <script src="js/main.js"></script> <!-- Resource jQuery -->
+                <script src="/js/jquery-2.1.1.js"></script>
+                <script src="/js/main.js"></script> <!-- Resource jQuery -->
                 </body>
                 </html>
                 `.toString());
@@ -88,9 +88,9 @@ app.get('/answer.html', function(req, res) {
 
                 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
 
-                	<link rel="stylesheet" href="css/reset.css"> <!-- CSS reset -->
-                	<link rel="stylesheet" href="css/style.css"> <!-- Resource style -->
-                	<script src="js/modernizr.js"></script> <!-- Modernizr -->
+                	<link rel="stylesheet" href="/css/reset.css"> <!-- CSS reset -->
+                	<link rel="stylesheet" href="/css/style.css"> <!-- Resource style -->
+                	<script src="/js/modernizr.js"></script> <!-- Modernizr -->
 
                 	<title>Etude, Etude</title>
                 </head>
@@ -111,8 +111,8 @@ app.get('/answer.html', function(req, res) {
                 	</main>
                 	<div class="cd-cover-layer"></div>
                 	<div class="cd-loading-bar"></div>
-                <script src="js/jquery-2.1.1.js"></script>
-                <script src="js/main.js"></script> <!-- Resource jQuery -->
+                <script src="/js/jquery-2.1.1.js"></script>
+                <script src="/js/main.js"></script> <!-- Resource jQuery -->
                 </body>
                 </html>
                 `.toString());
@@ -138,7 +138,6 @@ app.get('/quiz.html', function(req, res) {
                 <form action="POST" target="/quiz" style="display:none;">
                     <input type="text" id="qid" name="qid" value="${index}">
                     <input type="text" id="timestart" name="timestart" value="${Date.now()}">
-                    <input type="text" id="user" name="user" value="${req.cookies.user}">
                     <input type="text" id="key" name="key" value="${newToken()}">
                     <input type="text" id="alttab" name="alttab" value="0">
                     <input type="text" id="answer" name="answer" value="0">
@@ -155,13 +154,13 @@ app.get('/quiz.html', function(req, res) {
     });
 });
 
-app.post('/quiz', function(req, res) {
+app.post('/science', function(req, res) {
     //Result endpoint
     var results = {
         qid: req.query.qid,
         time: req.query.timestart,
         spent: req.query.timeend - req.query.timestart,
-        user: req.query.user,
+        user: req.cookies.user,
         alttab: req.query.alttab,
         answer: req.query.answer,
         key: req.query.key
