@@ -5,26 +5,32 @@ var Crypto = require('crypto')
 var app = express();
 var request = require('request');
 var passport = require('passport');
-var bodyParser = require('body-parser')
-app.use(bodyParser.urlencoded({ extended: false }))
 
-// parse application/json
-app.use(bodyParser.json())
+app.use(require('body-parser').urlencoded({
+    extended: true
+}));
+app.use(require('express-session')({
+    secret: 'keyboard cat',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 function newToken() {
     return Crypto.randomBytes(8).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/\=/g, '');
 }
 
 
-app.use(cookieParser())
-app.use(passport.initialize());
-app.use(passport.session())
+
+
 passport.serializeUser(function(user, done) {
-  done(null, user);
+    done(null, user);
 });
 
 passport.deserializeUser(function(user, done) {
-  done(null, user);
+    done(null, user);
 });
 
 function randomInt(min, max) {
@@ -81,12 +87,14 @@ passport.use(new LocalStrategy(
     }
 ));
 
-
 var auth = function(req, res, next) {
-    if (!req.isAuthenticated())
+    if (!req.user) {
+        req.session.returnTo = req.path;
         res.sendFile(__dirname + "/login.html");
-    else
+    } else {
         next();
+    }
+
 };
 
 
@@ -191,7 +199,7 @@ app.get('/quiz.html', auth, function(req, res) {
 
 
             var element = `<div>
-                <form action="POST" target="/quiz" style="display:none;">
+                <form action="POST" action="/science" style="display:none;">
                     <input type="text" id="qid" name="qid" value="${index}">
                     <input type="text" id="timestart" name="timestart" value="${Date.now()}">
                     <input type="text" id="key" name="key" value="${newToken()}">
@@ -210,33 +218,29 @@ app.get('/quiz.html', auth, function(req, res) {
     });
 });
 
-app.post('/science', function(req, res) {
+app.post('/science', auth, function(req, res) {
     //Result endpoint
     var results = {
         qid: req.query.qid,
         time: req.query.timestart,
-        spent: req.query.timeend - req.query.timestart,
-        user: req.cookies.user,
+        spent: Date.now() - req.query.timestart,
+        user: req.user,
         alttab: req.query.alttab,
         answer: req.query.answer,
         key: req.query.key
     };
-
+    console.log(JSON.stringify(results));
 });
 
 
 app.get("/login.html", function(req, res) {
-
     res.sendFile(__dirname + "/login.html");
 });
 
 app.post("/login.html", passport.authenticate('local', {
-    //failureRedirect: '/login.html',
-    successRedirect: '/'
+    failureRedirect: '/login.html'
 }), function(req, res) {
-    res.send(req.user);
-    //var username = req.query.username;
-    //var password = req.query.password;
+    res.redirect(req.session.returnTo || '/');
 });
 
 app.listen(process.env.PORT || 3000, function() {
