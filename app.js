@@ -115,7 +115,7 @@ app.get('/answer.html', auth, function(req, res) {
                 	<meta charset="UTF-8">
                 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-                	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+                	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
 
                 	<link rel="stylesheet" href="/css/reset.css"> <!-- CSS reset -->
                 	<link rel="stylesheet" href="/css/style.css"> <!-- Resource style -->
@@ -155,7 +155,7 @@ app.get('/answer.html', auth, function(req, res) {
                 	<meta charset="UTF-8">
                 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-                	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+                	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
 
                 	<link rel="stylesheet" href="/css/reset.css"> <!-- CSS reset -->
                 	<link rel="stylesheet" href="/css/style.css"> <!-- Resource style -->
