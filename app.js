@@ -226,16 +226,22 @@ app.get('/quiz.html', auth, function(req, res) {
 
 app.post('/science', auth, function(req, res) {
     //Result endpoint
-    var results = {
-        qid: req.body.qid,
-        time: req.body.timestart,
-        spent: (Date.now() - req.body.timestart),
-        user: req.user.username,
-        alttab: req.body.alttab,
-        answer: req.body.answer,
-        key: req.body.key
-    };
-    console.log(JSON.stringify(results));
+    fs.readFile(__dirname + "/questions/" + req.body.qid + ".json", function (err, data){
+        if (err) {return 0}
+        data = JSON.parse(data);
+        var results = {
+            qid: req.body.qid,
+            time: req.body.timestart,
+            spent: (Date.now() - req.body.timestart),
+            user: req.user.username,
+            alttab: req.body.alttab,
+            answer: req.body.answer,
+            correct: (req.body.answer == data.answer),
+            key: req.body.key
+        };
+        console.log(JSON.stringify(results));
+    })
+
 });
 
 
