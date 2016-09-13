@@ -99,11 +99,11 @@ var auth = function(req, res, next) {
 };
 
 
-app.get('/answer.html', auth, function(req, res) {
+app.get('/:quiz/answer.html', auth, function(req, res) {
     if (!req.query.q || !req.query.a){
         res.sendFile(__dirname + "/index.html");
     }
-    fs.readFile(__dirname + "/questions/" + req.query.q + ".json", function(err, data) {
+    fs.readFile(__dirname + "/questions/" + req.params.quiz + "/" + req.query.q + ".json", function(err, data) {
         if (!err) {
             qdata = JSON.parse(data);
             if (qdata.answer != req.query.a) {
@@ -127,6 +127,7 @@ app.get('/answer.html', auth, function(req, res) {
                 	<main>
                 		<div class="cd-about cd-main-content">
                         <a href="/logout.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button></a>
+                        <a href="/quiz.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button></a>
                 			<div>
 
                 				<h1>Mauvaise Reponse!</h1>
@@ -135,7 +136,7 @@ app.get('/answer.html', auth, function(req, res) {
                 				<p>
                 					${qdata.wrong}
                 				</p>
-                					<a class="cd-btn" href="/quiz.html" data-type="page-transition">Continuer &#8594;</a>
+                					<a class="cd-btn" href="quiz.html" data-type="page-transition">Continuer &#8594;</a>
                 			</div>
                 		</div>
                 	</main>
@@ -167,6 +168,7 @@ app.get('/answer.html', auth, function(req, res) {
                 	<main>
                 		<div class="cd-about cd-main-content">
                         <a href="/logout.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button></a>
+                        <a href="/quiz.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button></a>
                 			<div>
 
                 				<h1>Bonne Reponse!</h1>
@@ -175,7 +177,7 @@ app.get('/answer.html', auth, function(req, res) {
                 				<p>
                 					${qdata.right}
                 				</p>
-                					<a class="cd-btn" href="/quiz.html" data-type="page-transition">Continuer &#8594;</a>
+                					<a class="cd-btn" href="quiz.html" data-type="page-transition">Continuer &#8594;</a>
                 			</div>
                 		</div>
                 	</main>
@@ -191,16 +193,19 @@ app.get('/answer.html', auth, function(req, res) {
 
     })
 });
-app.get('/quiz.html', auth, function(req, res) {
+app.get('/quiz.html', auth, function (req, res){
+    res.sendFile(__dirname + "/choose.html");
+});
+app.get('/:quiz/quiz.html', auth, function(req, res) {
     //Question endpoint
-    fs.readdir(__dirname + "/questions", function(err, files) {
-        if (err) throw err;
+    fs.readdir(__dirname + "/questions/" + req.params.quiz, function(err, files) {
+        if (err) {res.send("404"); return;};
         var index = randomInt(0, files.length - 1);
 
         console.log(index);
 
         var filename = files[index];
-        fs.readFile(__dirname + "/questions/" + filename, function(err, data) {
+        fs.readFile(__dirname + "/questions/" + req.params.quiz + "/"+ filename, function(err, data) {
             qdata = JSON.parse(data);
 
 
@@ -211,6 +216,8 @@ app.get('/quiz.html', auth, function(req, res) {
                     <input type="text" id="key" name="key" value="${newToken()}">
                     <input type="text" id="alttab" name="alttab" value="0">
                     <input type="text" id="answer" name="answer" value="0">
+
+                    <input type="text" id="quiz" name="quiz" value="${req.params.quiz}">
                 </form>
                 <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question</h2>
                 <h1 style=" padding-bottom: 1em;">${qdata.question}</h1>
@@ -226,19 +233,22 @@ app.get('/quiz.html', auth, function(req, res) {
 
 app.post('/science', auth, function(req, res) {
     //Result endpoint
-    fs.readFile(__dirname + "/questions/" + req.body.qid + ".json", function (err, data){
+    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", function (err, data){
         if (err) {return 0}
         data = JSON.parse(data);
         var results = {
             qid: req.body.qid,
             time: req.body.timestart,
+            set: req.body.quiz,
             spent: (Date.now() - req.body.timestart),
             user: req.user.username,
             alttab: req.body.alttab,
             answer: req.body.answer,
-            correct: (req.body.answer == data.answer),
+            pass: (req.body.answer == data.answer),
+            correct: data.answer,
             key: req.body.key
         };
+        res.send("Data Submitted for Analysis");
         console.log(JSON.stringify(results));
     })
 
