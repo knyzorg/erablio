@@ -10,7 +10,7 @@ app.use(require('body-parser').urlencoded({
     extended: true
 }));
 app.use(require('express-session')({
-    secret: 'keyboard cat',
+    secret: 'correct battery horse staple',
     resave: true,
     saveUninitialized: true
 }));
@@ -38,7 +38,21 @@ function randomInt(min, max) {
 }
 
 function login(username, password, callback) {
-    var login = "https://portail.csdraveurs.qc.ca/Anonym/Login.aspx?lnrid=636091206172586869&_lnPageGuid=869878df-59f3-43c9-a5e3-5c54a05e24ef&__EGClientState=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=&__EVENTVALIDATION=%2FwEWCAL%2BraDpAgKN1azYCQLr3en9AwLXgqWzDwLMwYL7CQLvtfAUArqPkNEEApvk0uoCCFdFmooPyvnZcMHRMqny4KXERvg%3D&ctlUserCode=" + username + "&ctlUserPassword=" + password + "&ctlLogon=Connexion";
+    //  Broke down url into chunks to find in editor properly
+    //  Url is made out of chunks I don't even care to understand but it allows
+    //  a login and that's what I care for.
+    //  This function got a number of issues with it, most notable is that
+    //  it depends on a rather... unrealiable service. Secondly, user accounts
+    //  get locked after too many password attemps.
+    //  Let's just hope it doesn't break in production!
+
+    var login = "https://portail.csdraveurs.qc.ca/Anonym/Login.aspx?" +
+        "lnrid=636091206172586869&_lnPageGuid=869878df-59f3-43c9-a5e3-5c54" +
+        "a05e24ef&__EGClientState=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=" +
+        "&__EVENTVALIDATION=%2FwEWCAL%2BraDpAgKN1azYCQLr3en9AwLXgqWzDwLMwY" +
+        "L7CQLvtfAUArqPkNEEApvk0uoCCFdFmooPyvnZcMHRMqny4KXERvg%3D&ctlUserCode=" +
+        username + "&ctlUserPassword=" + password + "&ctlLogon=Connexion";
+
     console.log("Logging in for", username, password);
     request(login, function(error, response, body) {
         if (!error && response.statusCode == 200 && body.includes("Chargement en cours")) {
@@ -100,7 +114,7 @@ var auth = function(req, res, next) {
 
 
 app.get('/:quiz/answer.html', auth, function(req, res) {
-    if (!req.query.q || !req.query.a){
+    if (!req.query.q || !req.query.a) {
         res.sendFile(__dirname + "/index.html");
     }
     fs.readFile(__dirname + "/questions/" + req.params.quiz + "/" + req.query.q + ".json", function(err, data) {
@@ -193,19 +207,22 @@ app.get('/:quiz/answer.html', auth, function(req, res) {
 
     })
 });
-app.get('/quiz.html', auth, function (req, res){
+app.get('/quiz.html', auth, function(req, res) {
     res.sendFile(__dirname + "/choose.html");
 });
 app.get('/:quiz/quiz.html', auth, function(req, res) {
     //Question endpoint
     fs.readdir(__dirname + "/questions/" + req.params.quiz, function(err, files) {
-        if (err) {res.send("404"); return;};
+        if (err) {
+            res.send("404");
+            return;
+        };
         var index = randomInt(0, files.length - 1);
 
         console.log(index);
 
         var filename = files[index];
-        fs.readFile(__dirname + "/questions/" + req.params.quiz + "/"+ filename, function(err, data) {
+        fs.readFile(__dirname + "/questions/" + req.params.quiz + "/" + filename, function(err, data) {
             qdata = JSON.parse(data);
 
 
@@ -233,23 +250,33 @@ app.get('/:quiz/quiz.html', auth, function(req, res) {
 
 app.post('/science', auth, function(req, res) {
     //Result endpoint
-    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", function (err, data){
-        if (err) {return 0}
+    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", function(err, data) {
+        if (err) {
+            return 0
+        }
         data = JSON.parse(data);
         var results = {
             qid: req.body.qid,
-            time: req.body.timestart,
+            time: +req.body.timestart,
             set: req.body.quiz,
-            spent: (Date.now() - req.body.timestart),
+            spent: +(Date.now() - req.body.timestart),
             user: req.user.username,
-            alttab: req.body.alttab,
-            answer: req.body.answer,
-            pass: (req.body.answer == data.answer),
+            alttab: +req.body.alttab,
+            answer: +req.body.answer,
+            pass: +(req.body.answer == data.answer),
             correct: data.answer,
-            key: req.body.key
+            key: req.body.key,
+            agent: req.headers['user-agent']
         };
         res.send("Data Submitted for Analysis");
         console.log(JSON.stringify(results));
+
+
+        //Implement sqlite logger
+        // node dblite.test.js
+        var dblite = require('dblite');
+        var db = dblite("data.sqlite");
+        db.query('INSERT INTO quiz VALUES (:qid, :time, :set, :spent, :user, :alttab, :answer, :pass, :correct, :key, :agent)', results);
     })
 
 });

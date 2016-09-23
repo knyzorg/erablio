@@ -1,3 +1,7 @@
+window.onblur = function() {
+  $("#alttab").value(1);
+}
+
 jQuery(document).ready(function(event){
   var isAnimating = false,
     newLocation = '';
