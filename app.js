@@ -7,7 +7,7 @@ var request = require('request');
 var passport = require('passport');
 
 var dblite = require('dblite');
-var db = dblite("data.sqlite");
+var db = dblite("../data.sqlite");
 
 app.use(require('body-parser').urlencoded({
     extended: true
