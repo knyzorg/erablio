@@ -6,6 +6,9 @@ var app = express();
 var request = require('request');
 var passport = require('passport');
 
+var dblite = require('dblite');
+var db = dblite("data.sqlite");
+
 app.use(require('body-parser').urlencoded({
     extended: true
 }));
@@ -135,7 +138,7 @@ app.get('/:quiz/answer.html', auth, function(req, res) {
                 	<link rel="stylesheet" href="/css/style.css"> <!-- Resource style -->
                 	<script src="/js/modernizr.js"></script> <!-- Modernizr -->
 
-                	<title>Etude, Etude</title>
+                	<title>Étudie ÇA!</title>
                 </head>
                 <body class="cd-about">
                 	<main>
@@ -176,7 +179,7 @@ app.get('/:quiz/answer.html', auth, function(req, res) {
                 	<link rel="stylesheet" href="/css/style.css"> <!-- Resource style -->
                 	<script src="/js/modernizr.js"></script> <!-- Modernizr -->
 
-                	<title>Etude, Etude</title>
+                	<title>Étudie ÇA!</title>
                 </head>
                 <body class="cd-about">
                 	<main>
@@ -274,8 +277,6 @@ app.post('/science', auth, function(req, res) {
 
         //Implement sqlite logger
         // node dblite.test.js
-        var dblite = require('dblite');
-        var db = dblite("data.sqlite");
         db.query('INSERT INTO quiz VALUES (:qid, :time, :set, :spent, :user, :alttab, :answer, :pass, :correct, :key, :agent)', results);
     })
 
