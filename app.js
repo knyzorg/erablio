@@ -297,7 +297,8 @@ app.post("/login.html", passport.authenticate('local', {
 }), function(req, res) {
     res.redirect(req.session.returnTo || '/');
 });
-
-app.listen(process.env.PORT || 3000, function() {
+var PORT = process.env.PORT || 3000;
+app.listen(PORT, function() {
     console.log('App ready!');
+        console.log('Listening on *:' + PORT);
 });
