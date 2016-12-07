@@ -147,7 +147,7 @@ app.get('/:quiz/answer.html', auth, function(req, res) {
                         <a href="/quiz.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button></a>
                 			<div>
 
-                				<h1>Mauvaise Reponse!</h1>
+                				<h1 style="color:red">Mauvaise Reponse!</h1>
 
                 				<h2>La bonne reponse etait: <span>${qdata.options[+qdata.answer]}</span></h2>
                 				<p>
@@ -188,7 +188,7 @@ app.get('/:quiz/answer.html', auth, function(req, res) {
                         <a href="/quiz.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button></a>
                 			<div>
 
-                				<h1>Bonne Reponse!</h1>
+                				<h1 style="color:green">Bonne Reponse!</h1>
 
                 				<h2>Vous avez correctement dit: <span>${qdata.options[+qdata.answer]}</span></h2>
                 				<p>
