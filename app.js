@@ -1,5 +1,4 @@
 var express = require('express');
-var cookieParser = require('cookie-parser')
 var fs = require('fs')
 var Crypto = require('crypto')
 var app = express();
@@ -94,7 +93,7 @@ passport.use(new LocalStrategy(
             if (status) {
                 //Logged in
                 return done(null, {
-                    username: username
+                    username: username.toLowerCase()
                 });
             } else {
                 //Failed to login
