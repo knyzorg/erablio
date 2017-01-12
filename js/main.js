@@ -73,3 +73,10 @@ function loadNewContent(url, bool) {
         }
     });
 }
+
+$(window).on('popstate', function() {
+    var newPageArray = location.pathname.split('/'),
+        //this is the url of the page to be loaded 
+        newPage = newPageArray[newPageArray.length - 1];
+    if( !isAnimating ) changePage(newPage);
+});
