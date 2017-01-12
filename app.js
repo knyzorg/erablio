@@ -167,7 +167,8 @@ function question(module, id, cb) {
                     return;
                 }
             });
-
+            quizData.wrong = quizData.wrong.replace("\n", "<br>");
+            quizData.right = quizData.right.replace("\n", "<br>");
             //Done shuffling
 
             var toreturn = `<!doctype html>
@@ -204,9 +205,9 @@ function b64_to_utf8( str ) {
 			<a href="/logout.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button></a>
 			<a href="/module" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button></a>
 			<div>
-            <script>
+            <div id="data_inject" style="display:none">
             var data = JSON.parse(b64_to_utf8('` + new Buffer(JSON.stringify(quizData)).toString('base64') + `'));
-                </script><form method="POST" action="/science" style="display:none;">
+                </div><form method="POST" action="/science" style="display:none;">
                     <input type="text" id="qid" name="qid" value="${id}">
                     <input type="text" id="timestart" name="timestart" value="${Date.now()}">
                     <input type="text" id="key" name="key" value="${newToken()}">

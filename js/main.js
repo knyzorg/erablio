@@ -10,6 +10,10 @@ $('body').on('click', '.science', function (event) {
     $("#answer").val($(this).data('option'));
     //detect which page has been selected
     //var newPage = $(this).attr('href') + "?a=" + $(this).data('option') + "&q=" + $("#qid").val();
+
+    eval($("#data_inject").html())
+
+
     $("form").ajaxSubmit();
 
     if (data.answer != $(this).data('option')) {
@@ -21,10 +25,10 @@ $('body').on('click', '.science', function (event) {
     $(".science").eq(data.answer).addClass('yay');
 
     $(".science").removeClass('science');
-    $("#answered").fadeIn(500, "swing", function (){
+    $("#answered").fadeIn(500, "swing", function () {
         $("body").animate({ scrollTop: $(document).height() }, "slow");
     });
-    
+
     //if the page is not already being animated - trigger animation
     //if( !isAnimating ) changePage(newPage, true);
     //firstLoad = true;
@@ -62,8 +66,8 @@ function loadNewContent(url, bool) {
         // load new content and replace <main> content with the new one
         $('main').html(section);
         //...
-        setTimeout(function (){
-            
+        setTimeout(function () {
+
             $('body').removeClass('page-is-changing');
 
         }, 1000);
@@ -76,9 +80,9 @@ function loadNewContent(url, bool) {
     });
 }
 
-$(window).on('popstate', function() {
+$(window).on('popstate', function () {
     var newPageArray = location.pathname.split('/'),
         //this is the url of the page to be loaded 
         newPage = newPageArray[newPageArray.length - 1];
-    if( !isAnimating ) changePage(newPage);
+    if (!isAnimating) changePage(newPage);
 });
