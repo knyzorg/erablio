@@ -59,7 +59,11 @@ function loadNewContent(url, bool) {
         // load new content and replace <main> content with the new one
         $('main').html(section);
         //...
-        $('body').removeClass('page-is-changing');
+        setTimeout(function (){
+            
+            $('body').removeClass('page-is-changing');
+
+        }, 1000);
         //...
         isAnimating = false;
         if (url != window.location) {

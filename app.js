@@ -215,7 +215,7 @@ function question(module, id, cb) {
                 <a class="cd-btn science" data-option="3" data-type="answer">${quizData.options[3]}</a>
                 <br>
                 <div id="answered" style="display:none;">
-                    <a class="cd-btn" href="${randomInt(1, fs.readdirSync("questions/" + module).length)}">Suivant</a>
+                    <a class="cd-btn" data-type="page-transition" href="${randomInt(1, fs.readdirSync("questions/" + module).length)}">Suivant</a>
                 </div>
             </div>
 		</div>
