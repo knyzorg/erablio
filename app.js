@@ -306,7 +306,7 @@ app.get("/login.html", function (req, res) {
     res.sendFile(__dirname + "/login.html");
 });
 
-app.get("/module", function (req, res) {
+app.get("/module", auth, function (req, res) {
     res.sendFile(__dirname + "/select.html");
 });
 
