@@ -22,6 +22,7 @@ $('body').on('click', '.science', function (event) {
 
     $(".science").removeClass('science');
     $("#answered").fadeIn();
+    $("*").animate({ scrollTop: $(document).height() }, "slow");
     //if the page is not already being animated - trigger animation
     //if( !isAnimating ) changePage(newPage, true);
     //firstLoad = true;
