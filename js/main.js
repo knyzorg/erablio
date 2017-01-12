@@ -18,8 +18,6 @@ $('body').on('click', '.science', function (event) {
     }
     $(".science").eq(data.answer).addClass('yay');
 
-    $(".science").attr('disabled', "disabled");
-
     $(".science").removeClass('science');
     $("#answered").fadeIn(500, "swing", function (){
         $("body").animate({ scrollTop: $(document).height() }, "slow");
