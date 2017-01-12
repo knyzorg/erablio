@@ -167,8 +167,6 @@ function question(module, id, cb) {
                     return;
                 }
             });
-            quizData.wrong = quizData.wrong.replace("\n", "<br>");
-            quizData.right = quizData.right.replace("\n", "<br>");
             //Done shuffling
 
             var toreturn = `<!doctype html>

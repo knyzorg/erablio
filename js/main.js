@@ -25,6 +25,7 @@ $('body').on('click', '.science', function (event) {
     $(".science").eq(data.answer).addClass('yay');
 
     $(".science").removeClass('science');
+    $(".explain").html($(".explain").html().replace(/(?:\r\n|\r|\n)/g, '<br />'))
     $("#answered").fadeIn(500, "swing", function () {
         $("body").animate({ scrollTop: $(document).height() }, "slow");
     });
