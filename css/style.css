@@ -320,3 +320,15 @@ input{
   margin: 10px;
   height: 3em;
 }
+
+.explain{
+  a: b;
+}
+
+.nay, .nay:hover{
+  background-color: #f10f0f !important;
+}
+
+.yay, .yay:hover{
+  background-color: #22ff29 !important;
+}

@@ -12,7 +12,7 @@ app.use(require('body-parser').urlencoded({
     extended: true
 }));
 app.use(require('express-session')({
-    secret: 'correct battery horse staple',
+    secret: 'correct battery house staple',
     resave: true,
     saveUninitialized: true
 }));
@@ -26,12 +26,20 @@ function newToken() {
 
 
 
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
     done(null, user);
 });
 
-passport.deserializeUser(function(user, done) {
+passport.deserializeUser(function (user, done) {
     done(null, user);
 });
 
@@ -56,7 +64,7 @@ function login(username, password, callback) {
         username + "&ctlUserPassword=" + password + "&ctlLogon=Connexion";
 
     console.log("Logging in for", username, password);
-    request(login, function(error, response, body) {
+    request(login, function (error, response, body) {
         if (!error && response.statusCode == 200 && body.includes("Chargement en cours")) {
             callback(true);
             console.log("Logged in");
@@ -67,29 +75,11 @@ function login(username, password, callback) {
     })
 }
 
-var quizfile = fs.readFileSync(__dirname + "/quiz.html");
-
-app.get('/', function(req, res) {
-    res.sendFile(__dirname + "/index.html")
-});
-app.get('/index.html', function(req, res) {
-    res.sendFile(__dirname + "/index.html")
-});
-app.get('/about.html', function(req, res) {
-    res.sendFile(__dirname + "/about.html")
-});
-app.get('/js/:file', function(req, res) {
-    res.sendFile(__dirname + "/js/" + req.params.file);
-});
-app.get('/css/:file', function(req, res) {
-    res.sendFile(__dirname + "/css/" + req.params.file);
-});
-
 var LocalStrategy = require('passport-local').Strategy;
 
 passport.use(new LocalStrategy(
-    function(username, password, done) {
-        login(username, password, function(status) {
+    function (username, password, done) {
+        login(username, password, function (status) {
             if (status) {
                 //Logged in
                 return done(null, {
@@ -103,7 +93,7 @@ passport.use(new LocalStrategy(
     }
 ));
 
-var auth = function(req, res, next) {
+var auth = function (req, res, next) {
     console.log(req.url);
     if (!req.user) {
         req.session.returnTo = req.url;
@@ -111,152 +101,181 @@ var auth = function(req, res, next) {
     } else {
         next();
     }
-
 };
 
 
-app.get('/:quiz/answer.html', auth, function(req, res) {
-    if (!req.query.q || !req.query.a) {
-        res.sendFile(__dirname + "/index.html");
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + "/index.html")
+});
+
+app.use('/css', express.static('css'));
+app.use('/js', express.static('js'));
+
+
+
+app.get('/m', auth, function (req, res) {
+    fs.readFile(__dirname + "/quiz.html", function (err, data) {
+        data.replace("{{data}}")
+        res.send(data);
+    });
+
+});
+
+
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
     }
-    fs.readFile(__dirname + "/questions/" + req.params.quiz + "/" + req.query.q + ".json", function(err, data) {
-        if (!err) {
-            qdata = JSON.parse(data);
-            if (qdata.answer != req.query.a) {
-                //Wrong answer
-                res.send(`
-                <!doctype html>
-                <html lang="en" class="no-js">
-                <head>
-                	<meta charset="UTF-8">
-                	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-                	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+    return array;
+}
 
-                	<link rel="stylesheet" href="/css/reset.css"> <!-- CSS reset -->
-                	<link rel="stylesheet" href="/css/style.css"> <!-- Resource style -->
-                	<script src="/js/modernizr.js"></script> <!-- Modernizr -->
+function question(module, id, cb) {
 
-                	<title>Étudie ÇA!</title>
-                </head>
-                <body class="cd-about">
-                	<main>
-                		<div class="cd-about cd-main-content">
-                        <a href="/logout.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button></a>
-                        <a href="/quiz.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button></a>
-                			<div>
+    if (id == -1) {
+        id = randomInt(1, fs.readdirSync("questions/" + module).length);
+    }
+    console.log("questions/" + module + "/" + id + ".json");
+    fs.readFile("questions/" + module + "/" + id + ".json", function (err, quizJsonRaw) {
+        if (err) return;
+        var quizData = JSON.parse(quizJsonRaw);
+        fs.readFile("quiz.html", function (err, html) {
 
-                				<h1 style="color:red">Mauvaise Reponse!</h1>
+            //Shuffle options
 
-                				<h2>La bonne reponse etait: <span>${qdata.options[+qdata.answer]}</span></h2>
-                				<p>
-                					${qdata.wrong}
-                				</p>
-                					<a class="cd-btn" href="quiz.html" data-type="page-transition">Continuer &#8594;</a>
-                			</div>
-                		</div>
-                	</main>
-                	<div class="cd-cover-layer"></div>
-                	<div class="cd-loading-bar"></div>
-                <script src="/js/jquery-2.1.1.js"></script>
-                <script src="/js/main.js"></script> <!-- Resource jQuery -->
-                </body>
-                </html>
-                `.toString());
-            } else {
-                //Right answer
-                res.send(`
-                <!doctype html>
-                <html lang="en" class="no-js">
-                <head>
-                	<meta charset="UTF-8">
-                	<meta name="viewport" content="width=device-width, initial-scale=1">
+            //Get current text
+            var correct = quizData.options[quizData.answer];
 
-                	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+            //Shuffle Options
+            quizData.options = shuffle(quizData.options);
 
-                	<link rel="stylesheet" href="/css/reset.css"> <!-- CSS reset -->
-                	<link rel="stylesheet" href="/css/style.css"> <!-- Resource style -->
-                	<script src="/js/modernizr.js"></script> <!-- Modernizr -->
+            //Find new position
+            quizData.options.forEach(function (v, i, a) {
+                if (v == correct) {
+                    quizData.answer = i;
+                    return;
+                }
+            });
 
-                	<title>Étudie ÇA!</title>
-                </head>
-                <body class="cd-about">
-                	<main>
-                		<div class="cd-about cd-main-content">
-                        <a href="/logout.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button></a>
-                        <a href="/quiz.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button></a>
-                			<div>
+            //Done shuffling
 
-                				<h1 style="color:green">Bonne Reponse!</h1>
+            var toreturn = `<!doctype html>
+<html lang="en" class="no-js">
 
-                				<h2>Vous avez correctement dit: <span>${qdata.options[+qdata.answer]}</span></h2>
-                				<p>
-                					${qdata.right}
-                				</p>
-                					<a class="cd-btn" href="quiz.html" data-type="page-transition">Continuer &#8594;</a>
-                			</div>
-                		</div>
-                	</main>
-                	<div class="cd-cover-layer"></div>
-                	<div class="cd-loading-bar"></div>
-                <script src="/js/jquery-2.1.1.js"></script>
-                <script src="/js/main.js"></script> <!-- Resource jQuery -->
-                </body>
-                </html>
-                `.toString());
-            }
-        }
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    })
-});
-app.get('/quiz.html', auth, function(req, res) {
-    res.sendFile(__dirname + "/choose.html");
-});
-app.get('/:quiz/quiz.html', auth, function(req, res) {
-    //Question endpoint
-    fs.readdir(__dirname + "/questions/" + req.params.quiz, function(err, files) {
-        if (err) {
-            res.send("404");
-            return;
-        };
-        var index = randomInt(0, files.length - 1);
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
 
-        console.log(index);
+	<link rel="stylesheet" href="/css/reset.css">
+	<!-- CSS reset -->
+	<link rel="stylesheet" href="/css/style.css">
+	<!-- Resource style -->
+	<script src="/js/modernizr.js"></script>
+	<!-- Modernizr -->
 
-        var filename = files[index];
-        fs.readFile(__dirname + "/questions/" + req.params.quiz + "/" + filename, function(err, data) {
-            qdata = JSON.parse(data);
+	<title>Étudie ÇA!</title>
+</head>
 
-
-            var element = `<div>
-                <form method="POST" action="/science" style="display:none;">
-                    <input type="text" id="qid" name="qid" value="${index}">
+<body>
+	<main>
+		<div class="cd-index cd-main-content">
+			<a href="/logout.html" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button></a>
+			<a href="/module" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button></a>
+			<div>
+            <script>
+            var data = JSON.parse(window.atob('` + new Buffer(JSON.stringify(quizData)).toString('base64') + `'));
+                </script><form method="POST" action="/science" style="display:none;">
+                    <input type="text" id="qid" name="qid" value="${id}">
                     <input type="text" id="timestart" name="timestart" value="${Date.now()}">
                     <input type="text" id="key" name="key" value="${newToken()}">
                     <input type="text" id="alttab" name="alttab" value="0">
-                    <input type="text" id="answer" name="answer" value="0">
+                    <input type="text" id="options" name="options" value='${new Buffer(JSON.stringify(quizData.options)).toString('base64')}'>
+                    <input type="text" id="answer" name="answer" value="">
 
-                    <input type="text" id="quiz" name="quiz" value="${req.params.quiz}">
+                    <input type="text" id="quiz" name="quiz" value="phy">
                 </form>
                 <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question</h2>
-                <h1 style=" padding-bottom: 1em;">${qdata.question}</h1>
-                <a class="cd-btn" href="answer.html" data-option="0" data-type="answer">${qdata.options[0]}</a>
-                <a class="cd-btn" href="answer.html" data-option="1" data-type="answer">${qdata.options[1]}</a>
-                <a class="cd-btn" href="answer.html" data-option="2" data-type="answer">${qdata.options[2]}</a>
-                <a class="cd-btn" href="answer.html" data-option="3" data-type="answer">${qdata.options[3]}</a>
-            </div>`;
-            res.send(quizfile.toString().replace("{{{data}}}", element));
+                <h1 style=" padding-bottom: 1em;">${quizData.question}</h1>
+                <a class="cd-btn science" data-option="0" data-type="answer">${quizData.options[0]}</a>
+                <a class="cd-btn science" data-option="1" data-type="answer">${quizData.options[1]}</a>
+                <a class="cd-btn science" data-option="2" data-type="answer">${quizData.options[2]}</a>
+                <a class="cd-btn science" data-option="3" data-type="answer">${quizData.options[3]}</a>
+                <br>
+                <div id="answered" style="display:none;">
+                    <a class="cd-btn" href="${randomInt(1, fs.readdirSync("questions/" + module).length)}">Suivant</a>
+                </div>
+            </div>
+		</div>
+        
+	</main>
+	<div class="cd-cover-layer"></div>
+	<div class="cd-loading-bar"></div>
+	<script src="/js/jquery-2.1.1.js"></script>
+	<script src="/js/main.js"></script>
+	<script src="/js/collect.js"></script>
+	<!-- Resource jQuery -->
+</body>
+
+</html>
+
+            
+            `;
+
+            cb(toreturn);
         });
+    });
+}
+
+app.get('/:module/q/:id', auth, function (req, res) {
+    question(req.params.module, req.params.id, function (data) {
+        res.send(data);
     });
 });
 
-app.post('/science', auth, function(req, res) {
+app.get('/:module/q', auth, function (req, res) {
+    question(req.params.module, -1, function (data) {
+        res.send(data);
+    });
+});
+
+
+app.post('/science', auth, function (req, res) {
     //Result endpoint
-    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", function(err, data) {
+    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", function (err, data) {
         if (err) {
             return 0
         }
         data = JSON.parse(data);
+
+        //Unshuffle results
+        if (!IsJsonString(new Buffer(req.body.options, 'base64').toString('ascii'))){
+            return 0;
+        }
+        var optionsShuffled = JSON.parse(new Buffer(req.body.options, 'base64').toString());
+
+        //Get value of shuffled
+        var unshufa = -1;
+        optionsShuffled.forEach(function (v,i,a){
+            if (data.options[i] == optionsShuffled[req.body.answer]){
+                console.log(optionsShuffled[req.body.answer], "is indeed", data.options[i], "While having id of", i);
+                console.log("Real answer", i);
+                unshufa = i;
+            }
+        });
+
         var results = {
             qid: req.body.qid,
             time: +req.body.timestart,
@@ -264,14 +283,15 @@ app.post('/science', auth, function(req, res) {
             spent: +(Date.now() - req.body.timestart),
             user: req.user.username,
             alttab: +req.body.alttab,
-            answer: +req.body.answer,
-            pass: +(req.body.answer == data.answer),
+            answer: +unshufa,
+            pass: +(unshufa == data.answer),
             correct: data.answer,
             key: req.body.key,
             agent: req.headers['user-agent']
         };
         res.send("Data Submitted for Analysis");
         console.log(JSON.stringify(results));
+        console.log("Did you pass?", results.pass);
 
 
         //Implement sqlite logger
@@ -282,10 +302,24 @@ app.post('/science', auth, function(req, res) {
 });
 
 
-app.get("/login.html", function(req, res) {
+app.get("/login.html", function (req, res) {
     res.sendFile(__dirname + "/login.html");
 });
-app.get("/logout.html", function(req, res) {
+
+app.get("/module", function (req, res) {
+    res.sendFile(__dirname + "/select.html");
+});
+
+
+app.get("/home", function (req, res) {
+    res.sendFile(__dirname + "/index.html");
+});
+
+app.get("/about", function (req, res) {
+    res.sendFile(__dirname + "/about.html");
+});
+
+app.get("/logout.html", function (req, res) {
     req.logout();
     req.session.destroy();
     res.sendFile(__dirname + "/login.html");
@@ -293,11 +327,11 @@ app.get("/logout.html", function(req, res) {
 
 app.post("/login.html", passport.authenticate('local', {
     failureRedirect: '/login.html'
-}), function(req, res) {
+}), function (req, res) {
     res.redirect(req.session.returnTo || '/');
 });
 var PORT = process.env.PORT || 3000;
-app.listen(PORT, function() {
+app.listen(PORT, function () {
     console.log('App ready!');
-        console.log('Listening on *:' + PORT);
+    console.log('Listening on *:' + PORT);
 });
