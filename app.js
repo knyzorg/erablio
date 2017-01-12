@@ -114,7 +114,7 @@ app.use('/js', express.static('js'));
 
 
 app.get('/m', auth, function (req, res) {
-    fs.readFile(__dirname + "/quiz.html", function (err, data) {
+    fs.readFile(__dirname + "/quiz.html", {encoding: 'utf-8'}, function (err, data) {
         data.replace("{{data}}")
         res.send(data);
     });
@@ -147,7 +147,7 @@ function question(module, id, cb) {
         id = randomInt(1, fs.readdirSync("questions/" + module).length);
     }
     console.log("questions/" + module + "/" + id + ".json");
-    fs.readFile("questions/" + module + "/" + id + ".json", function (err, quizJsonRaw) {
+    fs.readFile("questions/" + module + "/" + id + ".json", {encoding: 'utf-8'}, function (err, quizJsonRaw) {
         if (err) return;
         var quizData = JSON.parse(quizJsonRaw);
         fs.readFile("quiz.html", function (err, html) {
@@ -187,6 +187,15 @@ function question(module, id, cb) {
 	<!-- Modernizr -->
 
 	<title>Étudie ÇA!</title>
+    <script>
+    function utf8_to_b64( str ) {
+    return window.btoa(unescape(encodeURIComponent( str )));
+}
+
+function b64_to_utf8( str ) {
+    return decodeURIComponent(escape(window.atob( str )));
+}
+</script>
 </head>
 
 <body>
@@ -196,7 +205,7 @@ function question(module, id, cb) {
 			<a href="/module" data-type="page-transition"><button class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button></a>
 			<div>
             <script>
-            var data = JSON.parse(window.atob('` + new Buffer(JSON.stringify(quizData)).toString('base64') + `'));
+            var data = JSON.parse(b64_to_utf8('` + new Buffer(JSON.stringify(quizData)).toString('base64') + `'));
                 </script><form method="POST" action="/science" style="display:none;">
                     <input type="text" id="qid" name="qid" value="${id}">
                     <input type="text" id="timestart" name="timestart" value="${Date.now()}">
@@ -254,14 +263,14 @@ app.get('/:module/q', auth, function (req, res) {
 
 app.post('/science', auth, function (req, res) {
     //Result endpoint
-    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", function (err, data) {
+    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", {encoding: 'utf-8'}, function (err, data) {
         if (err) {
             return 0
         }
         data = JSON.parse(data);
 
         //Unshuffle results
-        if (!IsJsonString(new Buffer(req.body.options, 'base64').toString('ascii'))){
+        if (!IsJsonString(new Buffer(req.body.options, 'base64').toString())){
             return 0;
         }
         var optionsShuffled = JSON.parse(new Buffer(req.body.options, 'base64').toString());

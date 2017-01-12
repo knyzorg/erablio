@@ -1,7 +1,1 @@
-{
-  "question": "aBlah blah blah?",
-  "options": ["é", "1", "2", "3"],
-  "answer": 0,
-  "wrong": "La bonne reponse est blah blah blah parce blah blah blah et blah blah blah mais pas blah blah blah",
-  "right": "blah blah est la bonne reponse parce que blah"
-}
+{"question":"Qui suis-je? Je nourris l'œil.","options":["Choroïde","Cornée","Nerf optique","Rétine"],"answer":"1","wrong":"La choroïde est une membrane riche en vaisseaux sanguins. C'est donc elle qui est responsable d l'alimentation de l'œil","right":"Bravo! Tu as bien identifié la fonction de la choroïde!"}
