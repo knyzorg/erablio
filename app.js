@@ -113,15 +113,6 @@ app.use('/js', express.static('js'));
 
 
 
-app.get('/m', auth, function (req, res) {
-    fs.readFile(__dirname + "/quiz.html", { encoding: 'utf-8' }, function (err, data) {
-        data.replace("{{data}}")
-        res.send(data);
-    });
-
-});
-
-
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -210,10 +201,10 @@ function b64_to_utf8( str ) {
                     <input type="text" id="timestart" name="timestart" value="${Date.now()}">
                     <input type="text" id="key" name="key" value="${newToken()}">
                     <input type="text" id="alttab" name="alttab" value="0">
+                    <input type="text" id="quiz" name="quiz" value="${module}">
+                    
                     <input type="text" id="options" name="options" value='${new Buffer(JSON.stringify(quizData.options)).toString('base64')}'>
                     <input type="text" id="answer" name="answer" value="">
-
-                    <input type="text" id="quiz" name="quiz" value="phy">
                 </form>
                 <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question</h2>
                 <h1 style=" padding-bottom: 1em;">${quizData.question}</h1>
@@ -263,13 +254,16 @@ app.get('/:module/q', auth, function (req, res) {
 app.post('/science', auth, function (req, res) {
     //Result endpoint
     fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' }, function (err, data) {
+        console.log("Reading", __dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json....")
         if (err) {
             return 0
         }
+        console.log("OK");
         data = JSON.parse(data);
 
         //Unshuffle results
         if (!IsJsonString(new Buffer(req.body.options, 'base64').toString())) {
+        console.log("Not valid JSON");
             return 0;
         }
         var optionsShuffled = JSON.parse(new Buffer(req.body.options, 'base64').toString());
