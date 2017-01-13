@@ -20,7 +20,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.science {
+button, a {
   color: #283040;
   text-decoration: none;
 }
