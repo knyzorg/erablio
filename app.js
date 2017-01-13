@@ -114,7 +114,7 @@ app.use('/js', express.static('js'));
 
 
 app.get('/m', auth, function (req, res) {
-    fs.readFile(__dirname + "/quiz.html", {encoding: 'utf-8'}, function (err, data) {
+    fs.readFile(__dirname + "/quiz.html", { encoding: 'utf-8' }, function (err, data) {
         data.replace("{{data}}")
         res.send(data);
     });
@@ -147,7 +147,7 @@ function question(module, id, cb) {
         id = randomInt(1, fs.readdirSync("questions/" + module).length);
     }
     console.log("questions/" + module + "/" + id + ".json");
-    fs.readFile("questions/" + module + "/" + id + ".json", {encoding: 'utf-8'}, function (err, quizJsonRaw) {
+    fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
         if (err) return;
         var quizData = JSON.parse(quizJsonRaw);
         fs.readFile("quiz.html", function (err, html) {
@@ -262,22 +262,22 @@ app.get('/:module/q', auth, function (req, res) {
 
 app.post('/science', auth, function (req, res) {
     //Result endpoint
-    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", {encoding: 'utf-8'}, function (err, data) {
+    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' }, function (err, data) {
         if (err) {
             return 0
         }
         data = JSON.parse(data);
 
         //Unshuffle results
-        if (!IsJsonString(new Buffer(req.body.options, 'base64').toString())){
+        if (!IsJsonString(new Buffer(req.body.options, 'base64').toString())) {
             return 0;
         }
         var optionsShuffled = JSON.parse(new Buffer(req.body.options, 'base64').toString());
 
         //Get value of shuffled
         var unshufa = -1;
-        optionsShuffled.forEach(function (v,i,a){
-            if (data.options[i] == optionsShuffled[req.body.answer]){
+        optionsShuffled.forEach(function (v, i, a) {
+            if (data.options[i] == optionsShuffled[req.body.answer]) {
                 console.log(optionsShuffled[req.body.answer], "is indeed", data.options[i], "While having id of", i);
                 console.log("Real answer", i);
                 unshufa = i;
