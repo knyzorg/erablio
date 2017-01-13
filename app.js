@@ -217,13 +217,13 @@ function b64_to_utf8( str ) {
                 </form>
                 <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question</h2>
                 <h1 style=" padding-bottom: 1em;">${quizData.question}</h1>
-                <a class="cd-btn science" data-option="0" data-type="answer">${quizData.options[0]}</a>
-                <a class="cd-btn science" data-option="1" data-type="answer">${quizData.options[1]}</a>
-                <a class="cd-btn science" data-option="2" data-type="answer">${quizData.options[2]}</a>
-                <a class="cd-btn science" data-option="3" data-type="answer">${quizData.options[3]}</a>
+                <button> class="cd-btn science" data-option="0" data-type="answer">${quizData.options[0]}</button>
+                <button> class="cd-btn science" data-option="1" data-type="answer">${quizData.options[1]}</button>
+                <button> class="cd-btn science" data-option="2" data-type="answer">${quizData.options[2]}</button>
+                <button> class="cd-btn science" data-option="3" data-type="answer">${quizData.options[3]}</button>
                 <br>
                 <div id="answered" style="display:none;">
-                    <a class="cd-btn" data-type="page-transition" href="${randomInt(1, fs.readdirSync("questions/" + module).length)}">Suivant</a>
+                    <button> class="cd-btn" data-type="page-transition" href="${randomInt(1, fs.readdirSync("questions/" + module).length)}">Suivant</button>
                 </div>
             </div>
 		</div>
