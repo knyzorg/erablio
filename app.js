@@ -18,11 +18,6 @@ app.use(require('express-session')({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
- 
-git.short(function (str) {
-  console.log('short', str)
-  // => aefdd94 
-})
 
 function newToken() {
     return Crypto.randomBytes(8).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/\=/g, '');
