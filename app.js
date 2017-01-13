@@ -95,6 +95,7 @@ passport.use(new LocalStrategy(
 
 var auth = function (req, res, next) {
     console.log(req.url);
+    console.log(JSON.stringify(req.user));
     if (!req.user) {
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
@@ -238,6 +239,10 @@ function b64_to_utf8( str ) {
     });
 }
 
+app.get("/module", auth, function (req, res) {
+    res.sendFile(__dirname + "/select.html");
+});
+
 app.get('/:module/q/:id', auth, function (req, res) {
     question(req.params.module, req.params.id, function (data) {
         res.send(data);
@@ -308,9 +313,6 @@ app.get("/login.html", function (req, res) {
     res.sendFile(__dirname + "/login.html");
 });
 
-app.get("/module", auth, function (req, res) {
-    res.sendFile(__dirname + "/select.html");
-});
 
 
 app.get("/home", function (req, res) {
