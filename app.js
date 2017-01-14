@@ -260,7 +260,7 @@ app.post('/science', auth, function (req, res) {
 
         //Unshuffle results
         if (!IsJsonString(new Buffer(req.body.options, 'base64').toString())) {
-        console.log("Not valid JSON");
+            console.log("Not valid JSON");
             return 0;
         }
         var optionsShuffled = JSON.parse(new Buffer(req.body.options, 'base64').toString());
@@ -324,7 +324,10 @@ app.get("/logout.html", function (req, res) {
 app.post("/login.html", passport.authenticate('local', {
     failureRedirect: '/login.html'
 }), function (req, res) {
-    res.redirect((req.session.returnTo || '/')  + "?" + newToken() );
+    if (req.session.returnTo) {
+        res.redirect(req.session.returnTo + "?" + newToken())
+    }
+    res.redirect('/');
 });
 var PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
