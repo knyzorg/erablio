@@ -49,7 +49,7 @@ $('body').on('click', '[data-type="page-transition"]', function (event) {
     var newPage = $(this).attr('href');
     //if the page is not animating - trigger animation
     if (!isAnimating) {
-        changePage(newPage, true);
+        changePage(newPage + '?' + Math.random().toString(36).substring(7), true);
         console.log("Changing page");
     } else {
 
