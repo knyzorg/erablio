@@ -324,6 +324,9 @@ app.get("/logout.html", function (req, res) {
 app.post("/login.html", passport.authenticate('local', {
     failureRedirect: '/login.html'
 }), function (req, res) {
+    if (req.session.returnTo){
+        req.session.returnTo += "?" + newToken();
+    }
     res.redirect(req.session.returnTo || '/');
 });
 var PORT = process.env.PORT || 3000;
