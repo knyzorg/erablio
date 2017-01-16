@@ -170,15 +170,17 @@ function question(module, id, username, cb) {
             //Select next question (semi-randomly)
             if (userQuestions[username].length == fs.readdirSync("questions/" + module).length){
                 //All questions complete, reset 
+                console.log("Reset questions");
                 userQuestions[username] = [];
             }
 
-            var nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length);
+            var nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length).toString();
 
             while (userQuestions[username].indexOf(nextQuestion) !== -1){
-                nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length);
+                console.log(nextQuestion, "is present. Changing.");
+                nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length).toString();
             }
-
+            console.log(nextQuestion, "is not in", JSON.stringify(userQuestions[username]));
             var toreturn = `<!doctype html>
 <html lang="en" class="no-js">
 
