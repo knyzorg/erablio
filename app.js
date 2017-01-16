@@ -133,12 +133,17 @@ function shuffle(array) {
 
     return array;
 }
-
-function question(module, id, cb) {
+var userQuestions = {};
+function question(module, id, username, cb) {
 
     if (id == -1) {
         id = randomInt(1, fs.readdirSync("questions/" + module).length);
     }
+    if (userQuestions[username] === undefined){
+        userQuestions[username] = [];
+    }
+    userQuestions[username].push(id);
+
     console.log("questions/" + module + "/" + id + ".json");
     fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
         if (err) return;
@@ -161,6 +166,18 @@ function question(module, id, cb) {
                 }
             });
             //Done shuffling
+
+            //Select next question (semi-randomly)
+            if (userQuestions[username].length == fs.readdirSync("questions/" + module).length){
+                //All questions complete, reset 
+                userQuestions[username] = [];
+            }
+
+            var nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length);
+
+            while (userQuestions[username].indexOf(nextQuestion) !== -1){
+                nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length);
+            }
 
             var toreturn = `<!doctype html>
 <html lang="en" class="no-js">
@@ -207,7 +224,7 @@ function question(module, id, cb) {
                 <button class="cd-btn science" data-option="3" data-type="answer">${quizData.options[3]}</button>
                 <br>
                 <div id="answered" style="display:none;">
-                    <button class="cd-btn" data-type="page-transition" href="${randomInt(1, fs.readdirSync("questions/" + module).length)}">Suivant</button>
+                    <button class="cd-btn" data-type="page-transition" href="${nextQuestion}">Suivant</button>
                 </div>
             </div>
 		</div>
@@ -236,13 +253,13 @@ app.get("/module", auth, function (req, res) {
 });
 
 app.get('/:module/q/:id', auth, function (req, res) {
-    question(req.params.module, req.params.id, function (data) {
+    question(req.params.module, req.params.id, req.user.username, function (data) {
         res.send(data);
     });
 });
 
 app.get('/:module/q', auth, function (req, res) {
-    question(req.params.module, -1, function (data) {
+    question(req.params.module, -1, req.user.username, function (data) {
         res.send(data);
     });
 });
