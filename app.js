@@ -82,7 +82,8 @@ passport.use(new LocalStrategy(
             if (status) {
                 //Logged in
                 return done(null, {
-                    username: username.toLowerCase()
+                    username: username.toLowerCase(),
+                    questions: {}
                 });
             } else {
                 //Failed to login
@@ -133,16 +134,21 @@ function shuffle(array) {
 
     return array;
 }
-var userQuestions = {};
-function question(module, id, username, cb) {
+function question(module, id, req, cb) {
 
     if (id == -1) {
         id = randomInt(1, fs.readdirSync("questions/" + module).length);
     }
-    if (userQuestions[username] === undefined){
-        userQuestions[username] = [];
+    if (req.user.questions[module] == undefined) {
+        req.user.questions[module] = {};
     }
-    userQuestions[username].push(id);
+    if (req.user.questions[module].answered === undefined) {
+        req.user.questions[module].answered = [];
+    }
+    if (req.user.questions[module].answered.indexOf(id.toString()) === -1) {
+        req.user.questions[module].answered.push(id.toString());
+
+    }
 
     console.log("questions/" + module + "/" + id + ".json");
     fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
@@ -168,19 +174,19 @@ function question(module, id, username, cb) {
             //Done shuffling
 
             //Select next question (semi-randomly)
-            if (userQuestions[username].length == fs.readdirSync("questions/" + module).length){
+            if (req.user.questions[module].answered.length == fs.readdirSync("questions/" + module).length) {
                 //All questions complete, reset 
                 console.log("Reset questions");
-                userQuestions[username] = [];
+                req.user.questions[module].answered = [];
             }
 
             var nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length).toString();
 
-            while (userQuestions[username].indexOf(nextQuestion) !== -1){
+            while (req.user.questions[module].answered.indexOf(nextQuestion) !== -1) {
                 console.log(nextQuestion, "is present. Changing.");
                 nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length).toString();
             }
-            console.log(nextQuestion, "is not in", JSON.stringify(userQuestions[username]));
+            console.log(nextQuestion, "is not in", JSON.stringify(req.user.questions[module].answered));
             var toreturn = `<!doctype html>
 <html lang="en" class="no-js">
 
@@ -218,7 +224,7 @@ function question(module, id, username, cb) {
                     <input type="text" id="options" name="options" value='${new Buffer(JSON.stringify(quizData.options)).toString('base64')}'>
                     <input type="text" id="answer" name="answer" value="">
                 </form>
-                <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question</h2>
+                <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question ${req.user.questions[module].answered.length}/${fs.readdirSync("questions/" + module).length}</h2>
                 <h1 style=" padding-bottom: 1em;">${quizData.question}</h1>
                 <button class="cd-btn science" data-option="0" data-type="answer">${quizData.options[0]}</button>
                 <button class="cd-btn science" data-option="1" data-type="answer">${quizData.options[1]}</button>
@@ -255,13 +261,19 @@ app.get("/module", auth, function (req, res) {
 });
 
 app.get('/:module/q/:id', auth, function (req, res) {
-    question(req.params.module, req.params.id, req.user.username, function (data) {
+    question(req.params.module, req.params.id, req, function (data) {
+        res.send(data);
+    });
+});
+
+app.get('/:module/q/reset', auth, function (req, res) {
+    question(req.params.module, req.params.id, req, function (data) {
         res.send(data);
     });
 });
 
 app.get('/:module/q', auth, function (req, res) {
-    question(req.params.module, -1, req.user.username, function (data) {
+    question(req.params.module, -1, req, function (data) {
         res.send(data);
     });
 });
@@ -270,7 +282,7 @@ app.get('/:module/q', auth, function (req, res) {
 app.post('/science', auth, function (req, res) {
     //Result endpoint
     fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' }, function (err, data) {
-        console.log("Reading", __dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json....")
+        console.log("Reading", __dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json")
         if (err) {
             console.log("Error could not read file for validation")
             res.send("Error");
@@ -281,7 +293,7 @@ app.post('/science', auth, function (req, res) {
 
         //Unshuffle results
         if (!IsJsonString(new Buffer(req.body.options, 'base64').toString())) {
-        console.log("Not valid JSON");
+            console.log("Not valid JSON");
             return 0;
         }
         var optionsShuffled = JSON.parse(new Buffer(req.body.options, 'base64').toString());
@@ -290,12 +302,9 @@ app.post('/science', auth, function (req, res) {
         var unshufa = -1;
         optionsShuffled.forEach(function (v, i, a) {
             if (data.options[i] == optionsShuffled[req.body.answer]) {
-                console.log(optionsShuffled[req.body.answer], "is indeed", data.options[i], "While having id of", i);
-                console.log("Real answer", i);
                 unshufa = i;
             }
         });
-
         var results = {
             qid: req.body.qid,
             time: +req.body.timestart,
@@ -313,6 +322,20 @@ app.post('/science', auth, function (req, res) {
         console.log(JSON.stringify(results));
         console.log("Did you pass?", results.pass);
 
+        if (req.user.questions[results.set] == undefined) {
+            req.user.questions[results.set] = {};
+        }
+
+        if (req.user.questions[results.set].wrong == undefined || req.user.questions[results.set].wrong == undefined) {
+            req.user.questions[results.set].wrong = [];
+            req.user.questions[results.set].right = [];
+        }
+
+        if (results.pass) {
+            req.user.questions[results.set].right.push(results.qid.toString);
+        } else {
+            req.user.questions[results.set].wrong.push(results.qid.toString);
+        }
 
         //Implement sqlite logger
         // node dblite.test.js
@@ -345,7 +368,7 @@ app.get("/logout.html", function (req, res) {
 app.post("/login.html", passport.authenticate('local', {
     failureRedirect: '/login.html'
 }), function (req, res) {
-    if (req.session.returnTo){
+    if (req.session.returnTo) {
         req.session.returnTo += "?" + newToken();
     }
     res.redirect(req.session.returnTo || '/module' + "?" + newToken());
