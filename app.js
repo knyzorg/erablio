@@ -208,7 +208,7 @@ function question(module, id, username, cb) {
 			<div>
             <div id="data_inject" style="display:none">
             var data = JSON.parse(b64_to_utf8('` + new Buffer(JSON.stringify(quizData)).toString('base64') + `'));
-                </div><form method="POST" action="/science" style="display:none;">
+                </div><form method="POST" action="/science?no-cache=${newToken()}" style="display:none;">
                     <input type="text" id="qid" name="qid" value="${id}">
                     <input type="text" id="timestart" name="timestart" value="${Date.now()}">
                     <input type="text" id="key" name="key" value="${newToken()}">
@@ -272,7 +272,9 @@ app.post('/science', auth, function (req, res) {
     fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' }, function (err, data) {
         console.log("Reading", __dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json....")
         if (err) {
-            return 0
+            console.log("Error could not read file for validation")
+            res.send("Error");
+            return 0;
         }
         console.log("OK");
         data = JSON.parse(data);
