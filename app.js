@@ -137,7 +137,12 @@ function shuffle(array) {
 function question(module, id, req, cb) {
 
     if (id == -1) {
-        id = randomInt(1, fs.readdirSync("questions/" + module).length);
+        if ((req.user.questions[module].answered.length != fs.readdirSync("questions/" + module).length)){
+            id = randomInt(1, fs.readdirSync("questions/" + module).length);
+        } else {
+            id = "end";
+        }
+        
     }
     if (req.user.questions[module] == undefined) {
         req.user.questions[module] = {};
@@ -173,20 +178,27 @@ function question(module, id, req, cb) {
             });
             //Done shuffling
 
+            var nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length).toString();
+
             //Select next question (semi-randomly)
             if (req.user.questions[module].answered.length == fs.readdirSync("questions/" + module).length) {
                 //All questions complete, reset 
-                console.log("Reset questions");
-                req.user.questions[module].answered = [];
-            }
+                if (fs.readdirSync("questions/" + module).length == req.user.questions[module].right.length) {
+                    console.log("All done, all right");
+                    req.user.questions[module].answered = [];
+                } else {
+                    nextQuestion = "end";
+                }
 
-            var nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length).toString();
+            }
 
             while (req.user.questions[module].answered.indexOf(nextQuestion) !== -1) {
                 console.log(nextQuestion, "is present. Changing.");
                 nextQuestion = randomInt(1, fs.readdirSync("questions/" + module).length).toString();
             }
             console.log(nextQuestion, "is not in", JSON.stringify(req.user.questions[module].answered));
+
+
             var toreturn = `<!doctype html>
 <html lang="en" class="no-js">
 
@@ -260,13 +272,133 @@ app.get("/module", auth, function (req, res) {
     res.sendFile(__dirname + "/select.html");
 });
 
-app.get('/:module/q/:id', auth, function (req, res) {
-    question(req.params.module, req.params.id, req, function (data) {
+
+app.get('/:module/q/end', auth, function (req, res) {
+    data = "Questions not completed, can't generate verdique";
+    if (req.user.questions[req.params.module].answered.length == fs.readdirSync("questions/" + req.params.module).length) {
+        var text = "Something broke :/";
+        switch (Math.round(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length)) {
+            case 0:
+                text = "As-tu vraiment fait ça sérieusement ?"
+                break;
+            case 1:
+                text = "Lis tes notes au moins une fois, ça fera une grande différence !"
+
+                break;
+            case 2:
+                text = "Tu as des oreilles et un cerveau qui communique par influx nerveux ! Utilise les en classe !"
+
+                break;
+            case 3:
+                text = "Tu es à mi-chemin !.......de la note de passage...Redouble tes efforts !"
+
+                break;
+            case 4:
+                text = "Tu as des oreilles et un cerveau qui communique par influx nerveux ! Utilise les en classe !"
+
+                break;
+            case 5:
+                text = "OH! Presque! Ne lache surtout pas ici!!"
+
+                break;
+            case 6:
+                text = "Ca passe! Mais aucune raison d'abondonner maintenant!"
+                break;
+            case 7:
+                text = "Tu peut faire mieux !"
+
+                break;
+            case 8:
+                text = "Garde cette cadence pour l'examen !"
+
+                break;
+            case 9:
+                text = "Ouh ! Si proche de la perfection ! Rappelle-toi bien de ses quelques erreurs que tu fais !.....ça ou c'est mieux : Mais au moins, tu as moins d'erreur à retravailler !....ou ni l'un ni l'autre ?"
+
+                break;
+            case 10:
+                text = "Perfection! Essaie d'avoir cette note encore une fois !"
+
+                break;
+
+        }
+        data = `
+        <!doctype html>
+<html lang="en" class="no-js">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+
+	<link rel="stylesheet" href="/css/reset.css">
+	<!-- CSS reset -->
+	<link rel="stylesheet" href="/css/style.css">
+	<!-- Resource style -->
+	<script src="/js/modernizr.js"></script>
+	<!-- Modernizr -->
+
+	<title>Étudie ÇA!</title>
+</head>
+
+<body class="cd-about">
+	<main>
+		<div class="cd-about cd-main-content">
+        <button href="/logout.html" data-type="page-transition" class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button>
+			<button href="/module" data-type="page-transition" class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button>
+			<div>
+
+
+                <h1>${req.user.questions[req.params.module].right.length}/${fs.readdirSync("questions/" + req.params.module).length}</h1>
+
+				<h2>Verdique</h2>
+
+				<p>
+					${text}
+				</p>
+				<button class="cd-btn" href="retake" data-type="page-transition">Refaire les questions manquées</button>
+				<button class="cd-btn" href="reset" data-type="page-transition">Refaire le module au complet</button>
+			</div>
+		</div>
+	</main>
+	<div class="cd-cover-layer"></div>
+	<div class="cd-loading-bar"></div>
+	<script src="/js/jquery-2.1.1.js"></script>
+	<script src="/js/main.js"></script>
+	<!-- Resource jQuery -->
+</body>
+
+</html>
+    `;
+    }
+    res.send(data);
+});
+
+
+app.get('/:module/q/retake', auth, function (req, res) {
+    if (req.user.questions[req.params.module] != undefined) {
+        req.user.questions[req.params.module].answered = req.user.questions[req.params.module].right;
+    }
+
+
+    question(req.params.module, -1, req, function (data) {
         res.send(data);
     });
 });
 
 app.get('/:module/q/reset', auth, function (req, res) {
+    if (req.user.questions[req.params.module] != undefined) {
+        req.user.questions[req.params.module].answered = [];
+    }
+
+
+    question(req.params.module, -1, req, function (data) {
+        res.send(data);
+    });
+});
+
+app.get('/:module/q/:id', auth, function (req, res) {
     question(req.params.module, req.params.id, req, function (data) {
         res.send(data);
     });
@@ -318,9 +450,8 @@ app.post('/science', auth, function (req, res) {
             key: req.body.key,
             agent: req.headers['user-agent']
         };
-        res.send("Data Submitted for Analysis");
-        console.log(JSON.stringify(results));
-        console.log("Did you pass?", results.pass);
+
+
 
         if (req.user.questions[results.set] == undefined) {
             req.user.questions[results.set] = {};
@@ -330,16 +461,22 @@ app.post('/science', auth, function (req, res) {
             req.user.questions[results.set].wrong = [];
             req.user.questions[results.set].right = [];
         }
-
         if (results.pass) {
-            req.user.questions[results.set].right.push(results.qid.toString);
+            req.user.questions[results.set].right.push(results.qid.toString());
         } else {
-            req.user.questions[results.set].wrong.push(results.qid.toString);
+            req.user.questions[results.set].wrong.push(results.qid.toString());
         }
+        console.log(req.user.questions[results.set].right);
+
 
         //Implement sqlite logger
         // node dblite.test.js
         db.query('INSERT INTO quiz VALUES (:qid, :time, :set, :spent, :user, :alttab, :answer, :pass, :correct, :key, :agent)', results);
+
+        res.send("Data Submitted for Analysis");
+        console.log(JSON.stringify(results));
+        console.log("Did you pass?", results.pass);
+
     })
 
 });
