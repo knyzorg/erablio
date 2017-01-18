@@ -153,7 +153,7 @@ function question(module, id, req, cb) {
         
     }
 
-    if (req.user.questions[module].answered.indexOf(id.toString()) === -1 && isNaN(id)) {
+    if (req.user.questions[module].answered.indexOf(id.toString()) === -1 && !isNaN(id)) {
         req.user.questions[module].answered.push(id.toString());
     }
 
