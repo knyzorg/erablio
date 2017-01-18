@@ -276,7 +276,7 @@ app.get("/module", auth, function (req, res) {
 
 
 app.get('/:module/q/end', auth, function (req, res) {
-    data = "Questions not completed, can't generate verdique";
+    data = "Questions not completed, can't generate verdict";
     if (req.user.questions[req.params.module].answered.length == fs.readdirSync("questions/" + req.params.module).length) {
         var text = "Something broke :/";
         switch (Math.round(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length)) {
@@ -288,7 +288,7 @@ app.get('/:module/q/end', auth, function (req, res) {
 
                 break;
             case 2:
-                text = "Tu as des oreilles et un cerveau qui communique par influx nerveux ! Utilise les en classe !"
+                text = "Tu as des oreilles et un cerveau qui communiquent par influx nerveux ! Utilise les en classe !"
 
                 break;
             case 3:
