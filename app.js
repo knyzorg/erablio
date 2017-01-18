@@ -135,6 +135,14 @@ function shuffle(array) {
     return array;
 }
 function question(module, id, req, cb) {
+    
+    if (req.user.questions[module] == undefined) {
+        req.user.questions[module] = {};
+    }
+    if (req.user.questions[module].answered === undefined) {
+        req.user.questions[module].answered = [];
+    }
+
 
     if (id == -1) {
         if ((req.user.questions[module].answered.length != fs.readdirSync("questions/" + module).length)){
@@ -144,15 +152,9 @@ function question(module, id, req, cb) {
         }
         
     }
-    if (req.user.questions[module] == undefined) {
-        req.user.questions[module] = {};
-    }
-    if (req.user.questions[module].answered === undefined) {
-        req.user.questions[module].answered = [];
-    }
-    if (req.user.questions[module].answered.indexOf(id.toString()) === -1) {
-        req.user.questions[module].answered.push(id.toString());
 
+    if (req.user.questions[module].answered.indexOf(id.toString()) === -1 && isNan(id)) {
+        req.user.questions[module].answered.push(id.toString());
     }
 
     console.log("questions/" + module + "/" + id + ".json");
