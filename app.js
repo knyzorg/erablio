@@ -148,7 +148,7 @@ function question(module, id, req, cb) {
         if ((req.user.questions[module].answered.length != fs.readdirSync("questions/" + module).length)){
             id = randomInt(1, fs.readdirSync("questions/" + module).length);
         } else {
-            id = "end";
+            res.redirect("/" + module + "/q/end")
         }
         
     }
@@ -354,7 +354,7 @@ app.get('/:module/q/end', auth, function (req, res) {
 
                 <h1>${req.user.questions[req.params.module].right.length}/${fs.readdirSync("questions/" + req.params.module).length}</h1>
 
-				<h2>Verdique</h2>
+				<h2>Verdict</h2>
 
 				<p>
 					${text}
