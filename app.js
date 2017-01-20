@@ -284,11 +284,11 @@ app.get('/:module/q/end', auth, function (req, res) {
                 text = "As-tu vraiment fait ça sérieusement ?"
                 break;
             case 1:
-                text = "Lis tes notes au moins une fois, ça fera une grande différence !"
+                text = "As-tu vraiment compris la matière correctement ?"
 
                 break;
             case 2:
-                text = "Tu as des oreilles et un cerveau qui communiquent par influx nerveux ! Utilise les en classe !"
+                text = "Continue ! Tu vas y arriver ! Un jour...."
 
                 break;
             case 3:
@@ -296,7 +296,7 @@ app.get('/:module/q/end', auth, function (req, res) {
 
                 break;
             case 4:
-                text = "Tu as des oreilles et un cerveau qui communique par influx nerveux ! Utilise les en classe !"
+                text = "Continue ! Tu vas y arriver ! Un jour...."
 
                 break;
             case 5:
@@ -307,7 +307,7 @@ app.get('/:module/q/end', auth, function (req, res) {
                 text = "Ca passe! Mais aucune raison d'abondonner maintenant!"
                 break;
             case 7:
-                text = "Tu peut faire mieux !"
+                text = "C'est bien! Mais c'est toujours possible à l'amélioration!"
 
                 break;
             case 8:
@@ -315,7 +315,7 @@ app.get('/:module/q/end', auth, function (req, res) {
 
                 break;
             case 9:
-                text = "Ouh ! Si proche de la perfection ! Rappelle-toi bien de ses quelques erreurs que tu fais !.....ça ou c'est mieux : Mais au moins, tu as moins d'erreur à retravailler !....ou ni l'un ni l'autre ?"
+                text = "Si proche de la perfection! Souviens toi attentivement de tes erreurs pour ne pas les répéter durant tes examens!"
 
                 break;
             case 10:
