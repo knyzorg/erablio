@@ -288,15 +288,15 @@ app.get('/:module/q/end', auth, function (req, res) {
 
                 break;
             case 2:
-                text = "Continue ! Tu vas y arriver ! Un jour...."
+                text = "Continue! Tu vas y arriver! Un jour...."
 
                 break;
             case 3:
-                text = "Tu es à mi-chemin !.......de la note de passage...Redouble tes efforts !"
+                text = "Tu es à mi-chemin!.......de la note de passage...Redouble tes efforts!"
 
                 break;
             case 4:
-                text = "Continue ! Tu vas y arriver ! Un jour...."
+                text = "Continue! Tu vas y arriver! Un jour...."
 
                 break;
             case 5:
@@ -311,7 +311,7 @@ app.get('/:module/q/end', auth, function (req, res) {
 
                 break;
             case 8:
-                text = "Garde cette cadence pour l'examen !"
+                text = "Garde cette cadence pour l'examen!"
 
                 break;
             case 9:
@@ -319,7 +319,7 @@ app.get('/:module/q/end', auth, function (req, res) {
 
                 break;
             case 10:
-                text = "Perfection! Essaie d'avoir cette note encore une fois !"
+                text = "Perfection! Essaie d'avoir cette note encore une fois!"
 
                 break;
 
