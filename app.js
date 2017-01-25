@@ -352,7 +352,7 @@ app.get('/:module/q/end', auth, function (req, res) {
 			<div>
 
 
-                <h1>${req.user.questions[req.params.module].right.length}/${fs.readdirSync("questions/" + req.params.module).length}</h1>
+                <h1>${req.user.questions[req.params.module].right.length*100/fs.readdirSync("questions/" + req.params.module).length}%</h1>
 
 				<h2>Verdict</h2>
 

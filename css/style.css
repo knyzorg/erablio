@@ -332,3 +332,6 @@ input{
 .yay, .yay:hover{
   background-color: #22ff29 !important;
 }
+button:empty {
+  display: none;
+}
