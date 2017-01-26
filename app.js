@@ -514,6 +514,9 @@ app.get("/home", function (req, res) {
 app.get("/about", function (req, res) {
     res.sendFile(__dirname + "/about.html");
 });
+app.get("/news", function (req, res) {
+    res.sendFile(__dirname + "/news.html");
+});
 
 app.get("/logout.html", function (req, res) {
     req.logout();
