@@ -112,6 +112,9 @@ app.get('/', function (req, res) {
 });
 
 app.use('/css', express.static('css'));
+
+// oeil-4.png
+app.use('/img', express.static('img'));
 app.use('/js', express.static('js'));
 
 
@@ -135,7 +138,7 @@ function shuffle(array) {
     return array;
 }
 function question(module, id, req, cb) {
-    
+
     if (req.user.questions[module] == undefined) {
         req.user.questions[module] = {};
     }
@@ -145,12 +148,12 @@ function question(module, id, req, cb) {
 
 
     if (id == -1) {
-        if ((req.user.questions[module].answered.length != fs.readdirSync("questions/" + module).length)){
+        if ((req.user.questions[module].answered.length != fs.readdirSync("questions/" + module).length)) {
             id = randomInt(1, fs.readdirSync("questions/" + module).length);
         } else {
             res.redirect("/" + module + "/q/end")
         }
-        
+
     }
 
     if (req.user.questions[module].answered.indexOf(id.toString()) === -1 && !isNaN(id)) {
@@ -200,6 +203,19 @@ function question(module, id, req, cb) {
             }
             console.log(nextQuestion, "is not in", JSON.stringify(req.user.questions[module].answered));
 
+            var imgHtml = "";
+
+            if (fs.existsSync("img/" + module + "-" + id + ".png")) {
+                imgHtml = `
+                    <img src="${"/img/" + module + "-" + id + ".png"}" style="
+    display: block;
+    margin-left: auto;
+    margin-right:auto;
+">
+<br>
+<br>
+                `;
+            }
 
             var toreturn = `<!doctype html>
 <html lang="en" class="no-js">
@@ -239,6 +255,7 @@ function question(module, id, req, cb) {
                     <input type="text" id="answer" name="answer" value="">
                 </form>
                 <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question ${req.user.questions[module].answered.length}/${fs.readdirSync("questions/" + module).length}</h2>
+                ${imgHtml}
                 <h1 style=" padding-bottom: 1em;">${quizData.question}</h1>
                 <button class="cd-btn science" data-option="0" data-type="answer">${quizData.options[0]}</button>
                 <button class="cd-btn science" data-option="1" data-type="answer">${quizData.options[1]}</button>
@@ -352,7 +369,7 @@ app.get('/:module/q/end', auth, function (req, res) {
 			<div>
 
 
-                <h1>${req.user.questions[req.params.module].right.length*100/fs.readdirSync("questions/" + req.params.module).length}%</h1>
+                <h1>${req.user.questions[req.params.module].right.length * 100 / fs.readdirSync("questions/" + req.params.module).length}%</h1>
 
 				<h2>Verdict</h2>
 
