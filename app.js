@@ -150,9 +150,8 @@ function question(module, id, req, cb) {
     if (id == -1) {
         if ((req.user.questions[module].answered.length != fs.readdirSync("questions/" + module).length)) {
             id = randomInt(1, fs.readdirSync("questions/" + module).length);
-        } else {
-            res.redirect("/" + module + "/q/end")
         }
+        //TODO: Fix login complete quiz issue via redirect
 
     }
 
