@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "postinstall": "git clone https://github.com/EtudieCA/img && git clone https://github.com/EtudieCA/questions || echo Installed",
+    "postinstall": "git clone https://github.com/EtudieCA/img && git clone https://github.com/EtudieCA/questions || cd questions && git pull && cd ../img && git pull && cd ..",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
