@@ -532,8 +532,7 @@ app.post("/login.html", passport.authenticate('local', {
     res.redirect(req.session.returnTo || '/module' + "?" + newToken());
 });
 var PORT = process.env.PORT || 3000;
-var HOST = process.env.HOST || "0.0.0.0";
-app.listen(PORT, HOST, function () {
+app.listen(PORT, function () {
     console.log('App ready!');
     console.log('Listening on ' + HOST + ':' + PORT);
 });
