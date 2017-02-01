@@ -534,5 +534,5 @@ app.post("/login.html", passport.authenticate('local', {
 var PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
     console.log('App ready!');
-    console.log('Listening on ' + HOST + ':' + PORT);
+    console.log('Listening on *:' + PORT);
 });
