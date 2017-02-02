@@ -141,6 +141,8 @@ function question(module, id, req, cb) {
 
     if (req.user.questions[module] == undefined) {
         req.user.questions[module] = {};
+        req.user.questions[module].right = [];
+        req.user.questions[module].wrong = [];
     }
     if (req.user.questions[module].answered === undefined) {
         req.user.questions[module].answered = [];
