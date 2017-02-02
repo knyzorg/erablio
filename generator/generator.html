@@ -16,11 +16,11 @@
   <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <a class="navbar-brand" href="/">Home</a>
+  <a class="navbar-brand" href="/generator">Home</a>
   <div class="collapse navbar-collapse" id="navbarNav">
   </div>
 </nav>
-    <form class="container" action="/submit" method="POST">
+    <form class="container" action="/generator/submit" method="POST">
         <div class="form-group">
             <label for="qid">ID (New question=0 else overwrite existing question):</label>
             <input type="number" id="qid" name="qid" class="form-control" value="0" placeholder="Question numeric ID" required>
