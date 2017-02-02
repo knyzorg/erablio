@@ -72,6 +72,7 @@ app.get('/edit/:module/:qid', function (req, res) {
 
 app.get('/list', function (req, res) {
     var questions = "";
+    var nav = "";
     var addHtml = function (qid, module) {
         var data = JSON.parse(fs.readFileSync("questions/" + module + "/" + qid + ".json"));
         questions += `
@@ -89,12 +90,13 @@ app.get('/list', function (req, res) {
         if (module == ".git"){
             return;
         }
-        questions += "<h1>Questions for " + module + "</h1>"
+        questions += "<h1 id='" + module + "'>Questions for " + module + "</h1>"
+        nav += "<li class='nav-item'><a class='nav-link' href='#" + module + "'>" + module + "</a></li>"
         fs.readdirSync("questions/" + module).forEach(function (filename, i, a) {
             addHtml(filename.split(".")[0], module);
         });
     });
-    fullHtml = fs.readFileSync(__dirname + "/generator/list.html").toString().replace("{{data}}", questions);
+    fullHtml = fs.readFileSync(__dirname + "/generator/list.html").toString().replace("{{data}}", questions).replace("{{nav}}", nav);
     res.send(fullHtml);
 });
 
