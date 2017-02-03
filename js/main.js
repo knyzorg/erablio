@@ -77,7 +77,7 @@ function changePage(url, bool) {
 function loadNewContent(url, bool) {
     var newSectionName = 'cd-' + url.replace('.html', ''),
         section = $('<div class="cd-main-content ' + newSectionName + '"></div>');
-
+    var startTime = Date.now();
     section.load(url + ' .cd-main-content > *', function (event) {
         // load new content and replace <main> content with the new one
         $('main').html(section);
@@ -85,8 +85,9 @@ function loadNewContent(url, bool) {
         setTimeout(function () {
 
             $('body').removeClass('page-is-changing');
-
-        }, 1000);
+        
+        //Animation will always last at least 850ms
+        }, 850 - (Date.now() - startTime));
         //...
         isAnimating = false;
         if (url != window.location) {
