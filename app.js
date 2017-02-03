@@ -4,7 +4,8 @@ var Crypto = require('crypto')
 var app = express();
 var request = require('request');
 var passport = require('passport');
-
+var sys = require('sys')
+var exec = require('child_process').exec;
 var dblite = require('dblite');
 var db = dblite("../data.sqlite");
 
@@ -630,7 +631,7 @@ app.get('/generator/list', advancedAuth, function (req, res) {
         }
         questions += "<h1 id='" + module + "'>Questions for " + module + "</h1>"
         nav += "<li class='nav-item'><a class='nav-link' href='#" + module + "'>" + module + "</a></li>"
-        fs.readdirSync("questions/" + module).forEach(function (filename, i, a) {
+        fs.readdirSync("questions/" + module).sort(function (a,b){return a.split(".")[0] - b.split(".")[0]}).forEach(function (filename, i, a) {
             addHtml(filename.split(".")[0], module);
         });
     });
@@ -640,6 +641,18 @@ app.get('/generator/list', advancedAuth, function (req, res) {
 
 app.get('/generator', advancedAuth, function (req, res) {
     res.sendFile(__dirname + "/generator/menu.html")
+});
+
+app.get('/generator/upload', advancedAuth, function (req, res) {
+    exec('cd questions; git add . -A; git commit -m "Production Upload"; git push; cd ..', function (err, out){
+        res.send("Updated")
+    });
+});
+
+app.get('/generator/update', advancedAuth, function (req, res) {
+    exec("cd questions; git pull; cd ../img; git pull; cd ..;", function (err, out){
+        res.send("Updated")
+    });
 });
 
 app.post('/generator/submit', advancedAuth, function (req, res) {
