@@ -169,7 +169,7 @@ function question(module, id, req, cb) {
             id = randomInt(1, fs.readdirSync("questions/" + module).length);
         }
         //TODO: Fix login complete quiz issue via redirect
-        if (fs.readdirSync("questions/" + module).length == req.user.questions[module].right.length){
+        if (fs.readdirSync("questions/" + module).length == req.user.questions[module].answered.length){
             res.redirect("/" + module + "/q/end");
             return;
         }
