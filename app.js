@@ -152,7 +152,7 @@ function shuffle(array) {
 
     return array;
 }
-function question(module, id, req, cb) {
+function question(module, id, req, res, cb) {
 
     if (req.user.questions[module] == undefined) {
         req.user.questions[module] = {};
@@ -435,13 +435,13 @@ app.get('/:module/q/reset', auth, function (req, res) {
 });
 
 app.get('/:module/q/:id', auth, function (req, res) {
-    question(req.params.module, req.params.id, req, function (data) {
+    question(req.params.module, req.params.id, req, res, function (data) {
         res.send(data);
     });
 });
 
 app.get('/:module/q', auth, function (req, res) {
-    question(req.params.module, -1, req, function (data) {
+    question(req.params.module, -1, req, res, function (data) {
         res.send(data);
     });
 });
