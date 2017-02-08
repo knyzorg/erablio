@@ -56,6 +56,8 @@ function login(username, password, callback) {
     //  get locked after too many password attemps.
     //  Let's just hope it doesn't break in production!
 
+    //callback(true);return;
+
     var login = "https://portail.csdraveurs.qc.ca/Anonym/Login.aspx?" +
         "lnrid=636091206172586869&_lnPageGuid=869878df-59f3-43c9-a5e3-5c54" +
         "a05e24ef&__EGClientState=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=" +
@@ -167,7 +169,10 @@ function question(module, id, req, cb) {
             id = randomInt(1, fs.readdirSync("questions/" + module).length);
         }
         //TODO: Fix login complete quiz issue via redirect
-
+        if (fs.readdirSync("questions/" + module).length == req.user.questions[module].right.length){
+            res.redirect("/" + module + "/q/end");
+            return;
+        }
     }
 
     if (req.user.questions[module].answered.indexOf(id.toString()) === -1 && !isNaN(id)) {
@@ -310,7 +315,7 @@ app.get('/:module/q/end', auth, function (req, res) {
     data = "Questions not completed, can't generate verdict";
     if (req.user.questions[req.params.module].answered.length == fs.readdirSync("questions/" + req.params.module).length) {
         var text = "Something broke :/";
-        switch (Math.round(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length)) {
+        switch (parseInt(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length)) {
             case 0:
                 text = "As-tu vraiment fait ça sérieusement ?"
                 break;
@@ -412,23 +417,21 @@ app.get('/:module/q/end', auth, function (req, res) {
 app.get('/:module/q/retake', auth, function (req, res) {
     if (req.user.questions[req.params.module] != undefined) {
         req.user.questions[req.params.module].answered = req.user.questions[req.params.module].right;
+        req.user.questions[req.params.module].wrong = [];
     }
 
-
-    question(req.params.module, -1, req, function (data) {
-        res.send(data);
-    });
+    
+    res.redirect("/" + req.params.module + "/q/")    
 });
 
 app.get('/:module/q/reset', auth, function (req, res) {
     if (req.user.questions[req.params.module] != undefined) {
         req.user.questions[req.params.module].answered = [];
+        req.user.questions[req.params.module].right = [];
+        req.user.questions[req.params.module].wrong = [];
     }
 
-
-    question(req.params.module, -1, req, function (data) {
-        res.send(data);
-    });
+    res.redirect("/" + req.params.module + "/q/")
 });
 
 app.get('/:module/q/:id', auth, function (req, res) {
