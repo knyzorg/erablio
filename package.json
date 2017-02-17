@@ -11,7 +11,7 @@
   "engines": {
     "node": "4.1.1"
   },
-  "author": "",
+  "author": "Slava Knyazev",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.2",

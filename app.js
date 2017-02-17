@@ -55,8 +55,9 @@ function login(username, password, callback) {
     //  it depends on a rather... unrealiable service. Secondly, user accounts
     //  get locked after too many password attemps.
     //  Let's just hope it doesn't break in production!
-
-    //callback(true);return;
+    if (process.env.DEMO){
+        callback(true);return;
+    }
 
     var login = "https://portail.csdraveurs.qc.ca/Anonym/Login.aspx?" +
         "lnrid=636091206172586869&_lnPageGuid=869878df-59f3-43c9-a5e3-5c54" +
@@ -112,7 +113,7 @@ var auth = function (req, res, next) {
 var advancedAuth = function (req, res, next) {
     console.log(req.url);
     console.log(JSON.stringify(req.user));
-    if (!req.user || !(req.user.username != "vbellemare" || req.user.username != "vknyazev")) {
+    if (!req.user || !(req.user.username != "vbellemare" || req.user.username != "vknyazev") || !process.env.DEMO) {
         console.log("User not logged in");
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
@@ -647,6 +648,9 @@ app.get('/generator', advancedAuth, function (req, res) {
 });
 
 app.get('/generator/upload', advancedAuth, function (req, res) {
+    if (process.env.DEMO){
+        res.send("Feature disabled on DEMO installs");return;
+    }
     exec('cd questions; git add . -A; git commit -m "Production Upload"; git push; cd ..', function (err, out){
         res.send("Updated")
     });
