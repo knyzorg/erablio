@@ -55,8 +55,8 @@ function login(username, password, callback) {
     //  it depends on a rather... unrealiable service. Secondly, user accounts
     //  get locked after too many password attemps.
     //  Let's just hope it doesn't break in production!
-    if (process.env.DEMO){
-        callback(true);return;
+    if (process.env.DEMO) {
+        callback(true); return;
     }
 
     var login = "https://portail.csdraveurs.qc.ca/Anonym/Login.aspx?" +
@@ -170,7 +170,7 @@ function question(module, id, req, res, cb) {
             id = randomInt(1, fs.readdirSync("questions/" + module).length);
         }
         //TODO: Fix login complete quiz issue via redirect
-        if (fs.readdirSync("questions/" + module).length == req.user.questions[module].answered.length){
+        if (fs.readdirSync("questions/" + module).length == req.user.questions[module].answered.length) {
             res.redirect("/" + module + "/q/end");
             return;
         }
@@ -421,8 +421,8 @@ app.get('/:module/q/retake', auth, function (req, res) {
         req.user.questions[req.params.module].wrong = [];
     }
 
-    
-    res.redirect("/" + req.params.module + "/q/")    
+
+    res.redirect("/" + req.params.module + "/q/")
 });
 
 app.get('/:module/q/reset', auth, function (req, res) {
@@ -630,12 +630,12 @@ app.get('/generator/list', advancedAuth, function (req, res) {
         `
     }
     fs.readdirSync("questions/").forEach(function (module, i, a) {
-        if (module == ".git"){
+        if (module == ".git") {
             return;
         }
         questions += "<h1 id='" + module + "'>Questions for " + module + "</h1>"
         nav += "<li class='nav-item'><a class='nav-link' href='#" + module + "'>" + module + "</a></li>"
-        fs.readdirSync("questions/" + module).sort(function (a,b){return a.split(".")[0] - b.split(".")[0]}).forEach(function (filename, i, a) {
+        fs.readdirSync("questions/" + module).sort(function (a, b) { return a.split(".")[0] - b.split(".")[0] }).forEach(function (filename, i, a) {
             addHtml(filename.split(".")[0], module);
         });
     });
@@ -648,20 +648,72 @@ app.get('/generator', advancedAuth, function (req, res) {
 });
 
 app.get('/generator/upload', advancedAuth, function (req, res) {
-    if (process.env.DEMO){
-        res.send("Feature disabled on DEMO installs");return;
+    if (process.env.DEMO) {
+        res.send("Feature disabled on DEMO installs"); return;
     }
-    exec('cd questions; git add . -A; git commit -m "Production Upload"; git push; cd ..', function (err, out){
+    exec('cd questions; git add . -A; git commit -m "Production Upload"; git push; cd ..', function (err, out) {
+        if (err) {
+            res.send("Something went wrong")
+            return;
+        }
         res.send("Updated")
     });
 });
 
 app.get('/generator/update', advancedAuth, function (req, res) {
-    exec("cd questions; git pull; cd ../img; git pull; cd ..;", function (err, out){
+    exec("cd questions; git pull; cd ../img; git pull; cd ..;", function (err, out) {
+        if (err) {
+            res.send("Something went wrong")
+            return;
+        }
         res.send("Updated")
     });
 });
 
+app.get('/generator/reboot-crash', advancedAuth, function (req, res) {
+    process.exit(1)
+});
+
+app.get('/generator/reboot-npm', advancedAuth, function (req, res) {
+    //res.send("Coming soon..")
+    server.close(function () {
+        var spawn = require('child_process').spawn;
+        spawn('npm', ['start'], {
+            stdio: 'ignore', // piping all stdio to /dev/null
+            detached: true
+        }).unref();
+        setTimeout(function (err, stdout, stderr) {
+            console.log(err, stdout, stderr);
+            console.log("Server status", server.listening)
+            process.exit(0);
+        });
+    });
+
+});
+
+app.get('/generator/upgrade', advancedAuth, function (req, res) {
+    fs.readFile("package.json", function (err, data) {
+        currentVersion = JSON.parse(data).version;
+        exec("git pull; npm install", function (err, out) {
+            if (err) {
+                res.send("Something went wrong")
+                return;
+            }
+            fs.readFile("package.json", function (err, data) {
+                newVersion = JSON.parse(data).version;
+                if (currentVersion == newVersion) {
+                    res.send("Already up to date!");
+                    return;
+                }
+                res.send("Upgraded from v" + currentVersion + " to v" + newVersion + "<br>Requires engine restart");
+            });
+        });
+    });
+});
+app.get('/generator/reboot-ctl', advancedAuth, function (req, res) {
+    res.send("Reboot using systemctl")
+    exec("systemctl restart erablio");
+});
 app.post('/generator/submit', advancedAuth, function (req, res) {
     if (req.body.qid > fs.readdirSync("questions/" + req.body.module).length) {
         res.send("ERROR");
@@ -698,7 +750,7 @@ app.post("/login.html", passport.authenticate('local', {
     res.redirect(req.session.returnTo || '/module' + "?" + newToken());
 });
 var PORT = process.env.PORT || 3000;
-app.listen(PORT, function () {
+var server = app.listen(PORT, function () {
     console.log('App ready!');
     console.log('Listening on *:' + PORT);
 });
