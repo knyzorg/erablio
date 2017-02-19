@@ -113,7 +113,7 @@ var auth = function (req, res, next) {
 var advancedAuth = function (req, res, next) {
     console.log(req.url);
     console.log(JSON.stringify(req.user));
-    if (!req.user || !(req.user.username != "vbellemare" || req.user.username != "vknyazev") || !process.env.DEMO) {
+    if ((!req.user || !(req.user.username != "vbellemare" || req.user.username != "vknyazev")) && !process.env.DEMO) {
         console.log("User not logged in");
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
