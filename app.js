@@ -1,3 +1,4 @@
+//Import dependencies
 var express = require('express');
 var fs = require('fs')
 var Crypto = require('crypto')
@@ -9,6 +10,7 @@ var exec = require('child_process').exec;
 var dblite = require('dblite');
 var db = dblite("../data.sqlite");
 
+//Setup ExpressJS
 app.use(require('body-parser').urlencoded({
     extended: true
 }));
@@ -20,13 +22,47 @@ app.use(require('express-session')({
 app.use(passport.initialize());
 app.use(passport.session());
 
-function newToken() {
-    return Crypto.randomBytes(8).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/\=/g, '');
+//Utility functions
+
+/**
+ *  Generates a random n-character long token
+ *  @param {Number} [length=8] Length of returned token 
+ *  @returns {String} Random n-character long token
+ */
+function newToken(length = 8) {
+    return Crypto.randomBytes(length).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/\=/g, '');
 }
 
+/**
+ * Shuffle an array
+ * @param {Array} array Array to be shuffled 
+ * @returns {Array} Shuffled array
+ */
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
 
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
 
-function IsJsonString(str) {
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+}
+
+/**
+ *  Checks if string is indeed JSON
+ *  @param {String} str String to check
+ *  @returns {Boolean} Whether the string is JSON or not
+ */
+function isJsonString(str) {
     try {
         JSON.parse(str);
     } catch (e) {
@@ -35,6 +71,19 @@ function IsJsonString(str) {
     return true;
 }
 
+/**
+ *  Returns random integer between defined range
+ *  @param {Number} min Minimum value of integer
+ *  @param {Number} max Maximium value of integer
+ *  @returns {Number} Random integer value
+ */
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+//Authentication stuff start
+
+//Setup passport
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
@@ -43,10 +92,12 @@ passport.deserializeUser(function (user, done) {
     done(null, user);
 });
 
-function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
+/**
+ *  Validates login information
+ *  @param {String} username User username 
+ *  @param {String} password User password 
+ *  @param {Function} callback Callback with a boolean value
+ */
 function login(username, password, callback) {
     //  Broke down url into chunks to find in editor properly
     //  Url is made out of chunks I don't even care to understand but it allows
@@ -97,6 +148,9 @@ passport.use(new LocalStrategy(
     }
 ));
 
+//Authentication middleware
+
+//Basic login authentication
 var auth = function (req, res, next) {
     console.log(req.url);
     console.log(JSON.stringify(req.user));
@@ -110,11 +164,11 @@ var auth = function (req, res, next) {
     }
 };
 
+//Login authentication with white-listing
 var advancedAuth = function (req, res, next) {
-    console.log(req.url);
-    console.log(JSON.stringify(req.user));
-    if ((!req.user || !(req.user.username != "vbellemare" || req.user.username != "vknyazev"))) {
-        console.log("User not logged in");
+    var admins = ["vbellemare", "vknyazev"];
+    if (!req.user || admins.indexOf(req.user.username) === -1) {
+        console.log("User not admin");
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
     } else {
@@ -123,6 +177,9 @@ var advancedAuth = function (req, res, next) {
     }
 };
 
+//Authentication stuff end
+
+//Routing stuff start
 app.get('/', function (req, res) {
     res.sendFile(__dirname + "/index.html")
 });
@@ -133,27 +190,15 @@ app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
 app.use('/js', express.static('js'));
 
-
-
-function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
-
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
-
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-
-        // And swap it with the current element.
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
-
-    return array;
-}
-function question(module, id, req, res, cb) {
+/**
+ * Generates quiz question html and automatically handles issues with redirection
+ * @param {String} module Name of module stored in /questions
+ * @param {Number} [id=-1] The id of the question
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ * @param {Function} cb Callback with the generated html
+ */
+function question(module, id = -1, req, res, cb) {
 
     if (req.user.questions[module] == undefined) {
         req.user.questions[module] = {};
@@ -461,7 +506,7 @@ app.post('/science', auth, function (req, res) {
         data = JSON.parse(data);
 
         //Unshuffle results
-        if (!IsJsonString(new Buffer(req.body.options, 'base64').toString())) {
+        if (!isJsonString(new Buffer(req.body.options, 'base64').toString())) {
             console.log("Not valid JSON");
             return 0;
         }
@@ -749,6 +794,9 @@ app.post("/login.html", passport.authenticate('local', {
     }
     res.redirect(req.session.returnTo || '/module' + "?" + newToken());
 });
+//Routing stuff end
+
+//Launched application
 var PORT = process.env.PORT || 3000;
 var server = app.listen(PORT, function () {
     console.log('App ready!');
