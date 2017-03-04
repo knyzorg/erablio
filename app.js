@@ -21,8 +21,25 @@ app.use(require('express-session')({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(require("cookie-parser")('correct battery house staple'));
 
 //Utility functions
+
+/**
+ * Converts a string to base64
+ * @param {String} str Any string
+ */
+function base64Encode(str){
+    return new Buffer(str).toString('base64')
+}
+
+/**
+ * Base64 encoding to a string
+ * @param {String} str A base64-encoded string
+ */
+function base64Decode(str){
+    return new Buffer(str, 'base64').toString()
+}
 
 /**
  *  Generates a random n-character long token
@@ -159,6 +176,9 @@ var auth = function (req, res, next) {
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
     } else {
+        if (req.cookies.username !== req.user.username){
+            res.cookie('username', req.user.username, { maxAge: 315360000 })
+        }
         console.log("User logged in");
         next();
     }
@@ -229,6 +249,7 @@ function question(module, id = -1, req, res, cb) {
     fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
         if (err) return;
         var quizData = JSON.parse(quizJsonRaw);
+        quizData.meta = {id:id, module:module};
         fs.readFile("quiz.html", function (err, html) {
 
             //Shuffle options
@@ -308,7 +329,7 @@ function question(module, id = -1, req, res, cb) {
 			<button href="/module" data-type="page-transition" class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button>
 			<div>
             <div id="data_inject" style="display:none">
-            var data = JSON.parse(b64_to_utf8('` + new Buffer(JSON.stringify(quizData)).toString('base64') + `'));
+            var data = JSON.parse(b64_to_utf8('` + base64Encode(JSON.stringify(quizData)) + `'));
                 </div><form method="POST" action="/science?no-cache=${newToken()}" style="display:none;">
                     <input type="text" id="qid" name="qid" value="${id}">
                     <input type="text" id="timestart" name="timestart" value="${Date.now()}">
@@ -316,7 +337,7 @@ function question(module, id = -1, req, res, cb) {
                     <input type="text" id="alttab" name="alttab" value="0">
                     <input type="text" id="quiz" name="quiz" value="${module}">
                     
-                    <input type="text" id="options" name="options" value='${new Buffer(JSON.stringify(quizData.options)).toString('base64')}'>
+                    <input type="text" id="options" name="options" value='${base64Encode(JSON.stringify(quizData.options))}'>
                     <input type="text" id="answer" name="answer" value="">
                 </form>
                 <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question ${req.user.questions[module].answered.length}/${fs.readdirSync("questions/" + module).length}</h2>
@@ -506,11 +527,11 @@ app.post('/science', auth, function (req, res) {
         data = JSON.parse(data);
 
         //Unshuffle results
-        if (!isJsonString(new Buffer(req.body.options, 'base64').toString())) {
+        if (!isJsonString(base64Decode(req.body.options))) {
             console.log("Not valid JSON");
             return 0;
         }
-        var optionsShuffled = JSON.parse(new Buffer(req.body.options, 'base64').toString());
+        var optionsShuffled = JSON.parse(base64Decode(req.body.options));
 
         //Get value of shuffled
         var unshufa = -1;
