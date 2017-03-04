@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "postinstall": "(echo '\nRunning updates on existing data...' && (cd questions && git pull && cd ../img && git pull && cd ..)) || (echo '\nPulling data via SSH...' && (git clone git@github.com:EtudieCA/questions.git && git clone git@github.com:EtudieCA/img.git) || echo '\n(Fallback, downloading and uploading data automatically is not supported)') || (echo '\nPulling data via HTTPS...' && (git clone https://github.com/EtudieCA/questions && git clone https://github.com/EtudieCA/img))",
+    "postinstall": "(echo '\nRunning updates on existing data...' && (cd questions && git pull && cd ../img && git pull && cd ..)) || (echo '\nPulling data via SSH...' && (git clone git@github.com:EtudieCA/questions.git && git clone git@github.com:EtudieCA/img.git)) || (echo '\nPulling data via HTTPS...' && (git clone https://github.com/EtudieCA/questions && git clone https://github.com/EtudieCA/img))",
     "test": "echo \"No tests yet...\""
   },
   "engines": {
