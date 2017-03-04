@@ -9,7 +9,7 @@
     "test": "echo \"No tests yet...\""
   },
   "engines": {
-    "node": "4.1.1"
+    "node": "7.7.1"
   },
   "author": "Slava Knyazev",
   "license": "ISC",
