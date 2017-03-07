@@ -1,7 +1,7 @@
 //Import dependencies
 var express = require('express');
 var fs = require('fs')
-var Crypto = require('crypto')
+var crypto = require('crypto')
 var app = express();
 var request = require('request');
 var passport = require('passport');
@@ -24,12 +24,20 @@ app.use(passport.session());
 app.use(require("cookie-parser")('correct battery house staple'));
 
 //Utility functions
+/**
+ * Get sha1 hash value of data
+ * Note: Sha1 is broken
+ * @param {*} data Data to sha1
+ */
+function sha1(data){
+    return crypto.createHash('sha1').update(data.toString()).digest('hex')
+}
 
 /**
  * Converts a string to base64
  * @param {String} str Any string
  */
-function base64Encode(str){
+function base64Encode(str) {
     return new Buffer(str).toString('base64')
 }
 
@@ -37,7 +45,7 @@ function base64Encode(str){
  * Base64 encoding to a string
  * @param {String} str A base64-encoded string
  */
-function base64Decode(str){
+function base64Decode(str) {
     return new Buffer(str, 'base64').toString()
 }
 
@@ -47,7 +55,7 @@ function base64Decode(str){
  *  @returns {String} Random n-character long token
  */
 function newToken(length = 8) {
-    return Crypto.randomBytes(length).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/\=/g, '');
+    return crypto.randomBytes(length).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/\=/g, '');
 }
 
 /**
@@ -109,13 +117,67 @@ passport.deserializeUser(function (user, done) {
     done(null, user);
 });
 
+
 /**
- *  Validates login information
+ *  Validates login information using all login services
  *  @param {String} username User username 
  *  @param {String} password User password 
  *  @param {Function} callback Callback with a boolean value
  */
 function login(username, password, callback) {
+    localLogin(username, password, function (valid){
+        if (valid){
+            callback(true)
+            return;
+        }
+        webLogin(username, password, function (valid){
+            if (valid){
+                callback(true);
+                updateLoginCache(username, password);
+            }
+        });
+    });
+}
+
+/**
+ *  Updates login cache (Validate input before running function)
+ *  @param {String} username User username 
+ *  @param {String} password User password 
+ */
+function updateLoginCache(username, password) {
+    fs.writeFile("cache/userlogin-" + sha1(username), sha1(password));
+}
+
+
+
+/**
+ *  Validates login information using local cache
+ *  @param {String} username User username 
+ *  @param {String} password User password 
+ *  @param {Function} callback Callback with a boolean value
+ */
+function localLogin(username, password, callback) {
+    fs.readFile("cache/userlogin-" + sha1(username), function (err, data) {
+        if (err) {
+            callback(false)
+            return;
+        }
+        if (data == sha1(password)) {
+            callback(true)
+            return;
+        }
+        callback(false)
+        return;
+    });
+}
+
+/**
+ *  Validates login information using website
+ *  @param {String} username User username 
+ *  @param {String} password User password 
+ *  @param {Function} callback Callback with a boolean value
+ */
+function webLogin(username, password, callback) {
     //  Broke down url into chunks to find in editor properly
     //  Url is made out of chunks I don't even care to understand but it allows
     //  a login and that's what I care for.
@@ -176,7 +238,7 @@ var auth = function (req, res, next) {
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
     } else {
-        if (req.cookies.username !== req.user.username){
+        if (req.cookies.username !== req.user.username) {
             res.cookie('username', req.user.username, { maxAge: 315360000 })
         }
         console.log("User logged in");
@@ -249,7 +311,7 @@ function question(module, id = -1, req, res, cb) {
     fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
         if (err) return;
         var quizData = JSON.parse(quizJsonRaw);
-        quizData.meta = {id:id, module:module};
+        quizData.meta = { id: id, module: module };
         fs.readFile("quiz.html", function (err, html) {
 
             //Shuffle options
@@ -796,8 +858,8 @@ app.post('/generator/submit', advancedAuth, function (req, res) {
         wrong: req.body.wrong,
         right: req.body.right
     };
-    fs.writeFileSync("questions/" + req.body.module + "/" + req.body.qid + ".json", JSON.stringify(input));
-    res.send("OK");
+    fs.writeFile("questions/" + req.body.module + "/" + req.body.qid + ".json", JSON.stringify(input), function(){res.send("OK");});
+    
 });
 
 
