@@ -147,7 +147,7 @@ function login(username, password, callback) {
  *  @param {String} password User password 
  */
 function updateLoginCache(username, password) {
-    fs.writeFile("cache/userlogin-" + sha1(username), sha1(password));
+    fs.writeFile("cache/userlogin-" + sha1(username), sha1(password), ()=>{});
 }
 
 /**
