@@ -12,6 +12,24 @@ function utf8_to_b64(str) {
     return window.btoa(unescape(encodeURIComponent(str)));
 }
 
+function login() {
+    $('#login').attr('action', '/login.html?' + Math.random().toString(36).substring(7));
+    $(".loader").fadeIn();
+    $("input, .login-btn").fadeOut();
+    $('#login').ajaxSubmit({
+        success: function (response) {
+            changePage(response, true);
+        },
+        error: function (data) {
+
+    $(".loader").fadeOut();
+    $("input, .login-btn").fadeIn();
+            alert("Mauvais mot de passe!")
+            console.log("Failed to login");
+        }
+    });
+}
+
 function b64_to_utf8(s) {
     var arr = base64js.toByteArray(s);
     var i, str = '';
@@ -123,10 +141,10 @@ function readCookie(name) {
     return undefined;
 }
 var username = readCookie("username")
-if (username !== undefined){
+if (username !== undefined) {
     try {
         ga('set', 'userId', username);
     } catch (error) {
-        
+
     }
 }

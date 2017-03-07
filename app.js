@@ -29,7 +29,7 @@ app.use(require("cookie-parser")('correct battery house staple'));
  * Note: Sha1 is broken
  * @param {*} data Data to sha1
  */
-function sha1(data){
+function sha1(data) {
     return crypto.createHash('sha1').update(data.toString()).digest('hex')
 }
 
@@ -125,15 +125,17 @@ passport.deserializeUser(function (user, done) {
  *  @param {Function} callback Callback with a boolean value
  */
 function login(username, password, callback) {
-    localLogin(username, password, function (valid){
-        if (valid){
+    localLogin(username, password, function (valid) {
+        if (valid) {
             callback(true)
             return;
         }
-        webLogin(username, password, function (valid){
-            if (valid){
+        webLogin(username, password, function (valid) {
+            if (valid) {
                 callback(true);
                 updateLoginCache(username, password);
+            } else {
+                callback(false);
             }
         });
     });
@@ -147,8 +149,6 @@ function login(username, password, callback) {
 function updateLoginCache(username, password) {
     fs.writeFile("cache/userlogin-" + sha1(username), sha1(password));
 }
-
-
 
 /**
  *  Validates login information using local cache
@@ -858,8 +858,8 @@ app.post('/generator/submit', advancedAuth, function (req, res) {
         wrong: req.body.wrong,
         right: req.body.right
     };
-    fs.writeFile("questions/" + req.body.module + "/" + req.body.qid + ".json", JSON.stringify(input), function(){res.send("OK");});
-    
+    fs.writeFile("questions/" + req.body.module + "/" + req.body.qid + ".json", JSON.stringify(input), function () { res.send("OK"); });
+
 });
 
 
@@ -869,13 +869,11 @@ app.get("/logout.html", function (req, res) {
     res.sendFile(__dirname + "/login.html");
 });
 
-app.post("/login.html", passport.authenticate('local', {
-    failureRedirect: '/login.html'
-}), function (req, res) {
+app.post("/login.html", passport.authenticate('local'), function (req, res) {
     if (req.session.returnTo) {
         req.session.returnTo += "?" + newToken();
     }
-    res.redirect(req.session.returnTo || '/module' + "?" + newToken());
+    res.send(req.session.returnTo || '/module' + "?" + newToken());
 });
 //Routing stuff end
 

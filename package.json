@@ -1,6 +1,6 @@
 {
   "name": "etudieca",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Hello world express app",
   "main": "app.js",
   "scripts": {
