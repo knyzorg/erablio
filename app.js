@@ -372,7 +372,7 @@ function question(module, id = -1, req, res, cb) {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='/css/fonts/fonts.css' rel='stylesheet' type='text/css'>
 
 	<link rel="stylesheet" href="/css/reset.css">
 	<!-- CSS reset -->
@@ -497,7 +497,7 @@ app.get('/:module/q/end', auth, function (req, res) {
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
+	<link href='/css/fonts/fonts.css' rel='stylesheet' type='text/css'>
 
 	<link rel="stylesheet" href="/css/reset.css">
 	<!-- CSS reset -->
@@ -678,12 +678,12 @@ app.get('/generator/edit/:module/:qid', advancedAuth, function (req, res) {
     <head>
     <title>Edit Question</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+<link rel="stylesheet" href="/css/bootstrap.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
     crossorigin="anonymous">
 <script src="/js/jquery-2.1.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+<script src="/js/tether.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
     crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+<script src="/js/bootstrap.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
     crossorigin="anonymous"></script>
     </head>
 
