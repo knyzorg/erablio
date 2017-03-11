@@ -92,6 +92,7 @@ $('body').on('click', '[data-type="page-transition"]', function (event) {
 });
 
 function changePage(url, bool) {
+    gatrigger();
     isAnimating = true;
     // trigger page animation
     $('body').addClass('page-is-changing');
@@ -140,6 +141,8 @@ function readCookie(name) {
     }
     return undefined;
 }
+function gatrigger(){
+
 var username = readCookie("username")
 if (username !== undefined) {
     try {
@@ -148,3 +151,6 @@ if (username !== undefined) {
 
     }
 }
+}
+
+gatrigger()
