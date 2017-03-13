@@ -228,10 +228,6 @@ passport.use(new LocalStrategy(
 
 //Basic login authentication
 var auth = function (req, res, next) {
-    if (process.env.DEMO){
-        next()
-        return;
-    }
     console.log(req.url);
     console.log(JSON.stringify(req.user));
     if (!req.user) {
@@ -249,11 +245,6 @@ var auth = function (req, res, next) {
 
 //Login authentication with white-listing
 var advancedAuth = function (req, res, next) {
-
-    if (process.env.DEMO){
-        next()
-        return;
-    }
     var admins = ["vbellemare", "vknyazev"];
     if (!req.user || admins.indexOf(req.user.username) === -1) {
         console.log("User not admin");
