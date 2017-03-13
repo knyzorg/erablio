@@ -35,13 +35,12 @@
 			</li>
 		</ul>
 	</p>
-	<form action="/login.html" id="login" method="POST">
+	<form action="/login.html" id="login" method="POST" onsubmit="login(); return false;" >
 		<div class="loader" style="display:none;"></div>
 		<input type="text" name="username" placeholder="Username" required>
 		<input type="password" name="password" placeholder="Password" required><br /><br />
-
-	</form>
-		<button class="cd-btn login-btn" onclick="login()">Démarrer</button>
+		<button class="cd-btn login-btn" type="submit">Démarrer</button>
+	</form>	
 
 	<p>Note: La connexion dépend de la vitesse du portail. Le portail peut parfois être lent. Ayez patience!</p>
 
