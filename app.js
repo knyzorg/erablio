@@ -230,7 +230,7 @@ passport.use(new LocalStrategy(
 var auth = function (req, res, next) {
     console.log(req.url);
     console.log(JSON.stringify(req.user));
-    if (!req.user && !process.env.DEMO) {
+    if (!process.env.DEMO && (!req.user)) {
         console.log("User not logged in");
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
@@ -246,7 +246,7 @@ var auth = function (req, res, next) {
 //Login authentication with white-listing
 var advancedAuth = function (req, res, next) {
     var admins = ["vbellemare", "vknyazev"];
-    if (!req.user || admins.indexOf(req.user.username) === -1 && !process.env.DEMO) {
+    if (!process.env.DEMO && (!req.user || admins.indexOf(req.user.username) === -1)) {
         console.log("User not admin");
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
