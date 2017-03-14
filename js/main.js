@@ -13,7 +13,7 @@ function utf8_to_b64(str) {
 }
 
 function login() {
-    $('#login').attr('action', '/login.html?' + Math.random().toString(36).substring(7));
+    $('#login').attr('action', '/login.html?'/* + Math.random().toString(36).substring(7)*/);
     $("input, .login-btn").fadeOut(function () {
         $(".loader").fadeIn();
     });
@@ -85,7 +85,7 @@ $('body').on('click', '[data-type="page-transition"]', function (event) {
     var newPage = $(this).attr('href');
     //if the page is not animating - trigger animation
     if (!isAnimating) {
-        changePage(newPage + '?' + Math.random().toString(36).substring(7), true);
+        changePage(newPage/* + '?' + Math.random().toString(36).substring(7)*/, true);
         console.log("Changing page");
     } else {
 
