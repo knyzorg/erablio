@@ -238,7 +238,7 @@ var auth = function (req, res, next) {
         if (req.cookies.username !== req.user.username) {
             res.cookie('username', req.user.username, { maxAge: 315360000 })
         }
-        console.log("User logged in");
+        console.log("User logged in as", req.user.username);
         next();
     }
 };
@@ -251,7 +251,7 @@ var advancedAuth = function (req, res, next) {
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
     } else {
-        console.log("User logged in");
+        console.log("User is admin id:", req.user.username);
         next();
     }
 };
@@ -663,14 +663,37 @@ app.get("/news", function (req, res) {
 
 
 //GENERATOR
+
+app.get('/generator', advancedAuth, function (req, res) {
+    console.log("Accessed admin panel")
+    res.sendFile(__dirname + "/generator/menu.html")
+});
+
 app.get('/generator/new', advancedAuth, function (req, res) {
-    res.sendFile(__dirname + "/generator/generator.html")
+    var modules = "";
+    fs.readdirSync("questions").forEach(function (v,i,a){
+        if (v==".git"){
+            return;
+        }
+        modules+="<option>" + v + "</option>"
+    })
+    fs.readFile("generator/generator.html", function (err, data){
+        res.send(data.toString().replace("{{modules}}", modules))
+    })
+    
 });
 
 app.get('/generator/edit/:module/:qid', advancedAuth, function (req, res) {
     var module = req.params.module;
     var qid = req.params.qid;
     var data = JSON.parse(fs.readFileSync("questions/" + module + "/" + qid + ".json"));
+    var modules = "";
+    fs.readdirSync("questions").forEach(function (v,i,a){
+        if (v==".git"){
+            return;
+        }
+        modules+="<option>" + v + "</option>"
+    })
     res.send(`
     <head>
     <title>Edit Question</title>
@@ -703,9 +726,7 @@ app.get('/generator/edit/:module/:qid', advancedAuth, function (req, res) {
             <label for="module">Module:</label>
             <select class="form-control" id="module" name="module">
                 <option>${module}</option>
-                <option>oeil</option>
-                <option>oreille</option>
-                <option>peau</option>
+                ${modules}
             </select>
         </div>
 
@@ -766,10 +787,6 @@ app.get('/generator/list', advancedAuth, function (req, res) {
     });
     fullHtml = fs.readFileSync(__dirname + "/generator/list.html").toString().replace("{{data}}", questions).replace("{{nav}}", nav);
     res.send(fullHtml);
-});
-
-app.get('/generator', advancedAuth, function (req, res) {
-    res.sendFile(__dirname + "/generator/menu.html")
 });
 
 app.get('/generator/upload', advancedAuth, function (req, res) {
