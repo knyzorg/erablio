@@ -147,7 +147,7 @@ function login(username, password, callback) {
  *  @param {String} password User password 
  */
 function updateLoginCache(username, password) {
-    fs.writeFile("cache/userlogin-" + sha1(username), sha1(password), ()=>{});
+    fs.writeFile("cache/userlogin-" + sha1(username), sha1(password), () => { });
 }
 
 /**
@@ -231,6 +231,9 @@ var auth = function (req, res, next) {
     console.log(req.url);
     console.log(JSON.stringify(req.user));
     if (!req.user) {
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
         console.log("User not logged in");
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
@@ -248,6 +251,9 @@ var advancedAuth = function (req, res, next) {
     var admins = ["vbellemare", "vknyazev"];
     if (!req.user || admins.indexOf(req.user.username) === -1) {
         console.log("User not admin");
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
     } else {
@@ -671,16 +677,16 @@ app.get('/generator', advancedAuth, function (req, res) {
 
 app.get('/generator/new', advancedAuth, function (req, res) {
     var modules = "";
-    fs.readdirSync("questions").forEach(function (v,i,a){
-        if (v==".git"){
+    fs.readdirSync("questions").forEach(function (v, i, a) {
+        if (v == ".git") {
             return;
         }
-        modules+="<option>" + v + "</option>"
+        modules += "<option>" + v + "</option>"
     })
-    fs.readFile("generator/generator.html", function (err, data){
+    fs.readFile("generator/generator.html", function (err, data) {
         res.send(data.toString().replace("{{modules}}", modules))
     })
-    
+
 });
 
 app.get('/generator/edit/:module/:qid', advancedAuth, function (req, res) {
@@ -688,11 +694,11 @@ app.get('/generator/edit/:module/:qid', advancedAuth, function (req, res) {
     var qid = req.params.qid;
     var data = JSON.parse(fs.readFileSync("questions/" + module + "/" + qid + ".json"));
     var modules = "";
-    fs.readdirSync("questions").forEach(function (v,i,a){
-        if (v==".git"){
+    fs.readdirSync("questions").forEach(function (v, i, a) {
+        if (v == ".git") {
             return;
         }
-        modules+="<option>" + v + "</option>"
+        modules += "<option>" + v + "</option>"
     })
     res.send(`
     <head>
