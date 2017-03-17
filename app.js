@@ -22,7 +22,12 @@ app.use(require('express-session')({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(require("cookie-parser")('correct battery house staple'));
-
+app.use(function (req, res, next) {
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
+    next()
+})
 //Utility functions
 /**
  * Get sha1 hash value of data
@@ -228,10 +233,6 @@ passport.use(new LocalStrategy(
 
 //Basic login authentication
 var auth = function (req, res, next) {
-
-    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-    res.header('Expires', '-1');
-    res.header('Pragma', 'no-cache');
     console.log(req.url);
     console.log(JSON.stringify(req.user));
     if (!req.user) {
@@ -249,10 +250,6 @@ var auth = function (req, res, next) {
 
 //Login authentication with white-listing
 var advancedAuth = function (req, res, next) {
-
-    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-    res.header('Expires', '-1');
-    res.header('Pragma', 'no-cache');
     var admins = ["vbellemare", "vknyazev"];
     if (!req.user || admins.indexOf(req.user.username) === -1) {
         console.log("User not admin");
@@ -582,6 +579,7 @@ app.get('/:module/q', auth, function (req, res) {
 
 
 app.post('/science', auth, function (req, res) {
+
     //Result endpoint
     fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' }, function (err, data) {
         console.log("Reading", __dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json")
