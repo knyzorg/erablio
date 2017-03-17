@@ -228,12 +228,13 @@ passport.use(new LocalStrategy(
 
 //Basic login authentication
 var auth = function (req, res, next) {
+
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
     console.log(req.url);
     console.log(JSON.stringify(req.user));
     if (!req.user) {
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
         console.log("User not logged in");
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
@@ -248,12 +249,13 @@ var auth = function (req, res, next) {
 
 //Login authentication with white-listing
 var advancedAuth = function (req, res, next) {
+
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.header('Expires', '-1');
+    res.header('Pragma', 'no-cache');
     var admins = ["vbellemare", "vknyazev"];
     if (!req.user || admins.indexOf(req.user.username) === -1) {
         console.log("User not admin");
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
         req.session.returnTo = req.url;
         res.sendFile(__dirname + "/login.html");
     } else {
