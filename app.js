@@ -1,6 +1,6 @@
 //Import dependencies
 var express = require('express');
-var fs = require('fs')
+var fs = require('fs-extra')
 var crypto = require('crypto')
 var app = express();
 var request = require('request');
@@ -275,6 +275,49 @@ app.use('/img', express.static('img'));
 app.use('/js', express.static('js'));
 
 /**
+ * Get a list of module objects
+ * @param {Function} callback 
+ */
+function getAllModules(callback) {
+    var modules = [];
+    fs.readdir("questions", function (err, files) {
+        rejected = 0;
+        files.forEach(function (fname, findex) {
+            if (fname.split(".json").length != 2) {
+                console.log("Rejecting folder", fname)
+                rejected++;
+                return;
+            }
+            fs.readFile("questions/" + fname, function (err, data) {
+                console.log("Parsing question", fname)
+                var json = JSON.parse(data);
+                modules.push(json)
+                if (modules.length == files.length-rejected) {
+                    callback(modules);
+                }
+            })
+        })
+    })
+}
+/**
+ * Gets an array of a user's enabled modules
+ * @param {String} user Username of user
+ * @param {Function} callback 
+ */
+function getUserModules(user, callback) {
+    var path = "userconfig/" + user;
+    if (fs.existsSync(path)) {
+        fs.readFile(path, (err, data) => {
+    console.log(JSON.parse(data));
+            
+            callback(JSON.parse(data));
+        })
+    } else {
+        callback([]);
+    }
+    
+}
+/**
  * Generates quiz question html and automatically handles issues with redirection
  * @param {String} module Name of module stored in /questions
  * @param {Number} [id=-1] The id of the question
@@ -437,8 +480,54 @@ function question(module, id = -1, req, res, cb) {
     });
 }
 
+app.get("/addmod/:modid", auth, function (req, res){
+    fs.readFile("userconfig/" + req.user.username, function (err, data){
+        var json = err ? [] : JSON.parse(data)
+        json.push(req.params.modid)
+        fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), ()=>{})
+    })
+    res.send("OK")
+})
+
+app.get("/remmod/:modid", auth, function (req, res){
+    fs.readFile("userconfig/" + req.user.username, function (err, data){
+        var json = err ? [] : JSON.parse(data)
+        delete json[json.indexOf(req.params.modid)]
+        fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), ()=>{})
+    })
+    res.send("OK")
+})
 app.get("/module", auth, function (req, res) {
-    res.sendFile(__dirname + "/select.html");
+    var buffer = "";
+    var buffer2 = "";
+    getUserModules(req.user.username, function (valid) {
+
+        getAllModules(function (modules) {
+            modules.forEach(function (module) {
+                if (module.draft) {
+                    return;
+                }
+                buffer2 += `<div class="new-mod-container">
+                    <a class="cd-btn addmod" data-modid="${module.id}" data-modname="${module.name}">${(valid.indexOf(module.id) === -1) ? "+" : "-"}</a>
+
+                <h2 style="
+                    display: inline-block;
+                ">${module.name}</h2>
+                    
+                    <p style="display:none;">${module.description}</p></div>`
+                if (valid.indexOf(module.id) !== -1) {
+                    buffer += `<a class="cd-btn" href="/${module.id}/q/" data-type="page-transition" id="mod${module.id}">${module.name}</a>`
+                }
+            })
+            fs.readFile("select.html", function (err, data) {
+                if (buffer == "") {
+                    //buffer = "<p>Pas de modules. Appuyez sur le <b>+</b> pour en ajouter!</p>"
+                }
+                res.send(data.toString().replace("{{buffer}}", buffer).replace("{{buffer2}}", buffer2))
+            })
+        })
+
+    })
 });
 
 
@@ -581,71 +670,72 @@ app.get('/:module/q', auth, function (req, res) {
 app.post('/science', auth, function (req, res) {
 
     //Result endpoint
-    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' }, function (err, data) {
-        console.log("Reading", __dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json")
-        if (err) {
-            console.log("Error could not read file for validation")
-            res.send("Error");
-            return 0;
-        }
-        console.log("OK");
-        data = JSON.parse(data);
-
-        //Unshuffle results
-        if (!isJsonString(base64Decode(req.body.options))) {
-            console.log("Not valid JSON");
-            return 0;
-        }
-        var optionsShuffled = JSON.parse(base64Decode(req.body.options));
-
-        //Get value of shuffled
-        var unshufa = -1;
-        optionsShuffled.forEach(function (v, i, a) {
-            if (data.options[i] == optionsShuffled[req.body.answer]) {
-                unshufa = i;
+    fs.readFile(__dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' },
+        function (err, data) {
+            console.log("Reading", __dirname + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json")
+            if (err) {
+                console.log("Error could not read file for validation")
+                res.send("Error");
+                return 0;
             }
-        });
-        var results = {
-            qid: req.body.qid,
-            time: +req.body.timestart,
-            set: req.body.quiz,
-            spent: +(Date.now() - req.body.timestart),
-            user: req.user.username,
-            alttab: +req.body.alttab,
-            answer: +unshufa,
-            pass: +(unshufa == data.answer),
-            correct: data.answer,
-            key: req.body.key,
-            agent: req.headers['user-agent']
-        };
+            console.log("OK");
+            data = JSON.parse(data);
+
+            //Unshuffle results
+            if (!isJsonString(base64Decode(req.body.options))) {
+                console.log("Not valid JSON");
+                return 0;
+            }
+            var optionsShuffled = JSON.parse(base64Decode(req.body.options));
+
+            //Get value of shuffled
+            var unshufa = -1;
+            optionsShuffled.forEach(function (v, i, a) {
+                if (data.options[i] == optionsShuffled[req.body.answer]) {
+                    unshufa = i;
+                }
+            });
+            var results = {
+                qid: req.body.qid,
+                time: +req.body.timestart,
+                set: req.body.quiz,
+                spent: +(Date.now() - req.body.timestart),
+                user: req.user.username,
+                alttab: +req.body.alttab,
+                answer: +unshufa,
+                pass: +(unshufa == data.answer),
+                correct: data.answer,
+                key: req.body.key,
+                agent: req.headers['user-agent']
+            };
 
 
 
-        if (req.user.questions[results.set] == undefined) {
-            req.user.questions[results.set] = {};
-        }
+            if (req.user.questions[results.set] == undefined) {
+                req.user.questions[results.set] = {};
+            }
 
-        if (req.user.questions[results.set].wrong == undefined || req.user.questions[results.set].wrong == undefined) {
-            req.user.questions[results.set].wrong = [];
-            req.user.questions[results.set].right = [];
-        }
-        if (results.pass) {
-            req.user.questions[results.set].right.push(results.qid.toString());
-        } else {
-            req.user.questions[results.set].wrong.push(results.qid.toString());
-        }
-        console.log(req.user.questions[results.set].right);
+            if (req.user.questions[results.set].wrong == undefined || req.user.questions[results.set].wrong == undefined) {
+                req.user.questions[results.set].wrong = [];
+                req.user.questions[results.set].right = [];
+            }
+            if (results.pass) {
+                req.user.questions[results.set].right.push(results.qid.toString());
+            } else {
+                req.user.questions[results.set].wrong.push(results.qid.toString());
+            }
+            console.log(req.user.questions[results.set].right);
 
 
-        //Implement sqlite logger
-        // node dblite.test.js
-        db.query('INSERT INTO quiz VALUES (:qid, :time, :set, :spent, :user, :alttab, :answer, :pass, :correct, :key, :agent)', results);
+            //Implement sqlite logger
+            // node dblite.test.js
+            db.query('INSERT INTO quiz VALUES (:qid, :time, :set, :spent, :user, :alttab, :answer, :pass, :correct, :key, :agent)', results);
 
-        res.send("Data Submitted for Analysis");
-        console.log(JSON.stringify(results));
-        console.log("Did you pass?", results.pass);
+            res.send("Data Submitted for Analysis");
+            console.log(JSON.stringify(results));
+            console.log("Did you pass?", results.pass);
 
-    })
+        })
 
 });
 
@@ -758,7 +848,7 @@ app.get('/generator/edit/:module/:qid', advancedAuth, function (req, res) {
     </form>
     <div class="container">
         <div class="form-group">
-            <button class="btn" onclick='$("form").ajaxSubmit({success: function (r){if (r=="OK"){alert("Question uploaded"); window.location.href = "/generator/list";}}});'>Upload</button>
+   <button class="btn" onclick='$("form").ajaxSubmit({success: function (r){if (r=="OK"){alert("Question uploaded"); window.location.href = "/generator/list";}}});'>Upload</button>
 </div>
 </div>
 </body>
@@ -787,11 +877,14 @@ app.get('/generator/list', advancedAuth, function (req, res) {
         }
         questions += "<h1 id='" + module + "'>Questions for " + module + "</h1>"
         nav += "<li class='nav-item'><a class='nav-link' href='#" + module + "'>" + module + "</a></li>"
-        fs.readdirSync("questions/" + module).sort(function (a, b) { return a.split(".")[0] - b.split(".")[0] }).forEach(function (filename, i, a) {
+        fs.readdirSync("questions/" + module).sort(function (a, b) {
+            return a.split(".")[0] - b.split(".")[0]
+        }).forEach(function (filename, i, a) {
             addHtml(filename.split(".")[0], module);
         });
     });
-    fullHtml = fs.readFileSync(__dirname + "/generator/list.html").toString().replace("{{data}}", questions).replace("{{nav}}", nav);
+    fullHtml = fs.readFileSync(__dirname + "/generator/list.html").toString().replace("{{data}}",
+        questions).replace("{{nav}}", nav);
     res.send(fullHtml);
 });
 
@@ -878,7 +971,10 @@ app.post('/generator/submit', advancedAuth, function (req, res) {
         wrong: req.body.wrong,
         right: req.body.right
     };
-    fs.writeFile("questions/" + req.body.module + "/" + req.body.qid + ".json", JSON.stringify(input), function () { res.send("OK"); });
+    fs.writeFile("questions/" + req.body.module + "/" + req.body.qid + ".json",
+        JSON.stringify(input), function () {
+            res.send("OK");
+        });
 
 });
 

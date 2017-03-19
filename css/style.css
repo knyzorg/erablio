@@ -366,3 +366,13 @@ p::selection {
   color: #fff;
   background-color: #ee42f4;
 }
+
+.new-mod-container{
+  margin: 20px;
+  display: inline;
+}
+.addmod{
+  font-size: 2rem;
+                    padding: calc(1.4em - 1rem) calc(1.6em - 1rem);
+                    margin: 0 10px;
+}

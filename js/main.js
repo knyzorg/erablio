@@ -93,7 +93,34 @@ $('body').on('click', '[data-type="page-transition"]', function (event) {
     }
 
 });
+$('body').on('click', '.plusminus', function (event) {
+    if ($(this).text() == "+") { $(this).text("-") } else { $(this).text("+") }
+});
 
+function addMod(modid) {
+    $.ajax({
+        url: "/addmod/" + modid
+    });
+}
+function remMod(modid) {
+    $.ajax({
+        url: "/remmod/" + modid
+    });
+}
+$('body').on('click', '.addmod', function (event) {
+    if ($(this).text() == "+") {
+        $(this).text("-");
+        addMod($(this).data("modid"))
+        $(".selection").append($('<a id="mod' + $(this).data("modid") + '" class="cd-btn" href="/' + $(this).data("modid") + '/q/" data-type="page-transition">' + $(this).data("modname") + '</a>').fadeIn().css("display","inline-block"))
+    } else { 
+        $(this).text("+") 
+        remMod($(this).data("modid"))
+        $( "#mod" +  $(this).data("modid")).fadeOut(()=>{
+            $( "#mod" +  $(this).data("modid")).remove()
+        });
+}
+    
+});
 function changePage(url, bool) {
     gatrigger();
     isAnimating = true;
