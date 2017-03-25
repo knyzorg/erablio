@@ -59,6 +59,12 @@ Patterns - reusable parts of our design
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   border-width: 0;
 }
+.plusminus{
+      min-width: 56px;
+}
+.addnew .cd-btn{
+      min-width: 56px;
+}
 .no-touch .cd-btn:hover {
   background-color: #ccc;
 }
@@ -373,6 +379,6 @@ p::selection {
 }
 .addmod{
   font-size: 2rem;
-                    padding: calc(1.4em - 1rem) calc(1.6em - 1rem);
-                    margin: 0 10px;
+  padding: calc(1.4em - 1rem) calc(1.6em - 1rem);
+  margin: 0 10px;
 }
