@@ -1,3 +1,7 @@
+/*
+    This file takes care of routing for static files
+*/
+
 app.get('/', function (req, res) {
     res.sendFile(appRoot + "/html/index.html")
 });

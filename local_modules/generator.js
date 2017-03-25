@@ -1,3 +1,7 @@
+/*
+    Admin quiz-creation interface
+*/
+
 app.get('/generator', authUtils.adminAuth, function (req, res) {
     console.log("Accessed admin panel")
     res.sendFile(__dirname + "/generator/menu.html")

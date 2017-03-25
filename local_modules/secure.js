@@ -1,4 +1,9 @@
-//Authentication stuff start
+/*
+    Takes care of all login, logout and security needs
+    Exposes 2 middlewares:
+        authUtils.basicAuth: Allows normal user connection and guarantees the req.user variable
+        authUtils.adminAuth: Allows admin user connection and guarantees the req.user variable
+*/
 
 var passport = require('passport');
 app.use(passport.initialize());

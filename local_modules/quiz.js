@@ -1,3 +1,8 @@
+/*
+    Core app logic
+    TODO: Unbundle module and quiz routes and functions
+*/
+
 /**
  * Get a list of module objects
  * @param {Function} callback 
