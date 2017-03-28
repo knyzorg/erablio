@@ -44,6 +44,9 @@ app.use(function (req, res, next) {
     next()
 })
 
+//Use Pug rendering engine
+app.set('view engine', 'pug')
+
 //Import routes
 //Secure file carries routes as well as a few middlewares which guarantees the existance of req.user variable
 global.authUtils = require("./local_modules/secure")

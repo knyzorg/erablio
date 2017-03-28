@@ -1,0 +1,49 @@
+doctype html
+html.no-js(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(href='/css/fonts/fonts.css', rel='stylesheet', type='text/css')
+    link(rel='stylesheet', href='/css/reset.css')
+    link(rel='stylesheet', href='/css/style.css')
+    script(src='/js/modernizr.js')
+    title &Eacute;tudie &Ccedil;A!
+  body
+    main
+      .cd-index.cd-main-content
+        button.cd-btn(href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
+        button.cd-btn(href='/module', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
+        div
+          #data_inject(style='display:none')
+            | var data = JSON.parse(b64_to_utf8(&apos;#{quizData}&apos;));
+          form(method='POST', action='/science?no-cache=#{token}', style='display:none;')
+            input#qid(type='text', name='qid', value=id)
+  
+            input#timestart(type='text', name='timestart', value=timestamp)
+  
+            input#key(type='text', name='key', value=token)
+  
+            input#alttab(type='text', name='alttab', value='0')
+  
+            input#quiz(type='text', name='quiz', value=module)
+  
+            input#options(type='text', name='options', value=silentOptions)
+  
+            input#answer(type='text', name='answer', value='')
+          h2(style='font-weight: 400; color: #ccc; padding-bottom: 3em;')
+            | Question !{questionNumber}/!{totalQuestions}
+          
+          img.question-image(src='/img/'+module+'/'+id+'.png', onerror='this.parentNode.removeChild(this)')
+          
+          h1(style=' padding-bottom: 1em;') !{question}
+
+          each option, index in options
+            button.cd-btn.science(data-option=index, data-type='answer')= option
+          br
+          #answered(style='display:none;')
+            button.cd-btn(data-type='page-transition', href='!{next}') Suivant
+    .cd-cover-layer
+    .cd-loading-bar
+    script(src='/js/jquery-2.1.1.js')
+    script(src='/js/main.js')
+    script(src='/js/collect.js')

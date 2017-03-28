@@ -382,3 +382,9 @@ p::selection {
   padding: calc(1.4em - 1rem) calc(1.6em - 1rem);
   margin: 0 10px;
 }
+
+img.question-image{
+  display: block;
+    margin-left: auto;
+    margin-right:auto;
+}

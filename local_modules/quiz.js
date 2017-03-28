@@ -21,7 +21,7 @@ function getAllModules(callback) {
                 console.log("Parsing question", fname)
                 var json = JSON.parse(data);
                 modules.push(json)
-                if (modules.length == files.length-rejected) {
+                if (modules.length == files.length - rejected) {
                     callback(modules);
                 }
             })
@@ -33,28 +33,28 @@ function getAllModules(callback) {
  * @param {String} user Username of user
  * @param {Function} callback 
  */
+//TODO: Requires refactoring. Current settings storage is deficient.
 function getUserModules(user, callback) {
     var path = "userconfig/" + user;
     if (fs.existsSync(path)) {
         fs.readFile(path, (err, data) => {
-    console.log(JSON.parse(data));
-            
+            console.log(JSON.parse(data));
+
             callback(JSON.parse(data));
         })
     } else {
         callback([]);
     }
-    
+
 }
 /**
- * Generates quiz question html and automatically handles issues with redirection
+ * Generates quiz question html and automatically handles the response
  * @param {String} module Name of module stored in /questions
  * @param {Number} [id=-1] The id of the question
  * @param {Object} req Express request object
  * @param {Object} res Express response object
- * @param {Function} cb Callback with the generated html
  */
-function question(module, id = -1, req, res, cb) {
+function question(module, id = -1, req, res) {
 
     if (req.user.questions[module] == undefined) {
         req.user.questions[module] = {};
@@ -125,107 +125,43 @@ function question(module, id = -1, req, res, cb) {
             }
             console.log(nextQuestion, "is not in", JSON.stringify(req.user.questions[module].answered));
 
-            var imgHtml = "";
+            res.render("question", {
+                question: quizData.question,
+                id: id,
+                module: module,
+                options: quizData.options,
+                silentOptions: utils.base64Encode(JSON.stringify(quizData)),
+                quizData: utils.base64Encode(JSON.stringify(quizData)),
+                token: utils.newToken(),
+                next: nextQuestion,
+                timestamp: Date.now,
+                questionNumber: req.user.questions[module].answered.length,
+                totalQuestions: fs.readdirSync("questions/" + module).length,
 
-            if (fs.existsSync("img/" + module + "-" + id + ".png")) {
-                imgHtml = `
-                    <img src="${"/img/" + module + "-" + id + ".png"}" style="
-    display: block;
-    margin-left: auto;
-    margin-right:auto;
-">
-<br>
-<br>
-                `;
-            }
-
-            var toreturn = `<!doctype html>
-<html lang="en" class="no-js">
-
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<link href='/css/fonts/fonts.css' rel='stylesheet' type='text/css'>
-
-	<link rel="stylesheet" href="/css/reset.css">
-	<!-- CSS reset -->
-	<link rel="stylesheet" href="/css/style.css">
-	<!-- Resource style -->
-	<script src="/js/modernizr.js"></script>
-	<!-- Modernizr -->
-
-	<title>Étudie ÇA!</title>
-</head>
-
-<body>
-	<main>
-		<div class="cd-index cd-main-content">
-			<button href="/logout.html" data-type="page-transition" class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button>
-			<button href="/module" data-type="page-transition" class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button>
-			<div>
-            <div id="data_inject" style="display:none">
-            var data = JSON.parse(b64_to_utf8('` + utils.base64Encode(JSON.stringify(quizData)) + `'));
-                </div><form method="POST" action="/science?no-cache=${utils.newToken()}" style="display:none;">
-                    <input type="text" id="qid" name="qid" value="${id}">
-                    <input type="text" id="timestart" name="timestart" value="${Date.now()}">
-                    <input type="text" id="key" name="key" value="${utils.newToken()}">
-                    <input type="text" id="alttab" name="alttab" value="0">
-                    <input type="text" id="quiz" name="quiz" value="${module}">
-                    
-                    <input type="text" id="options" name="options" value='${utils.base64Encode(JSON.stringify(quizData.options))}'>
-                    <input type="text" id="answer" name="answer" value="">
-                </form>
-                <h2 style="font-weight: 400; color: #ccc; padding-bottom: 3em;">Question ${req.user.questions[module].answered.length}/${fs.readdirSync("questions/" + module).length}</h2>
-                ${imgHtml}
-                <h1 style=" padding-bottom: 1em;">${quizData.question}</h1>
-                <button class="cd-btn science" data-option="0" data-type="answer">${quizData.options[0]}</button>
-                <button class="cd-btn science" data-option="1" data-type="answer">${quizData.options[1]}</button>
-                <button class="cd-btn science" data-option="2" data-type="answer">${quizData.options[2]}</button>
-                <button class="cd-btn science" data-option="3" data-type="answer">${quizData.options[3]}</button>
-                <br>
-                <div id="answered" style="display:none;">
-                    <button class="cd-btn" data-type="page-transition" href="${nextQuestion}">Suivant</button>
-                </div>
-            </div>
-		</div>
-        
-	</main>
-	<div class="cd-cover-layer"></div>
-	<div class="cd-loading-bar"></div>
-	<script src="/js/jquery-2.1.1.js"></script>
-	<script src="/js/main.js"></script>
-	<script src="/js/collect.js"></script>
-	<!-- Resource jQuery -->
-</body>
-
-</html>
-
-            
-            `;
-
-            cb(toreturn);
+            })
         });
     });
 }
 
-app.get("/addmod/:modid", authUtils.basicAuth, function (req, res){
-    fs.readFile("userconfig/" + req.user.username, function (err, data){
+app.get("/addmod/:modid", authUtils.basicAuth, function (req, res) {
+    fs.readFile("userconfig/" + req.user.username, function (err, data) {
         var json = err ? [] : JSON.parse(data)
         json.push(req.params.modid)
-        fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), ()=>{})
+        fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), () => { })
     })
     res.send("OK")
 })
 
-app.get("/remmod/:modid", authUtils.basicAuth, function (req, res){
-    fs.readFile("userconfig/" + req.user.username, function (err, data){
+app.get("/remmod/:modid", authUtils.basicAuth, function (req, res) {
+    fs.readFile("userconfig/" + req.user.username, function (err, data) {
         var json = err ? [] : JSON.parse(data)
         delete json[json.indexOf(req.params.modid)]
-        fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), ()=>{})
+        fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), () => { })
     })
     res.send("OK")
 })
+
+//TODO: Redo entire /module page, it's utter crap
 app.get("/module", authUtils.basicAuth, function (req, res) {
     var buffer = "";
     var buffer2 = "";
@@ -263,103 +199,12 @@ app.get("/module", authUtils.basicAuth, function (req, res) {
 app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
     data = "Questions not completed, can't generate verdict";
     if (req.user.questions[req.params.module].answered.length == fs.readdirSync("questions/" + req.params.module).length) {
-        var text = "Something broke :/";
-        switch (parseInt(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length)) {
-            case 0:
-                text = "As-tu vraiment fait ça sérieusement ?"
-                break;
-            case 1:
-                text = "As-tu vraiment compris la matière correctement ?"
-
-                break;
-            case 2:
-                text = "Continue! Tu vas y arriver! Un jour...."
-
-                break;
-            case 3:
-                text = "Tu es à mi-chemin!.......de la note de passage...Redouble tes efforts!"
-
-                break;
-            case 4:
-                text = "Continue! Tu vas y arriver! Un jour...."
-
-                break;
-            case 5:
-                text = "OH! Presque! Ne lache surtout pas ici!!"
-
-                break;
-            case 6:
-                text = "Ca passe! Mais aucune raison d'abondonner maintenant!"
-                break;
-            case 7:
-                text = "C'est bien! Mais c'est toujours possible à l'amélioration!"
-
-                break;
-            case 8:
-                text = "Garde cette cadence pour l'examen!"
-
-                break;
-            case 9:
-                text = "Si proche de la perfection! Souviens toi attentivement de tes erreurs pour ne pas les répéter durant tes examens!"
-
-                break;
-            case 10:
-                text = "Perfection! Essaie d'avoir cette note encore une fois!"
-
-                break;
-
-        }
-        data = `
-        <!doctype html>
-<html lang="en" class="no-js">
-
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<link href='/css/fonts/fonts.css' rel='stylesheet' type='text/css'>
-
-	<link rel="stylesheet" href="/css/reset.css">
-	<!-- CSS reset -->
-	<link rel="stylesheet" href="/css/style.css">
-	<!-- Resource style -->
-	<script src="/js/modernizr.js"></script>
-	<!-- Modernizr -->
-
-	<title>Étudie ÇA!</title>
-</head>
-
-<body class="cd-about">
-	<main>
-		<div class="cd-about cd-main-content">
-        <button href="/logout.html" data-type="page-transition" class="cd-btn" style="position: absolute; top: 10px; right: 5px;">X</button>
-			<button href="/module" data-type="page-transition" class="cd-btn" style="position: absolute; top: 10px; left: 5px;">&larr;</button>
-			<div>
-
-
-                <h1>${Math.round(req.user.questions[req.params.module].right.length * 100 / fs.readdirSync("questions/" + req.params.module).length)}%</h1>
-
-				<h2>Verdict</h2>
-
-				<p>
-					${text}
-				</p>
-				<button class="cd-btn" href="retake" data-type="page-transition">Refaire les questions manquées</button>
-				<button class="cd-btn" href="reset" data-type="page-transition">Refaire le module au complet</button>
-			</div>
-		</div>
-	</main>
-	<div class="cd-cover-layer"></div>
-	<div class="cd-loading-bar"></div>
-	<script src="/js/jquery-2.1.1.js"></script>
-	<script src="/js/main.js"></script>
-	<!-- Resource jQuery -->
-</body>
-
-</html>
-    `;
+        res.render("quizend", {
+            percent: Math.round(req.user.questions[req.params.module].right.length * 100 / fs.readdirSync('questions/' + req.params.module).length) + "%",
+            bracket: parseInt(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length),
+        });
     }
-    res.send(data);
+
 });
 
 

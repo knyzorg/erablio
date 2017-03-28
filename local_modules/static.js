@@ -3,7 +3,11 @@
 */
 
 app.get('/', function (req, res) {
-    res.sendFile(appRoot + "/html/index.html")
+    res.render("index");
+});
+
+app.get("/home", function (req, res) {
+    res.render("index");
 });
 
 app.use('/css', express.static('css'));
@@ -14,14 +18,12 @@ app.use('/js', express.static('js'));
 
 
 app.get("/login.html", function (req, res) {
-    res.sendFile(appRoot + "/html/login.html");
+    res.render("login");
 });
 
 
 
-app.get("/home", function (req, res) {
-    res.sendFile(appRoot + "/html/index.html");
-});
+
 
 app.get("/about", function (req, res) {
     res.sendFile(appRoot + "/html/about.html");
