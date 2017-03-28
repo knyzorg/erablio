@@ -14,7 +14,7 @@ global.sys = require('sys')
 global.exec = require('child_process').exec;
 
 //A few utility functions
-global.utils = require("./local_modules/utils")
+global.utils = require("./util/utils")
 
 //Database setup
 global.dblite = require('dblite');
@@ -49,13 +49,10 @@ app.set('view engine', 'pug')
 
 //Import routes
 //Secure file carries routes as well as a few middlewares which guarantees the existance of req.user variable
-global.authUtils = require("./local_modules/secure")
+global.authUtils = require("./util/secure")
 
-//Just routing.. refer to appropriate file
-require("./local_modules/static")
-require("./local_modules/generator")
-require("./local_modules/quiz")
-require("./local_modules/science")
+//Just routing.. refer to files in the routes directory
+require('require-dir')("./routes")
 
 //Launch application
 var PORT = process.env.PORT || 3000;
