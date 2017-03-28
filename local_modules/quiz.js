@@ -55,31 +55,28 @@ function getUserModules(user, callback) {
  * @param {Object} res Express response object
  */
 function question(module, id = -1, req, res) {
-
     if (req.user.questions[module] == undefined) {
         req.user.questions[module] = {};
         req.user.questions[module].right = [];
         req.user.questions[module].wrong = [];
-    }
-    if (req.user.questions[module].answered === undefined) {
         req.user.questions[module].answered = [];
     }
 
 
     if (id == -1) {
-        if ((req.user.questions[module].answered.length != fs.readdirSync("questions/" + module).length)) {
-            id = utils.randomInt(1, fs.readdirSync("questions/" + module).length);
-        }
-        //TODO: Fix login complete quiz issue via redirect
+
         if (fs.readdirSync("questions/" + module).length == req.user.questions[module].answered.length) {
             res.redirect("/" + module + "/q/end");
             return;
         }
-    }
 
-    if (req.user.questions[module].answered.indexOf(id.toString()) === -1 && !isNaN(id)) {
-        req.user.questions[module].answered.push(id.toString());
+        id = utils.randomInt(1, fs.readdirSync("questions/" + module).length);
+
+        while (req.user.questions[module].answered.indexOf(id.toString()) !== -1){
+            id = utils.randomInt(1, fs.readdirSync("questions/" + module).length)
+        }
     }
+    console.log("Answering", id);
 
     console.log("questions/" + module + "/" + id + ".json");
     fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
@@ -108,7 +105,10 @@ function question(module, id = -1, req, res) {
             var nextQuestion = utils.randomInt(1, fs.readdirSync("questions/" + module).length).toString();
 
             //Select next question (semi-randomly)
-            if (req.user.questions[module].answered.length == fs.readdirSync("questions/" + module).length) {
+            if (req.user.questions[module].answered.length+1 == fs.readdirSync("questions/" + module).length && req.user.questions[module].answered.indexOf(id.toString) === -1) {
+                
+                console.log("Quiz is over, next page is result", req.user.questions[module].answered.indexOf(id.toString))
+                
                 //All questions complete, reset 
                 if (fs.readdirSync("questions/" + module).length == req.user.questions[module].right.length) {
                     console.log("All done, all right");
@@ -119,7 +119,7 @@ function question(module, id = -1, req, res) {
 
             }
 
-            while (req.user.questions[module].answered.indexOf(nextQuestion) !== -1) {
+            while (req.user.questions[module].answered.indexOf(nextQuestion) !== -1 || nextQuestion == id) {
                 console.log(nextQuestion, "is present. Changing.");
                 nextQuestion = utils.randomInt(1, fs.readdirSync("questions/" + module).length).toString();
             }
@@ -130,12 +130,12 @@ function question(module, id = -1, req, res) {
                 id: id,
                 module: module,
                 options: quizData.options,
-                silentOptions: utils.base64Encode(JSON.stringify(quizData)),
+                silentOptions: utils.base64Encode(JSON.stringify(quizData.options)),
                 quizData: utils.base64Encode(JSON.stringify(quizData)),
                 token: utils.newToken(),
                 next: nextQuestion,
-                timestamp: Date.now,
-                questionNumber: req.user.questions[module].answered.length,
+                timestamp: Date.now(),
+                questionNumber: req.user.questions[module].answered.length + 1,
                 totalQuestions: fs.readdirSync("questions/" + module).length,
 
             })

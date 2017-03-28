@@ -16,7 +16,7 @@ html.no-js(lang='en')
         div
           #data_inject(style='display:none')
             | var data = JSON.parse(b64_to_utf8(&apos;#{quizData}&apos;));
-          form(method='POST', action='/science?no-cache=#{token}', style='display:none;')
+          form(method='POST', action='/science?no-cache=' + token, style='display:none;')
             input#qid(type='text', name='qid', value=id)
   
             input#timestart(type='text', name='timestart', value=timestamp)
@@ -41,7 +41,7 @@ html.no-js(lang='en')
             button.cd-btn.science(data-option=index, data-type='answer')= option
           br
           #answered(style='display:none;')
-            button.cd-btn(data-type='page-transition', href='!{next}') Suivant
+            button.cd-btn(data-type='page-transition', href='/' + module + '/q/' next) Suivant
     .cd-cover-layer
     .cd-loading-bar
     script(src='/js/jquery-2.1.1.js')
