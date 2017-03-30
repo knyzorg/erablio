@@ -16,9 +16,11 @@ html.no-js(lang='en')
         div
           h1=percent
           h2 Verdict
+          
           case bracket
             when 0
                 p As-tu vraiment fait ça sérieusement ?
+
             when 1
                 p As-tu vraiment compris la matière correctement ?
 
@@ -36,6 +38,7 @@ html.no-js(lang='en')
 
             when 6
                 p Ca passe! Mais aucune raison d'abondonner maintenant!
+
             when 7
                 p C'est bien! Mais c'est toujours possible à l'amélioration!
 
@@ -47,11 +50,11 @@ html.no-js(lang='en')
 
             when 10
                 p Perfection! Essaie d'avoir cette note encore une fois!
+
             default
-                p Something broke...
-          |  
-          button.cd-btn(href='retake', data-type='page-transition') Refaire les questions manqu&eacute;es
-          |  
+                p Something broke...  
+
+          button.cd-btn(href='retake', data-type='page-transition') Refaire les questions manqu&eacute;es  
           button.cd-btn(href='reset', data-type='page-transition') Refaire le module au complet
     .cd-cover-layer
     .cd-loading-bar

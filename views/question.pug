@@ -16,20 +16,16 @@ html.no-js(lang='en')
         div
           #data_inject(style='display:none')
             | var data = JSON.parse(b64_to_utf8(&apos;#{quizData}&apos;));
+
           form(method='POST', action='/science?no-cache=' + token, style='display:none;')
             input#qid(type='text', name='qid', value=id)
-  
             input#timestart(type='text', name='timestart', value=timestamp)
-  
             input#key(type='text', name='key', value=token)
-  
             input#alttab(type='text', name='alttab', value='0')
-  
             input#quiz(type='text', name='quiz', value=module)
-  
             input#options(type='text', name='options', value=silentOptions)
-  
             input#answer(type='text', name='answer', value='')
+
           h2(style='font-weight: 400; color: #ccc; padding-bottom: 3em;')
             | Question #{questionNumber}/#{totalQuestions}
           
@@ -39,9 +35,11 @@ html.no-js(lang='en')
 
           each option, index in options
             button.cd-btn.science(data-option=index, data-type='answer')= option
+
           br
           #answered(style='display:none;')
             button.cd-btn(data-type='page-transition', href='/' + module + '/q/' + next) Suivant
+            
     .cd-cover-layer
     .cd-loading-bar
     script(src='/js/jquery-2.1.1.js')

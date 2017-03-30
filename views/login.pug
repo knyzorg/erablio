@@ -24,13 +24,10 @@ html.no-js(lang='en')
               li  Vous acceptez que nous fesont une collecte de donn&eacute;es sur vos activit&eacute;s.
           form#login(action='/login.html', method='POST', onsubmit='login(); return false;')
             .loader(style='display:none;')
-            |  
             input(type='text', name='username', placeholder='Username', required='')
-            |  
             input(type='password', name='password', placeholder='Password', required='')
             br
             br
-            |  
             button.cd-btn.login-btn(type='submit') D&eacute;marrer
           p
             | Note: La connexion d&eacute;pend de la vitesse du portail. Le portail peut parfois &ecirc;tre lent. Ayez patience!
