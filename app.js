@@ -30,13 +30,14 @@ global.appRoot = __dirname;
 app.use(require('body-parser').urlencoded({
     extended: true
 }));
+var tmpSecret = utils.newToken();
 app.use(require('express-session')({
-    secret: 'correct battery house staple',
+    secret: tmpSecret,
     resave: true,
     saveUninitialized: true
 }));
 
-app.use(require("cookie-parser")('correct battery house staple'));
+app.use(require("cookie-parser")(tmpSecret));
 app.use(function (req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');

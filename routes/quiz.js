@@ -104,7 +104,7 @@ function question(module, id = -1, req, res) {
 
                 var nextQuestion = utils.randomInt(1, files.length).toString();
 
-                //Select next question (semi-randomly)
+                //Logic:  Is this the last question? (Only one question unanswered) AND is this THE unanswered question?
                 if (req.user.questions[module].answered.length + 1 == files.length && req.user.questions[module].answered.indexOf(id.toString()) === -1) {
 
                     console.log("Quiz is over, next page is result", req.user.questions[module].answered.indexOf(id.toString()))
