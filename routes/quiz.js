@@ -62,83 +62,78 @@ function question(module, id = -1, req, res) {
         req.user.questions[module].answered = [];
     }
 
+    fs.readdir("questions/" + module, function (err, files) {
+        if (id == -1) {
 
-    if (id == -1) {
+            if (files.length == req.user.questions[module].answered.length) {
+                res.redirect("/" + module + "/q/end");
+                return;
+            }
 
-        if (fs.readdirSync("questions/" + module).length == req.user.questions[module].answered.length) {
-            res.redirect("/" + module + "/q/end");
-            return;
+            id = utils.randomInt(1, files.length);
+
+            while (req.user.questions[module].answered.indexOf(id.toString()) !== -1) {
+                id = utils.randomInt(1, files.length)
+            }
         }
+        console.log("Answering", id);
 
-        id = utils.randomInt(1, fs.readdirSync("questions/" + module).length);
+        console.log("questions/" + module + "/" + id + ".json");
+        fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
+            if (err) return;
+            var quizData = JSON.parse(quizJsonRaw);
+            quizData.meta = { id: id, module: module };
+            fs.readFile("quiz.html", function (err, html) {
 
-        while (req.user.questions[module].answered.indexOf(id.toString()) !== -1){
-            id = utils.randomInt(1, fs.readdirSync("questions/" + module).length)
-        }
-    }
-    console.log("Answering", id);
+                //Shuffle options
 
-    console.log("questions/" + module + "/" + id + ".json");
-    fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
-        if (err) return;
-        var quizData = JSON.parse(quizJsonRaw);
-        quizData.meta = { id: id, module: module };
-        fs.readFile("quiz.html", function (err, html) {
+                //Get current text
+                var correct = quizData.options[quizData.answer];
 
-            //Shuffle options
+                //Shuffle Options
+                quizData.options = utils.shuffleArray(quizData.options);
 
-            //Get current text
-            var correct = quizData.options[quizData.answer];
+                //Find new position
+                quizData.options.forEach(function (v, i, a) {
+                    if (v == correct) {
+                        quizData.answer = i;
+                        return;
+                    }
+                });
+                //Done shuffling
 
-            //Shuffle Options
-            quizData.options = utils.shuffleArray(quizData.options);
+                var nextQuestion = utils.randomInt(1, files.length).toString();
 
-            //Find new position
-            quizData.options.forEach(function (v, i, a) {
-                if (v == correct) {
-                    quizData.answer = i;
-                    return;
-                }
-            });
-            //Done shuffling
+                //Select next question (semi-randomly)
+                if (req.user.questions[module].answered.length + 1 == files.length && req.user.questions[module].answered.indexOf(id.toString()) === -1) {
 
-            var nextQuestion = utils.randomInt(1, fs.readdirSync("questions/" + module).length).toString();
+                    console.log("Quiz is over, next page is result", req.user.questions[module].answered.indexOf(id.toString()))
 
-            //Select next question (semi-randomly)
-            if (req.user.questions[module].answered.length+1 == fs.readdirSync("questions/" + module).length && req.user.questions[module].answered.indexOf(id.toString) === -1) {
-                
-                console.log("Quiz is over, next page is result", req.user.questions[module].answered.indexOf(id.toString))
-                
-                //All questions complete, reset 
-                if (fs.readdirSync("questions/" + module).length == req.user.questions[module].right.length) {
-                    console.log("All done, all right");
-                    req.user.questions[module].answered = [];
-                } else {
                     nextQuestion = "end";
+
                 }
 
-            }
+                while (req.user.questions[module].answered.indexOf(nextQuestion) !== -1 || nextQuestion == id) {
+                    console.log(nextQuestion, "is present. Changing.");
+                    nextQuestion = utils.randomInt(1, files.length).toString();
+                }
+                console.log(nextQuestion, "is not in", JSON.stringify(req.user.questions[module].answered));
 
-            while (req.user.questions[module].answered.indexOf(nextQuestion) !== -1 || nextQuestion == id) {
-                console.log(nextQuestion, "is present. Changing.");
-                nextQuestion = utils.randomInt(1, fs.readdirSync("questions/" + module).length).toString();
-            }
-            console.log(nextQuestion, "is not in", JSON.stringify(req.user.questions[module].answered));
+                res.render("question", {
+                    question: quizData.question,
+                    id: id,
+                    module: module,
+                    options: quizData.options,
+                    silentOptions: utils.base64Encode(JSON.stringify(quizData.options)),
+                    quizData: utils.base64Encode(JSON.stringify(quizData)),
+                    token: utils.newToken(),
+                    next: nextQuestion,
+                    timestamp: Date.now(),
+                    questionNumber: req.user.questions[module].answered.length + 1,
+                    totalQuestions: files.length,
 
-            res.render("question", {
-                question: quizData.question,
-                id: id,
-                module: module,
-                options: quizData.options,
-                silentOptions: utils.base64Encode(JSON.stringify(quizData.options)),
-                quizData: utils.base64Encode(JSON.stringify(quizData)),
-                token: utils.newToken(),
-                next: nextQuestion,
-                timestamp: Date.now(),
-                questionNumber: req.user.questions[module].answered.length + 1,
-                totalQuestions: fs.readdirSync("questions/" + module).length,
-
-            })
+                })
+            });
         });
     });
 }
