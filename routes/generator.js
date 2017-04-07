@@ -2,9 +2,16 @@
     Admin quiz-creation interface
 */
 
+/*  =========
+    IMPORTANT
+    =========
+    Generator system has been broken by project re-structuring as well as a new question module standard.
+    Please do not spend any time fixing it,
+    instead focus on a ground-up re-write of it while closely integrating it in the main application
+*/
 app.get('/generator', authUtils.adminAuth, function (req, res) {
     console.log("Accessed admin panel")
-    res.sendFile(__dirname + "/generator/menu.html")
+    res.sendFile(appRoot + "/generator/menu.html")
 });
 
 app.get('/generator/new', authUtils.adminAuth, function (req, res) {
@@ -15,7 +22,7 @@ app.get('/generator/new', authUtils.adminAuth, function (req, res) {
         }
         modules += "<option>" + v + "</option>"
     })
-    fs.readFile("generator/generator.html", function (err, data) {
+    fs.readFile(appRoot + "/generator/generator.html", function (err, data) {
         res.send(data.toString().replace("{{modules}}", modules))
     })
 
@@ -24,9 +31,9 @@ app.get('/generator/new', authUtils.adminAuth, function (req, res) {
 app.get('/generator/edit/:module/:qid', authUtils.adminAuth, function (req, res) {
     var module = req.params.module;
     var qid = req.params.qid;
-    var data = JSON.parse(fs.readFileSync("questions/" + module + "/" + qid + ".json"));
+    var data = JSON.parse(fs.readFileSync(appRoot + "/questions/" + module + "/" + qid + ".json"));
     var modules = "";
-    fs.readdirSync("questions").forEach(function (v, i, a) {
+    fs.readdirSync(appRoot + "/questions").forEach(function (v, i, a) {
         if (v == ".git") {
             return;
         }
@@ -41,7 +48,12 @@ app.get('/generator/edit/:module/:qid', authUtils.adminAuth, function (req, res)
 <script src="/js/jquery-2.1.1.js"></script>
 <script src="/js/tether.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
     crossorigin="anonymous"></script>
-<script src="/js/bootstrap.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+    crossorigin="anonymous">
+<script src="/js/jquery-2.1.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+    crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
     crossorigin="anonymous"></script>
     </head>
 
@@ -119,13 +131,13 @@ app.get('/generator/list', authUtils.adminAuth, function (req, res) {
         }
         questions += "<h1 id='" + module + "'>Questions for " + module + "</h1>"
         nav += "<li class='nav-item'><a class='nav-link' href='#" + module + "'>" + module + "</a></li>"
-        fs.readdirSync("questions/" + module).sort(function (a, b) {
+        fs.readdirSync(appRoot + "/questions/" + module).sort(function (a, b) {
             return a.split(".")[0] - b.split(".")[0]
         }).forEach(function (filename, i, a) {
             addHtml(filename.split(".")[0], module);
         });
     });
-    fullHtml = fs.readFileSync(__dirname + "/generator/list.html").toString().replace("{{data}}",
+    fullHtml = fs.readFileSync(appRoot + "/generator/list.html").toString().replace("{{data}}",
         questions).replace("{{nav}}", nav);
     res.send(fullHtml);
 });
