@@ -24,9 +24,9 @@ function getAllModules(callback) {
                 if (modules.length == files.length - rejected) {
                     callback(modules);
                 }
-            })
-        })
-    })
+            });
+        });
+    });
 }
 /**
  * Gets an array of a user's enabled modules
@@ -130,8 +130,7 @@ function question(module, id = -1, req, res) {
                     next: nextQuestion,
                     timestamp: Date.now(),
                     questionNumber: req.user.questions[module].answered.length + 1,
-                    totalQuestions: files.length,
-
+                    totalQuestions: files.length
                 })
             });
         });
@@ -196,15 +195,15 @@ app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
     if (req.user.questions[req.params.module].answered.length == fs.readdirSync("questions/" + req.params.module).length) {
         res.render("quizend", {
             percent: Math.round(req.user.questions[req.params.module].right.length * 100 / fs.readdirSync('questions/' + req.params.module).length) + "%",
-            bracket: parseInt(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length),
+            bracket: parseInt(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length)
         });
     }
-
+    res.redirect("/" + req.params.module + "/q/")
 });
 
 
 app.get('/:module/q/retake', authUtils.basicAuth, function (req, res) {
-    if (req.user.questions[req.params.module] != undefined) {
+    if (req.user.questions[req.params.module] !== undefined) {
         req.user.questions[req.params.module].answered = req.user.questions[req.params.module].right;
         req.user.questions[req.params.module].wrong = [];
     }
@@ -214,7 +213,7 @@ app.get('/:module/q/retake', authUtils.basicAuth, function (req, res) {
 });
 
 app.get('/:module/q/reset', authUtils.basicAuth, function (req, res) {
-    if (req.user.questions[req.params.module] != undefined) {
+    if (req.user.questions[req.params.module] !== undefined) {
         req.user.questions[req.params.module].answered = [];
         req.user.questions[req.params.module].right = [];
         req.user.questions[req.params.module].wrong = [];
@@ -224,13 +223,9 @@ app.get('/:module/q/reset', authUtils.basicAuth, function (req, res) {
 });
 
 app.get('/:module/q/:id', authUtils.basicAuth, function (req, res) {
-    question(req.params.module, req.params.id, req, res, function (data) {
-        res.send(data);
-    });
+    question(req.params.module, req.params.id, req, res);
 });
 
 app.get('/:module/q', authUtils.basicAuth, function (req, res) {
-    question(req.params.module, -1, req, res, function (data) {
-        res.send(data);
-    });
+    question(req.params.module, -1, req, res);
 });

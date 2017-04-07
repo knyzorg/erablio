@@ -7,14 +7,14 @@ global.express = require('express');
 global.app = express();
 
 //Same as fs but better
-global.fs = require('fs-extra')
+global.fs = require('fs-extra');
 
 //For interaction with CLI
-global.sys = require('sys')
+global.sys = require('sys');
 global.exec = require('child_process').exec;
 
 //A few utility functions
-global.utils = require("./util/utils")
+global.utils = require("./util/utils");
 
 //Database setup
 global.dblite = require('dblite');
@@ -42,18 +42,18 @@ app.use(function (req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
-    next()
-})
-
+    next();
+});
+    
 //Use Pug rendering engine
-app.set('view engine', 'pug')
+app.set('view engine', 'pug');
 
 //Import routes
 //Secure file carries routes as well as a few middlewares which guarantees the existance of req.user variable
-global.authUtils = require("./util/secure")
+global.authUtils = require("./util/secure");
 
 //Just routing.. refer to files in the routes directory
-require('require-dir')("./routes")
+require('require-dir')("./routes");
 
 //Launch application
 var PORT = process.env.PORT || 3000;
