@@ -70,11 +70,19 @@ function question(module, id = -1, req, res) {
                 return;
             }
 
-            id = utils.randomInt(1, files.length);
-
-            while (req.user.questions[module].answered.indexOf(id.toString()) !== -1) {
-                id = utils.randomInt(1, files.length)
+            let unanswered = [];
+            for (let qid = 1; qid != files.length + 1; qid++) {
+                if (req.user.questions[module].answered.indexOf(qid.toString()) == -1) {
+                    unanswered.push(qid.toString());
+                }
             }
+            console.log("Available unanswered questions", unanswered);
+            id = utils.randomArray(unanswered);
+            console.log("Selected", id);
+
+            /*while (req.user.questions[module].answered.indexOf(id.toString()) !== -1) {
+                id = utils.randomInt(1, files.length)
+            }*/
         }
         console.log("Answering", id);
 
@@ -102,10 +110,22 @@ function question(module, id = -1, req, res) {
                 });
                 //Done shuffling
 
-                var nextQuestion = utils.randomInt(1, files.length).toString();
+                let availableQuestions = [];
+                for (let qid = 1; qid != files.length + 1; qid++) {
+                    if (req.user.questions[module].answered.indexOf(qid.toString()) == -1 && qid != id) {
+                        console.log("Logic test", qid, id, qid != id)
+                        availableQuestions.push(qid.toString());
+                    }
+                }
+
+                console.log("Next Q candidates", availableQuestions)
+
+                var nextQuestion = availableQuestions.length ? utils.randomArray(availableQuestions) : "end";
+                console.log("Selected", nextQuestion)
+                //var nextQuestion = utils.randomInt(1, files.length).toString();
 
                 //Logic:  Is this the last question? (Only one question unanswered) AND is this THE unanswered question?
-                if (req.user.questions[module].answered.length + 1 == files.length && req.user.questions[module].answered.indexOf(id.toString()) === -1) {
+                /*if (req.user.questions[module].answered.length + 1 == files.length && req.user.questions[module].answered.indexOf(id.toString()) === -1) {
 
                     console.log("Quiz is over, next page is result", req.user.questions[module].answered.indexOf(id.toString()))
 
@@ -117,7 +137,7 @@ function question(module, id = -1, req, res) {
                     console.log(nextQuestion, "is present. Changing.");
                     nextQuestion = utils.randomInt(1, files.length).toString();
                 }
-                console.log(nextQuestion, "is not in", JSON.stringify(req.user.questions[module].answered));
+                console.log(nextQuestion, "is not in", JSON.stringify(req.user.questions[module].answered));*/
 
                 res.render("question", {
                     question: quizData.question,
@@ -191,12 +211,15 @@ app.get("/module", authUtils.basicAuth, function (req, res) {
 
 
 app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
-    data = "Questions not completed, can't generate verdict";
+    console.log("Answered=", req.user.questions[req.params.module].answered.length)
+    console.log("Number of wsad", fs.readdirSync("questions/" + req.params.module).length)
     if (req.user.questions[req.params.module].answered.length == fs.readdirSync("questions/" + req.params.module).length) {
+        console.log("End valid")
         res.render("quizend", {
             percent: Math.round(req.user.questions[req.params.module].right.length * 100 / fs.readdirSync('questions/' + req.params.module).length) + "%",
             bracket: parseInt(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length)
         });
+        return;
     }
     res.redirect("/" + req.params.module + "/q/")
 });
