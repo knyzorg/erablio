@@ -83,3 +83,14 @@ module.exports.isJsonString = function isJsonString(str) {
 module.exports.randomInt = function (min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+/**
+ * Gets a random value of an array
+ * @param {Array} array Array to get value from
+ */
+module.exports.randomArray = function (array) {
+    if (array.length == 0){
+        return undefined;
+    }
+    return array[Math.floor(Math.random()*array.length)];
+}
