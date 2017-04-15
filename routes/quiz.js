@@ -175,6 +175,28 @@ app.get("/remmod/:modid", authUtils.basicAuth, function (req, res) {
     res.send("OK")
 })
 
+app.get("/tmp", function (req, res) {
+    var renderModules = [];
+    //getUserModules(req.user.username, function (enabled) {
+    getUserModules("vknyazev", function (enabled) {
+        getAllModules(function (modules) {
+            modules.forEach(function (module) {
+                if (enabled.indexOf(module.id) !== -1) {
+                    //Module is enabled
+                    module.enabled = true
+                    renderModules.push(module)
+                } else {
+                    //Module is disabled
+                    module.enabled = false
+                    renderModules.push(module)
+                }
+            })
+            res.render("modules", {modules: renderModules})
+        })
+    })
+
+    
+})
 //TODO: Redo entire /module page, it's utter crap
 app.get("/module", authUtils.basicAuth, function (req, res) {
     var buffer = "";

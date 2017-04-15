@@ -48,7 +48,6 @@ Patterns - reusable parts of our design
   margin-bottom: 2em;
   margin-left: 0.5em;
   margin-right: 0.5em;
-
   border-radius: 50em;
   background-color: #fff;
   color: #000;
@@ -56,7 +55,7 @@ Patterns - reusable parts of our design
   font-size: 1.3rem;
   letter-spacing: 1px;
   text-transform: uppercase;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 8px 3px rgba(0, 0, 0, 0.1);
   border-width: 0;
 }
 .plusminus{
@@ -143,7 +142,6 @@ main .cd-main-content::after, main .cd-main-content::before {
   content: '';
   position: absolute;
   left: 0;
-  height: 50px;
   width: 100%;
 }
 main .cd-main-content::before {
@@ -374,8 +372,12 @@ p::selection {
 }
 
 .new-mod-container{
-  margin: 20px;
-  display: inline;
+  padding: 20px;
+  display: inline-block;
+  background: white;
+  color: #3e3e3e;
+  border: 5px solid #000;
+  width: 400px;
 }
 .addmod{
   font-size: 2rem;
@@ -387,4 +389,18 @@ img.question-image{
   display: block;
     margin-left: auto;
     margin-right:auto;
+}
+.new-mod-container p {
+    color: #000;
+}
+
+.modsearch{
+  display: block;
+  width: 250px;
+  height: 4em;
+  text-align: center;
+}
+
+p.seo{
+  display: none;
 }
