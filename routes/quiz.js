@@ -175,7 +175,7 @@ app.get("/remmod/:modid", authUtils.basicAuth, function (req, res) {
     res.send("OK")
 })
 
-app.get("/module", function (req, res) {
+app.get("/module", authUtils.basicAuth, function (req, res) {
     var renderModules = [];
     getUserModules(req.user.username, function (enabled) {
     //getUserModules("vknyazev", function (enabled) {
@@ -197,6 +197,8 @@ app.get("/module", function (req, res) {
 
     
 })
+
+/*
 //TODO: Redo entire /module page, it's utter crap
 app.get("/legacy", authUtils.basicAuth, function (req, res) {
     var buffer = "";
@@ -229,7 +231,8 @@ app.get("/legacy", authUtils.basicAuth, function (req, res) {
         })
 
     })
-});
+});*/
+
 
 
 app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
