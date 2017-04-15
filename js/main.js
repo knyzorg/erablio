@@ -111,15 +111,15 @@ $('body').on('click', '.addmod', function (event) {
     if ($(this).text() == "+") {
         $(this).text("-");
         addMod($(this).data("modid"))
-        $(".selection").append($('<a id="mod' + $(this).data("modid") + '" class="cd-btn" href="/' + $(this).data("modid") + '/q/" data-type="page-transition">' + $(this).data("modname") + '</a>').fadeIn().css("display","inline-block"))
-    } else { 
-        $(this).text("+") 
+        $(".selection").append($('<a id="mod' + $(this).data("modid") + '" class="cd-btn" href="/' + $(this).data("modid") + '/q/" data-type="page-transition">' + $(this).data("modname") + '</a>').fadeIn().css("display", "inline-block"))
+    } else {
+        $(this).text("+")
         remMod($(this).data("modid"))
-        $( "#mod" +  $(this).data("modid")).fadeOut(()=>{
-            $( "#mod" +  $(this).data("modid")).remove()
+        $("#mod" + $(this).data("modid")).fadeOut(() => {
+            $("#mod" + $(this).data("modid")).remove()
         });
-}
-    
+    }
+
 });
 function changePage(url, bool) {
     gatrigger();
@@ -184,3 +184,30 @@ function gatrigger() {
 }
 
 gatrigger()
+
+
+$('body').on('keyup keypress', '.modsearch', function (event) {
+    var searchStr = $(".modsearch").val();
+    $(".new-mod-container").show();
+    //$(".new-mod-container p:contains('" + searchStr + "')").parent().show();
+
+    searchStr.split(/[^a-z0-9]/ig).forEach(function (sterm) {
+        $(".new-mod-container").each(function () {
+            var pool =  $(this).children("h2").text().toLowerCase() + " " + $(this).children("p.description").text().toLowerCase() + " " + $(this).children("p.seo").text().toLowerCase()
+            if (!pool.includes(sterm)) {
+                $(this).hide()
+            }
+            console.log(pool);
+        })
+    })
+    /*searchStr.split(" ").forEach(function (sterm) {
+        $(".new-mod-container p.seo").each(function () {
+            if ($(this).text().toLowerCase().includes(sterm)) {
+                $(this).parent().show()
+            }
+        })
+    })*/
+    if (searchStr == "") {
+        $(".new-mod-container").show();
+    }
+})
