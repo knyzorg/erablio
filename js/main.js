@@ -50,7 +50,7 @@ $(window).blur(function () {
 })
 
 
-$('body').on('click', '.science', function (event) {
+$('body').on('click tap', '.science', function (event) {
     $("#answer").val($(this).data('option'));
     //detect which page has been selected
     //var newPage = $(this).data('href') + "?a=" + $(this).data('option') + "&q=" + $("#qid").val();
@@ -79,7 +79,7 @@ $('body').on('click', '.science', function (event) {
     //firstLoad = true;
 });
 
-$('body').on('click', '[data-type="page-transition"]', function (event) {
+$('body').on('click tap', '[data-type="page-transition"]', function (event) {
     event.preventDefault();
     //detect which page has been selected
     var newPage = $(this).data('href');
@@ -93,7 +93,7 @@ $('body').on('click', '[data-type="page-transition"]', function (event) {
     }
 
 });
-$('body').on('click', '.plusminus', function (event) {
+$('body').on('click tap', '.plusminus', function (event) {
     if ($(this).text() == "+") { $(this).text("-") } else { $(this).text("+") }
 });
 
@@ -107,7 +107,7 @@ function remMod(modid) {
         url: "/remmod/" + modid
     });
 }
-$('body').on('click', '.addmod', function (event) {
+$('body').on('click tap', '.addmod', function (event) {
     if ($(this).text() == "+") {
         $(this).text("-");
         addMod($(this).data("modid"))
