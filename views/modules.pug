@@ -1,50 +1,32 @@
-doctype html
-html.no-js(lang='en')
-  head
-    meta(charset='UTF-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(href='/css/fonts/fonts.css', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='/css/reset.css')
-    link(rel='stylesheet', href='/css/style.css')
-    script(src='/js/modernizr.js')
-    title &Eacute;tudie &Ccedil;A!
-  body
-    main
-      .cd-index.cd-main-content
-        button.cd-btn(data-href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
-        |  
-        button.cd-btn(data-href='/', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
-        div
-          h2(style='font-weight: 400; color: #ccc; padding-bottom: 3em;') S&eacute;lection
-          h1(style=' padding-bottom: 1em;') Choissez votre module
-          .selection
-            each module in modules
-              if !module.draft
-                if module.enabled
-                  a.cd-btn(id='mod' + module.id,data-href='/' + module.id + '/q/', data-type='page-transition', style='display: inline-block;')= module.name
-          br
-          |  
-          a.cd-btn.plusminus(onclick='$(".addnew").fadeToggle();', style='\
-          font-size: 2rem;\
-          padding: calc(1.4em - 1rem) calc(1.6em - 1rem);\
-          ') +
-          .addnew(style='display:none')
-            center
-              input.modsearch(type='text', placeholder='Recherche')
-              each module in modules
-                if !module.draft
-                  .new-mod-container
-                    if module.enabled
-                      button.cd-btn.addmod(data-modid=module.id, data-modname=module.name) -
-                    else
-                      button.cd-btn.addmod(data-modid=module.id, data-modname=module.name) +
-                    h2(style='\
-                    display: inline-block;\
-                    ')= module.name
-                    p.description= module.description
-                    p.seo= module.seo
-    .cd-cover-layer
-    .cd-loading-bar
-    script(src='/js/jquery-2.1.1.js')
-    script(src='/js/main.js')
-    script(src='/js/collect.js')
+extends base.pug
+
+block content
+  button.cd-btn(data-href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
+  button.cd-btn(data-href='/', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
+  
+  h2(style='font-weight: 400; color: #ccc; padding-bottom: 3em;') S&eacute;lection
+  h1(style=' padding-bottom: 1em;') Choissez votre module
+  .selection
+    each module in modules
+      if !module.draft
+        if module.enabled
+          a.cd-btn(id='mod' + module.id,data-href='/' + module.id + '/q/', data-type='page-transition', style='display: inline-block;')= module.name
+  br
+  a.cd-btn.plusminus(onclick='$(".addnew").fadeToggle();', style='\
+  font-size: 2rem;\
+  padding: calc(1.4em - 1rem) calc(1.6em - 1rem);\
+  ') +
+  .addnew(style='display:none')
+    center
+      input.modsearch(type='text', placeholder='Recherche')
+      each module in modules
+        if !module.draft
+          .new-mod-container(style='background-image:url(/img/' + module.id + '.png)')
+            .new-mod-overlay
+              if module.enabled
+                button.cd-btn.addmod(data-modid=module.id, data-modname=module.name) -
+              else
+                button.cd-btn.addmod(data-modid=module.id, data-modname=module.name) +
+              h2(style='display: inline-block;')= module.name
+              p.description= module.description
+              p.seo= module.seo

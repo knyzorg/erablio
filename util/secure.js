@@ -162,7 +162,7 @@ module.exports.adminAuth = function (req, res, next) {
 app.get("/logout.html", function (req, res) {
     req.logout();
     req.session.destroy();
-    res.sendFile(appRoot + "/html/login.html");
+    res.render("login");
 });
 
 app.post("/login.html", passport.authenticate('local'), function (req, res) {

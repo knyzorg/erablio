@@ -1,37 +1,20 @@
-doctype html
-html.no-js(lang='en')
-  head
-    meta(charset='UTF-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(href='/css/fonts/fonts.css', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='/css/reset.css')
-    link(rel='stylesheet', href='/css/style.css')
-    script(src='/js/modernizr.js')
-    title &Eacute;tudie &Ccedil;A!
-  body
-    main
-      .cd-quiz.cd-main-content
-        a(data-href='/', data-type='page-transition')
-          button.cd-btn(style='position: absolute; top: 10px; left: 5px;') &larr;
-        div
-          h1 Connexion
-          p Vos identifiants sont identiques &agrave; celui du portail.
-          p
-            | Nous demandons votre collaboration sur certains points quant &agrave; l&apos;utilisation de ce programme d&apos;&eacute;tude:
-            ul
-              li N&apos;utilisez pas de r&eacute;f&eacute;rences externes. Prenez ceci comme une situation d&apos;examen.
-              li  Ne laissez jamais quelqu&apos;un autre utiliser votre session.
-              li  Vous acceptez que nous fesont une collecte de donn&eacute;es sur vos activit&eacute;s.
-          form#login(action='/login.html', method='POST', onsubmit='login(); return false;')
-            .loader(style='display:none;')
-            input(type='text', name='username', placeholder='Username', required='')
-            input(type='password', name='password', placeholder='Password', required='')
-            br
-            br
-            button.cd-btn.login-btn(type='submit') D&eacute;marrer
-          p
-            | Note: La connexion d&eacute;pend de la vitesse du portail. Le portail peut parfois &ecirc;tre lent. Ayez patience!
-    .cd-cover-layer
-    .cd-loading-bar
-    script(src='/js/jquery-2.1.1.js')
-    script(src='/js/main.js')
+extends base.pug
+
+block content
+  button.cd-btn(data-href='/', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
+  h1 Connexion
+  p Vos identifiants sont identiques &agrave; celui du portail.
+  p Nous demandons votre collaboration sur certains points quant &agrave; l&apos;utilisation de ce programme d&apos;&eacute;tude:
+    ul
+      li N&apos;utilisez pas de r&eacute;f&eacute;rences externes. Prenez ceci comme une situation d&apos;examen.
+      li  Ne laissez jamais quelqu&apos;un autre utiliser votre session.
+      li  Vous acceptez que nous fesont une collecte de donn&eacute;es sur vos activit&eacute;s.
+  form#login(action='/login.html', method='POST', onsubmit='login(); return false;')
+    .loader(style='display:none;')
+    input(type='text', name='username', placeholder='Username', required='')
+    input(type='password', name='password', placeholder='Password', required='')
+    br
+    br
+    button.cd-btn.login-btn(type='submit') D&eacute;marrer
+  p Note: La connexion d&eacute;pend de la vitesse du portail. Le portail peut parfois &ecirc;tre lent. Ayez patience!
+  

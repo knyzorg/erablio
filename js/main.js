@@ -193,20 +193,14 @@ $('body').on('keyup keypress', '.modsearch', function (event) {
 
     searchStr.split(/[^a-z0-9]/ig).forEach(function (sterm) {
         $(".new-mod-container").each(function () {
-            var pool =  $(this).children("h2").text().toLowerCase() + " " + $(this).children("p.description").text().toLowerCase() + " " + $(this).children("p.seo").text().toLowerCase()
+            var pool =  $(this).children(".new-mod-overlay").children("h2").text().toLowerCase() + " " + $(this).children(".new-mod-overlay").children("p.description").text().toLowerCase() + " " + $(this).children(".new-mod-overlay").children("p.seo").text().toLowerCase()
             if (!pool.includes(sterm)) {
                 $(this).hide()
             }
             console.log(pool);
         })
     })
-    /*searchStr.split(" ").forEach(function (sterm) {
-        $(".new-mod-container p.seo").each(function () {
-            if ($(this).text().toLowerCase().includes(sterm)) {
-                $(this).parent().show()
-            }
-        })
-    })*/
+    
     if (searchStr == "") {
         $(".new-mod-container").show();
     }

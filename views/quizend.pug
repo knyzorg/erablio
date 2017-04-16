@@ -1,62 +1,36 @@
-doctype html
-html.no-js(lang='en')
-  head
-    meta(charset='UTF-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(href='/css/fonts/fonts.css', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='/css/reset.css')
-    link(rel='stylesheet', href='/css/style.css')
-    script(src='/js/modernizr.js')
-    title &Eacute;tudie &Ccedil;A!
-  body.cd-about
-    main
-      .cd-about.cd-main-content
-        button.cd-btn(data-href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
-        button.cd-btn(data-href='/module', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
-        div
-          h1=percent
-          h2 Verdict
-          
-          case bracket
-            when 0
-                p As-tu vraiment fait ça sérieusement ?
+extends base.pug
 
-            when 1
-                p As-tu vraiment compris la matière correctement ?
-
-            when 2
-                p Continue! Tu vas y arriver! Un jour....
-
-            when 3
-                p Tu es à mi-chemin!.......de la note de passage...Redouble tes efforts!
-
-            when 4
-                p Continue! Tu vas y arriver! Un jour....
-
-            when 5
-                p OH! Presque! Ne lache surtout pas ici!!
-
-            when 6
-                p Ca passe! Mais aucune raison d'abondonner maintenant!
-
-            when 7
-                p C'est bien! Mais c'est toujours possible à l'amélioration!
-
-            when 8
-                p Garde cette cadence pour l'examen!
-
-            when 9
-                p Si proche de la perfection! Souviens toi attentivement de tes erreurs pour ne pas les répéter durant tes examens!
-
-            when 10
-                p Perfection! Essaie d'avoir cette note encore une fois!
-
-            default
-                p Something broke...  
-
-          button.cd-btn(data-href='retake', data-type='page-transition') Refaire les questions manqu&eacute;es  
-          button.cd-btn(data-href='reset', data-type='page-transition') Refaire le module au complet
-    .cd-cover-layer
-    .cd-loading-bar
-    script(src='/js/jquery-2.1.1.js')
-    script(src='/js/main.js')
+block content
+  button.cd-btn(data-href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
+  button.cd-btn(data-href='/module', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
+  
+  h1=percent
+  h2 Verdict
+  
+  case bracket
+  when 0
+      p As-tu vraiment fait ça sérieusement ?
+  when 1
+      p As-tu vraiment compris la matière correctement ?
+  when 2
+      p Continue! Tu vas y arriver! Un jour....
+  when 3
+      p Tu es à mi-chemin!.......de la note de passage...Redouble tes efforts!
+  when 4
+      p Continue! Tu vas y arriver! Un jour....
+  when 5
+      p OH! Presque! Ne lache surtout pas ici!!
+  when 6
+      p Ca passe! Mais aucune raison d'abondonner maintenant!
+  when 7
+      p C'est bien! Mais c'est toujours possible à l'amélioration!
+  when 8
+      p Garde cette cadence pour l'examen!
+  when 9
+      p Si proche de la perfection! Souviens toi attentivement de tes erreurs pour ne pas les répéter durant tes examens!
+  when 10
+      p Perfection! Essaie d'avoir cette note encore une fois!
+  default
+      p Something broke...  
+  button.cd-btn(data-href='retake', data-type='page-transition') Refaire les questions manqu&eacute;es  
+  button.cd-btn(data-href='reset', data-type='page-transition') Refaire le module au complet

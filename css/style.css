@@ -327,9 +327,9 @@ input{
   height: 3em;
 }
 
-.explain{
+/*.explain{
   a: b;
-}
+}*/
 
 .nay, .nay:hover{
   background-color: #f10f0f !important;
@@ -374,13 +374,17 @@ p::selection {
 }
 
 .new-mod-container{
-  padding: 20px;
   display: inline-block;
-  background: white;
-  color: #3e3e3e;
+  background-size: cover;
+  color: #fff;
   border: 5px solid #000;
   width: 300px;
   border-radius: 30px;
+}
+.new-mod-overlay{
+  padding: 20px;
+  background: rgba(0,0,0,.3);
+  height: 100%;
 }
 .addmod{
   font-size: 2rem;
@@ -394,7 +398,7 @@ img.question-image{
     margin-right:auto;
 }
 .new-mod-container p {
-    color: #000;
+    color: #fff;
 }
 
 .modsearch{

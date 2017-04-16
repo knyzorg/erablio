@@ -1,37 +1,17 @@
-doctype html
-html.no-js(lang='en')
-  head
-    meta(charset='UTF-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(href='/css/fonts/fonts.css', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='/css/reset.css')
-    link(rel='stylesheet', href='/css/style.css')
-    script(src='/js/modernizr.js')
-    title &Eacute;tudie &Ccedil;A!
-  body.cd-about
-    main
-      .cd-about.cd-main-content
-        div
-          h1 &Eacute;tudie &Ccedil;A!
-          h2 Un syst&egrave;me d&apos;&eacute;tude r&eacute;invent&eacute;
-          p
-            | &Eacute;tudie &Ccedil;A! est un projet Exposcience. En bref, ce programme cherche &agrave; quantifier la corr&eacute;lation entre le temps d&apos;&eacute;tude, la technique ainsi que diverses autres variables et la performance globale des utilisateurs.
-          h2 Contactez Nous
-          p
-            b Bogues et Aide General:
-            br
-            |  
-            i Slava Knyazev
-            |  &mdash; slava[at]knyz.org
-          p
-            b Erreurs de questions:
-            br
-            |  
-            i Vincent Bellemare
-            |  &mdash; VincentBellemare.12[at]gmail.com
-          |  
-          button.cd-btn(data-href='/', data-type='page-transition') &larr; Retour
-    .cd-cover-layer
-    .cd-loading-bar
-    script(src='/js/jquery-2.1.1.js')
-    script(src='/js/main.js')
+extends base.pug
+
+block content  
+    div
+      h1 &Eacute;tudie &Ccedil;A!
+      h2 Un syst&egrave;me d&apos;&eacute;tude r&eacute;invent&eacute;
+      p &Eacute;tudie &Ccedil;A! est un projet Exposcience. En bref, ce programme cherche &agrave; quantifier la corr&eacute;lation entre le temps d&apos;&eacute;tude, la technique ainsi que diverses autres variables et la performance globale des utilisateurs.
+      h2 Contactez Nous
+      p
+        b Bogues et Aide General:
+        br
+        i Slava Knyazev &mdash; slava[at]knyz.org
+      p
+        b Erreurs de questions:
+        br
+        i Vincent Bellemare &mdash; VincentBellemare.12[at]gmail.com
+      button.cd-btn(data-href='/', data-type='page-transition') &larr; Retour

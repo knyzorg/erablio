@@ -1,42 +1,28 @@
-doctype html
-html.no-js(lang='en')
-  head
-    meta(charset='UTF-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(href='/css/fonts/fonts.css', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', href='/css/reset.css')
-    link(rel='stylesheet', href='/css/style.css')
-    script(src='/js/modernizr.js')
-    title &Eacute;tudie &Ccedil;A!
-  body.cd-about
-    main
-      .cd-about.cd-main-content
-        div
-          h1 Nouveaut&eacute;s
-          h2 7 Mars
-          p
-            ol
-              li Am&eacute;liorations generales et changement d&apos;engin (de Node 4.2.0 &agrave; Node 7.7.1)
-              li
-                | Cache de comptes (Les connexions sont faites plus rapidements apr&egrave;s la premi&egrave;re en sauvegardant les sessions)
-          h2 8 F&eacute;vrier
-          p
-            ol
-              li
-                | 1. Le projet &laquo;&Eacute;tudie &Ccedil;A!&raquo; a &eacute;t&eacute; choisit pour poursuivre notre recherche &agrave; l&apos;Expo-Science r&eacute;gionale!
-              li
-                | 2. On a investi dans la performance et &agrave; arranger des bugs (Mais vous risquez de ne pas voir la diff&eacute;rence!)
-          h2 25 Janvier
-          p
-            ol
-              li
-                | 1. Syst&egrave;me de nouveaut&eacute;s afin de vous communiquer efficacement toutes les mises &agrave; jour.
-              li
-                | 2. L&apos;ajout d&apos;images est maintenant op&eacute;rationnel et sera disponible dans le prochain module, la peau.
-              li 3. Il y aura &agrave; pr&eacute;sent des questions &laquo;vrai ou faux&raquo; dans le prochain module.
-          |  
-          button.cd-btn(data-href='/', data-type='page-transition') &larr; Retour
-    .cd-cover-layer
-    .cd-loading-bar
-    script(src='/js/jquery-2.1.1.js')
-    script(src='/js/main.js')
+extends base.pug
+
+block content
+  h1 Nouveaut&eacute;s
+  h2 16 Avril
+  p
+    ol
+        li Optimization majeure de l'engin + migration de HTML &agrave; Pug
+        li Nouveau systeme de modules avec systeme de recherche
+        li Solution aux certains bogues sur iOS
+        li Preparation pour la Super Exposcience    
+  h2 7 Mars
+  p
+    ol
+      li Am&eacute;liorations generales et changement d&apos;engin (de Node 4.2.0 &agrave; Node 7.7.1)
+      li Cache de comptes (Les connexions sont faites plus rapidements apr&egrave;s la premi&egrave;re en sauvegardant les sessio     
+  h2 8 F&eacute;vrier
+  p
+    ol
+      li 1. Le projet &laquo;&Eacute;tudie &Ccedil;A!&raquo; a &eacute;t&eacute; choisit pour poursuivre notre recherche &agrave; l&apos;Expo-Science r&eacute;gionale!
+      li 2. On a investi dans la performance et &agrave; arranger des bugs (Mais vous risquez de ne pas voir la diff&eacute;renc      
+  h2 25 Janvier
+  p
+    ol
+      li 1. Syst&egrave;me de nouveaut&eacute;s afin de vous communiquer efficacement toutes les mises &agrave; jour.
+      li 2. L&apos;ajout d&apos;images est maintenant op&eacute;rationnel et sera disponible dans le prochain module, la peau.
+      li 3. Il y aura &agrave; pr&eacute;sent des questions &laquo;vrai ou faux&raquo; dans le prochain module. 
+  button.cd-btn(data-href='/', data-type='page-transition') &larr; Retour

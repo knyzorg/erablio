@@ -1,52 +1,3 @@
-/*
-    Core app logic
-    TODO: Unbundle module and quiz routes and functions
-*/
-
-/**
- * Get a list of module objects
- * @param {Function} callback 
- */
-function getAllModules(callback) {
-    var modules = [];
-    fs.readdir("questions", function (err, files) {
-        rejected = 0;
-        files.forEach(function (fname, findex) {
-            if (fname.split(".json").length != 2) {
-                console.log("Rejecting folder", fname)
-                rejected++;
-                return;
-            }
-            fs.readFile("questions/" + fname, function (err, data) {
-                console.log("Parsing question", fname)
-                var json = JSON.parse(data);
-                modules.push(json)
-                if (modules.length == files.length - rejected) {
-                    callback(modules);
-                }
-            });
-        });
-    });
-}
-/**
- * Gets an array of a user's enabled modules
- * @param {String} user Username of user
- * @param {Function} callback 
- */
-//TODO: Requires refactoring. Current settings storage is deficient.
-function getUserModules(user, callback) {
-    var path = "userconfig/" + user;
-    if (fs.existsSync(path)) {
-        fs.readFile(path, (err, data) => {
-            console.log(JSON.parse(data));
-
-            callback(JSON.parse(data));
-        })
-    } else {
-        callback([]);
-    }
-
-}
 /**
  * Generates quiz question html and automatically handles the response
  * @param {String} module Name of module stored in /questions
@@ -122,22 +73,6 @@ function question(module, id = -1, req, res) {
 
                 var nextQuestion = availableQuestions.length ? utils.randomArray(availableQuestions) : "end";
                 console.log("Selected", nextQuestion)
-                //var nextQuestion = utils.randomInt(1, files.length).toString();
-
-                //Logic:  Is this the last question? (Only one question unanswered) AND is this THE unanswered question?
-                /*if (req.user.questions[module].answered.length + 1 == files.length && req.user.questions[module].answered.indexOf(id.toString()) === -1) {
-
-                    console.log("Quiz is over, next page is result", req.user.questions[module].answered.indexOf(id.toString()))
-
-                    nextQuestion = "end";
-
-                }
-
-                while (req.user.questions[module].answered.indexOf(nextQuestion) !== -1 || nextQuestion == id) {
-                    console.log(nextQuestion, "is present. Changing.");
-                    nextQuestion = utils.randomInt(1, files.length).toString();
-                }
-                console.log(nextQuestion, "is not in", JSON.stringify(req.user.questions[module].answered));*/
 
                 res.render("question", {
                     question: quizData.question,
@@ -156,84 +91,6 @@ function question(module, id = -1, req, res) {
         });
     });
 }
-
-app.get("/addmod/:modid", authUtils.basicAuth, function (req, res) {
-    fs.readFile("userconfig/" + req.user.username, function (err, data) {
-        var json = err ? [] : JSON.parse(data)
-        json.push(req.params.modid)
-        fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), () => { })
-    })
-    res.send("OK")
-})
-
-app.get("/remmod/:modid", authUtils.basicAuth, function (req, res) {
-    fs.readFile("userconfig/" + req.user.username, function (err, data) {
-        var json = err ? [] : JSON.parse(data)
-        delete json[json.indexOf(req.params.modid)]
-        fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), () => { })
-    })
-    res.send("OK")
-})
-
-app.get("/module", authUtils.basicAuth, function (req, res) {
-    var renderModules = [];
-    getUserModules(req.user.username, function (enabled) {
-    //getUserModules("vknyazev", function (enabled) {
-        getAllModules(function (modules) {
-            modules.forEach(function (module) {
-                if (enabled.indexOf(module.id) !== -1) {
-                    //Module is enabled
-                    module.enabled = true
-                    renderModules.push(module)
-                } else {
-                    //Module is disabled
-                    module.enabled = false
-                    renderModules.push(module)
-                }
-            })
-            res.render("modules", {modules: renderModules})
-        })
-    })
-
-    
-})
-
-/*
-//TODO: Redo entire /module page, it's utter crap
-app.get("/legacy", authUtils.basicAuth, function (req, res) {
-    var buffer = "";
-    var buffer2 = "";
-    getUserModules(req.user.username, function (valid) {
-
-        getAllModules(function (modules) {
-            modules.forEach(function (module) {
-                if (module.draft) {
-                    return;
-                }
-                buffer2 += `<div class="new-mod-container">
-                    <button class="cd-btn addmod" data-modid="${module.id}" data-modname="${module.name}">${(valid.indexOf(module.id) === -1) ? "+" : "-"}</button>
-
-                <h2 style="
-                    display: inline-block;
-                ">${module.name}</h2>
-                    
-                    <p style="display:none;">${module.description}</p></div>`
-                if (valid.indexOf(module.id) !== -1) {
-                    buffer += `<button class="cd-btn" href="/${module.id}/q/" data-type="page-transition" id="mod${module.id}">${module.name}</button>`
-                }
-            })
-            fs.readFile("html/select.html", function (err, data) {
-                if (buffer == "") {
-                    //buffer = "<p>Pas de modules. Appuyez sur le <b>+</b> pour en ajouter!</p>"
-                }
-                res.send(data.toString().replace("{{buffer}}", buffer).replace("{{buffer2}}", buffer2))
-            })
-        })
-
-    })
-});*/
-
-
 
 app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
     console.log("Answered=", req.user.questions[req.params.module].answered.length)

@@ -16,14 +16,9 @@ app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
 app.use('/js', express.static('js'));
 
-
 app.get("/login.html", function (req, res) {
     res.render("login");
 });
-
-
-
-
 
 app.get("/about", function (req, res) {
    res.render("about");
