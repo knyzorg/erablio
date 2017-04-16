@@ -11,8 +11,8 @@ html.no-js(lang='en')
   body.cd-about
     main
       .cd-about.cd-main-content
-        button.cd-btn(href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
-        button.cd-btn(href='/module', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
+        button.cd-btn(data-href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
+        button.cd-btn(data-href='/module', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
         div
           h1=percent
           h2 Verdict
@@ -54,8 +54,8 @@ html.no-js(lang='en')
             default
                 p Something broke...  
 
-          button.cd-btn(href='retake', data-type='page-transition') Refaire les questions manqu&eacute;es  
-          button.cd-btn(href='reset', data-type='page-transition') Refaire le module au complet
+          button.cd-btn(data-href='retake', data-type='page-transition') Refaire les questions manqu&eacute;es  
+          button.cd-btn(data-href='reset', data-type='page-transition') Refaire le module au complet
     .cd-cover-layer
     .cd-loading-bar
     script(src='/js/jquery-2.1.1.js')

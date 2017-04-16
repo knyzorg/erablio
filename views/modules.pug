@@ -11,9 +11,9 @@ html.no-js(lang='en')
   body
     main
       .cd-index.cd-main-content
-        button.cd-btn(href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
+        button.cd-btn(data-href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
         |  
-        button.cd-btn(href='/', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
+        button.cd-btn(data-href='/', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
         div
           h2(style='font-weight: 400; color: #ccc; padding-bottom: 3em;') S&eacute;lection
           h1(style=' padding-bottom: 1em;') Choissez votre module
@@ -21,7 +21,7 @@ html.no-js(lang='en')
             each module in modules
               if !module.draft
                 if module.enabled
-                  a.cd-btn(id='mod' + module.id,href='/' + module.id + '/q/', data-type='page-transition', style='display: inline-block;')= module.name
+                  a.cd-btn(id='mod' + module.id,data-href='/' + module.id + '/q/', data-type='page-transition', style='display: inline-block;')= module.name
           br
           |  
           a.cd-btn.plusminus(onclick='$(".addnew").fadeToggle();', style='\

@@ -11,8 +11,8 @@ html.no-js(lang='en')
   body
     main
       .cd-index.cd-main-content
-        button.cd-btn(href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
-        button.cd-btn(href='/module', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
+        button.cd-btn(data-href='/logout.html', data-type='page-transition', style='position: absolute; top: 10px; right: 5px;') X
+        button.cd-btn(data-href='/module', data-type='page-transition', style='position: absolute; top: 10px; left: 5px;') &larr;
         div
           #data_inject(style='display:none')
             | var data = JSON.parse(b64_to_utf8(&apos;#{quizData}&apos;));
@@ -38,7 +38,7 @@ html.no-js(lang='en')
 
           br
           #answered(style='display:none;')
-            button.cd-btn(data-type='page-transition', href='/' + module + '/q/' + next) Suivant
+            button.cd-btn(data-type='page-transition', data-href='/' + module + '/q/' + next) Suivant
             
     .cd-cover-layer
     .cd-loading-bar
