@@ -26,8 +26,8 @@ app.get("/login.html", function (req, res) {
 
 
 app.get("/about", function (req, res) {
-    res.sendFile(appRoot + "/html/about.html");
+   res.render("about");
 });
 app.get("/news", function (req, res) {
-    res.sendFile(appRoot + "/html/news.html");
+    res.render("news");
 });

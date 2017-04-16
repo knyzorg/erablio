@@ -57,6 +57,7 @@ Patterns - reusable parts of our design
   text-transform: uppercase;
   box-shadow: 0 1px 8px 3px rgba(0, 0, 0, 0.1);
   border-width: 0;
+  z-index: 999;
 }
 .plusminus{
       min-width: 56px;
@@ -377,7 +378,8 @@ p::selection {
   background: white;
   color: #3e3e3e;
   border: 5px solid #000;
-  width: 400px;
+  width: 300px;
+  border-radius: 30px;
 }
 .addmod{
   font-size: 2rem;
@@ -404,3 +406,8 @@ img.question-image{
 p.seo{
   display: none;
 }
+
+body.page-is-changing::before {
+    z-index: 9999 !important;
+}
+
