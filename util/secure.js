@@ -134,7 +134,7 @@ module.exports.basicAuth = function (req, res, next) {
     if (!req.user) {
         console.log("User not logged in");
         req.session.returnTo = req.url;
-        res.sendFile(appRoot + "/html/login.html");
+        res.render("login");
     } else {
         if (req.cookies.username !== req.user.username) {
             res.cookie('username', req.user.username, { maxAge: 315360000 })
@@ -150,7 +150,7 @@ module.exports.adminAuth = function (req, res, next) {
     if (!req.user || admins.indexOf(req.user.username) === -1) {
         console.log("User not admin");
         req.session.returnTo = req.url;
-        res.sendFile(appRoot + "/html/login.html");
+        res.render("login");
     } else {
         console.log("User is admin id:", req.user.username);
         next();
