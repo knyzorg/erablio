@@ -377,9 +377,8 @@ p::selection {
   display: inline-block;
   background-size: cover;
   color: #fff;
-  border: 5px solid #000;
-  width: 300px;
-  border-radius: 30px;
+  /*border: 5px solid #000;
+  border-radius: 30px;*/
 }
 .new-mod-overlay{
   padding: 20px;
@@ -415,4 +414,38 @@ p.seo{
 body.page-is-changing::before {
     z-index: 9999 !important;
 }
+
+
+
+
+
+
+
+
+  .new-mod-container{
+    width: 100%
+  }
+
+@media only screen and (min-width: 570px) {
+  .new-mod-container{
+    width: 50%
+  }
+}
+
+/* Masonry reponsive */
+@media only screen and (min-width: 860px) {
+  .new-mod-container{
+    width: 33.3333%
+  }
+}
+
+/* Masonry reponsive */
+@media only screen and (min-width: 1200px) {
+  .new-mod-container{
+    width: 25%
+  }
+}
+
+
+
 

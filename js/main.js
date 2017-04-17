@@ -193,15 +193,24 @@ $('body').on('keyup keypress', '.modsearch', function (event) {
 
     searchStr.split(/[^a-z0-9]/ig).forEach(function (sterm) {
         $(".new-mod-container").each(function () {
-            var pool =  $(this).children(".new-mod-overlay").children("h2").text().toLowerCase() + " " + $(this).children(".new-mod-overlay").children("p.description").text().toLowerCase() + " " + $(this).children(".new-mod-overlay").children("p.seo").text().toLowerCase()
+            var pool = $(this).children(".new-mod-overlay").children("h2").text().toLowerCase() + " " + $(this).children(".new-mod-overlay").children("p.description").text().toLowerCase() + " " + $(this).children(".new-mod-overlay").children("p.seo").text().toLowerCase()
             if (!pool.includes(sterm)) {
                 $(this).hide()
             }
             console.log(pool);
         })
     })
-    
+
     if (searchStr == "") {
         $(".new-mod-container").show();
     }
+    mansonry()
 })
+
+function mansonry() {
+    $('.modules').packery({
+        // options
+        itemSelector: '.new-mod-container',
+        gutter: 0
+    });
+}

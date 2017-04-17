@@ -12,14 +12,25 @@ block content
         if module.enabled
           a.cd-btn(id='mod' + module.id,data-href='/' + module.id + '/q/', data-type='page-transition', style='display: inline-block;')= module.name
   br
-  a.cd-btn.plusminus(onclick='$(".addnew").fadeToggle();', style='\
+  a.cd-btn.plusminus(onclick='$(".addnew").fadeToggle();mansonry()', style='\
   font-size: 2rem;\
-  padding: calc(1.4em - 1rem) calc(1.6em - 1rem);\
-  ') +
+  padding: calc(1.4em - 1rem) calc(1.6em - 1rem);') +
   .addnew(style='display:none')
     center
       input.modsearch(type='text', placeholder='Recherche')
+    center.modules
       each module in modules
+        if !module.draft
+          .new-mod-container(style='background-image:url(/img/' + module.id + '.png)')
+            .new-mod-overlay
+              if module.enabled
+                button.cd-btn.addmod(data-modid=module.id, data-modname=module.name) -
+              else
+                button.cd-btn.addmod(data-modid=module.id, data-modname=module.name) +
+              h2(style='display: inline-block;')= module.name
+              p.description= module.description
+              p.seo= module.seo
+      //-each module in modules
         if !module.draft
           .new-mod-container(style='background-image:url(/img/' + module.id + '.png)')
             .new-mod-overlay
