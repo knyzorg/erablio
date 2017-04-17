@@ -211,6 +211,6 @@ function mansonry() {
     $('.modules').packery({
         // options
         itemSelector: '.new-mod-container',
-        gutter: 0
+        gutter: 10
     });
 }

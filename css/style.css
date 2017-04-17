@@ -428,21 +428,21 @@ body.page-is-changing::before {
 
 @media only screen and (min-width: 570px) {
   .new-mod-container{
-    width: 50%
+    width: calc( 50% - 10px / 2 )
   }
 }
 
 /* Masonry reponsive */
 @media only screen and (min-width: 860px) {
   .new-mod-container{
-    width: 33.3333%
+    width: calc( 33.3333% - 20px / 3 )
   }
 }
 
 /* Masonry reponsive */
 @media only screen and (min-width: 1200px) {
   .new-mod-container{
-    width: 25%
+    width: calc( 25% - 30px / 4 )
   }
 }
 
