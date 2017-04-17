@@ -187,7 +187,7 @@ gatrigger()
 
 
 $('body').on('keyup keypress', '.modsearch', function (event) {
-    var searchStr = $(".modsearch").val();
+    var searchStr = $(".modsearch").val().toLowerCase();
     $(".new-mod-container").show();
     //$(".new-mod-container p:contains('" + searchStr + "')").parent().show();
 
