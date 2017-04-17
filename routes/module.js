@@ -60,6 +60,7 @@ app.get("/remmod/:modid", authUtils.basicAuth, function (req, res) {
     fs.readFile("userconfig/" + req.user.username, function (err, data) {
         if (err) return;
         var json = JSON.parse(data)
+        if (json.indexOf(req.params.modid) === -1) return;
         json.splice(json.indexOf(req.params.modid), 1)
         fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), () => { })
     })
