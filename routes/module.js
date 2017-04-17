@@ -49,6 +49,7 @@ function getUserModules(user, callback) {
 app.get("/addmod/:modid", authUtils.basicAuth, function (req, res) {
     fs.readFile("userconfig/" + req.user.username, function (err, data) {
         var json = err ? [] : JSON.parse(data)
+        if (json.indexOf(req.params.modid) !== -1) return;
         json.push(req.params.modid)
         fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), () => { })
     })
