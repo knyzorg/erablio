@@ -426,14 +426,14 @@ body.page-is-changing::before {
     width: 100%
   }
 
-@media only screen and (min-width: 570px) {
+@media only screen and (min-width: 576px) {
   .new-mod-container{
     width: calc( 50% - 10px / 2 )
   }
 }
 
 /* Masonry reponsive */
-@media only screen and (min-width: 860px) {
+@media only screen and (min-width: 768px) {
   .new-mod-container{
     width: calc( 33.3333% - 20px / 3 )
   }
