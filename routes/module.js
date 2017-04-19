@@ -7,12 +7,14 @@ function getModules(callback) {
     fs.readdir("questions", function (err, files) {
         rejected = 0;
         files.forEach(function (fname, findex) {
-            if (fname.split(".json").length != 2) {
+            if (!fname.includes(".json")) {
+                //File is folder - Ignore
                 console.log("Rejecting folder", fname)
                 rejected++;
                 return;
             }
             fs.readFile("questions/" + fname, function (err, data) {
+                //
                 console.log("Parsing question", fname)
                 var json = JSON.parse(data);
                 modules.push(json)
