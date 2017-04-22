@@ -15,7 +15,7 @@ function question(module, id = -1, req, res) {
 
     fs.readdir("questions/" + module, function (err, files) {
         if (err){
-            res.send("Module does not exist")
+            res.redirect("/module")
             return;
         }
         if (id == -1) {
@@ -97,6 +97,9 @@ function question(module, id = -1, req, res) {
 }
 
 app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
+    if (!req.user.questions[req.params.module]){
+        res.redirect("/" + req.params.module + "/q/")
+    }
     console.log("Answered=", req.user.questions[req.params.module].answered.length)
     console.log("Number of wsad", fs.readdirSync("questions/" + req.params.module).length)
     if (req.user.questions[req.params.module].answered.length == fs.readdirSync("questions/" + req.params.module).length) {
