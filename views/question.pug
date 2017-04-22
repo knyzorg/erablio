@@ -18,10 +18,11 @@ block content
   h2(style='font-weight: 400; color: #ccc; padding-bottom: 3em;') Question #{questionNumber}/#{totalQuestions}
   
   img.question-image(src='/img/'+module+'/'+id+'.png', onerror='this.parentNode.removeChild(this)')
-  h1(style=' padding-bottom: 1em;') #{question}
+  h1(style=' padding-bottom: 1em;') !{question}
   each option, index in options
     button.cd-btn.science(data-option=index, data-type='answer')= option
   br
   #answered(style='display:none;')
-    button.cd-btn(data-type='page-transition', data-href='/' + module + '/q/' + next) Suivant
+    button.cd-btn.next-btn(data-type='page-transition', data-href='/' + module + '/q/' + next) Suivant
+    .punish.loader(style='display:none;')
   

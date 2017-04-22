@@ -71,6 +71,14 @@ $('body').on('click', '.science', function (event) {
     if (data.answer != $(this).data('option')) {
         $(this).addClass("nay");
         $("#answered").prepend("<p class='explain'>" + data.wrong + "</p>");
+        $(".next-btn").hide();
+        $(".punish").show()
+
+        setTimeout(function (){
+            $(".punish").fadeOut(500, "swing", function (){
+                $(".next-btn").fadeIn(500, "swing");
+            });
+        },3500)
     } else {
         $("#answered").prepend("<p class='explain'>" + data.right + "</p>");
     }
@@ -95,9 +103,6 @@ $('body').on('click', '[data-type="page-transition"]', function (event) {
     if (!isAnimating) {
         changePage(newPage/* + '?' + Math.random().toString(36).substring(7)*/, true);
         console.log("Changing page");
-    } else {
-
-
     }
 
 });

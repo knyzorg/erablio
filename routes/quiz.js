@@ -14,6 +14,10 @@ function question(module, id = -1, req, res) {
     }
 
     fs.readdir("questions/" + module, function (err, files) {
+        if (err){
+            res.send("Module does not exist")
+            return;
+        }
         if (id == -1) {
 
             if (files.length == req.user.questions[module].answered.length) {
