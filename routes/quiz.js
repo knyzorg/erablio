@@ -7,6 +7,7 @@
  */
 function question(module, id = -1, req, res) {
     if (req.user.questions[module] == undefined) {
+        //Make sure module questions are defined
         req.user.questions[module] = {};
         req.user.questions[module].right = [];
         req.user.questions[module].wrong = [];
@@ -15,104 +16,102 @@ function question(module, id = -1, req, res) {
 
     fs.readdir("questions/" + module, function (err, files) {
         if (err) {
+            //Module does not exist, list all available
             res.redirect("/module")
             return;
         }
+
         if (id == -1) {
+            //Question ID has not been defined
 
             if (files.length == req.user.questions[module].answered.length) {
+                //All questions have been answered, redirect to quiz end
                 res.redirect("/" + module + "/q/end");
                 return;
             }
 
+            //Find unanswered questions
             let unanswered = [];
             for (let qid = 1; qid != files.length + 1; qid++) {
                 if (req.user.questions[module].answered.indexOf(qid.toString()) == -1) {
                     unanswered.push(qid.toString());
                 }
             }
-            console.log("Available unanswered questions", unanswered);
+
+            //Select random unanswered question
             id = utils.randomArray(unanswered);
-            console.log("Selected", id);
 
-            /*while (req.user.questions[module].answered.indexOf(id.toString()) !== -1) {
-                id = utils.randomInt(1, files.length)
-            }*/
         }
-        console.log("Answering", id);
 
-        console.log("questions/" + module + "/" + id + ".json");
+        //ID now has a real value, load question
+
         fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
-            if (err) return;
+            if (err) {
+                //Requested question does not exist, redirect to random one
+                res.redirect("/" + module + "/q/");
+                return;
+            };
+
             var quizData = JSON.parse(quizJsonRaw);
             quizData.meta = { id: id, module: module };
-            fs.readFile("quiz.html", function (err, html) {
 
-                //Shuffle options
+            //Get correct answer text
+            var correct = quizData.options[quizData.answer];
 
-                //Get current text
-                var correct = quizData.options[quizData.answer];
+            //Shuffle Options
+            quizData.options = utils.shuffleArray(quizData.options);
 
-                //Shuffle Options
-                quizData.options = utils.shuffleArray(quizData.options);
+            //Find new position
+            quizData.answer = quizData.options.indexOf(correct)
 
-                //Find new position
-                quizData.options.forEach(function (v, i, a) {
-                    if (v == correct) {
-                        quizData.answer = i;
-                        return;
-                    }
-                });
-                //Done shuffling
-
-                let availableQuestions = [];
-                for (let qid = 1; qid != files.length + 1; qid++) {
-                    if (req.user.questions[module].answered.indexOf(qid.toString()) == -1 && qid != id) {
-                        console.log("Logic test", qid, id, qid != id)
-                        availableQuestions.push(qid.toString());
-                    }
+            //Get next question
+            let availableQuestions = [];
+            for (let qid = 1; qid != files.length + 1; qid++) {
+                //Must not be current, must not have been answered
+                if (req.user.questions[module].answered.indexOf(qid.toString()) === -1 && qid != id) {
+                    //Meets conditions
+                    availableQuestions.push(qid.toString());
                 }
+            }
 
-                console.log("Next Q candidates", availableQuestions)
+            //If non-zero, get random. If zero, set to end.        
+            var nextQuestion = availableQuestions.length ? utils.randomArray(availableQuestions) : "end";
 
-                var nextQuestion = availableQuestions.length ? utils.randomArray(availableQuestions) : "end";
-                console.log("Selected", nextQuestion)
-
-                res.render("question", {
-                    question: quizData.question,
-                    id: id,
-                    module: module,
-                    options: quizData.options,
-                    silentOptions: utils.base64Encode(JSON.stringify(quizData.options)),
-                    quizData: utils.base64Encode(JSON.stringify(quizData)),
-                    token: utils.newToken(),
-                    next: nextQuestion,
-                    timestamp: Date.now(),
-                    questionNumber: req.user.questions[module].answered.length + 1,
-                    totalQuestions: files.length
-                })
-            });
+            //Render Question page
+            res.render("question", {
+                question: quizData.question,
+                id: id,
+                module: module,
+                options: quizData.options,
+                silentOptions: utils.base64Encode(JSON.stringify(quizData.options)),
+                quizData: utils.base64Encode(JSON.stringify(quizData)),
+                token: utils.newToken(),
+                next: nextQuestion,
+                timestamp: Date.now(),
+                questionNumber: req.user.questions[module].answered.length + 1,
+                totalQuestions: files.length
+            })
         });
     });
 }
 
 app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
     if (!req.user.questions[req.params.module]) {
-        //This condition catches fake modules
+        //This condition catches fake/untouched modules
         res.redirect("/" + req.params.module + "/q/")
         return;
     }
     fs.readdir("questions/" + req.params.module, function (err, files) {
-        console.log("Answered=", req.user.questions[req.params.module].answered.length)
-        console.log("Number of wsad", files.length)
+        //Did you *really* finish?
         if (req.user.questions[req.params.module].answered.length == files.length) {
-            console.log("End valid")
+            //You did!
             res.render("quizend", {
                 percent: Math.round(req.user.questions[req.params.module].right.length * 100 / files.length) + "%",
                 bracket: parseInt(10 * req.user.questions[req.params.module].right.length / files.length)
             });
             return;
         }
+        //You didn't. Go do it!
         res.redirect("/" + req.params.module + "/q/")
     })
 
@@ -121,28 +120,34 @@ app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
 
 app.get('/:module/q/retake', authUtils.basicAuth, function (req, res) {
     if (req.user.questions[req.params.module] !== undefined) {
+        //Answered questions are right questions
         req.user.questions[req.params.module].answered = req.user.questions[req.params.module].right;
+        //No more wrong questions
         req.user.questions[req.params.module].wrong = [];
     }
 
-
+    //Restart
     res.redirect("/" + req.params.module + "/q/")
 });
 
 app.get('/:module/q/reset', authUtils.basicAuth, function (req, res) {
     if (req.user.questions[req.params.module] !== undefined) {
+        //Reset module questions tbh
         req.user.questions[req.params.module].answered = [];
         req.user.questions[req.params.module].right = [];
         req.user.questions[req.params.module].wrong = [];
     }
 
+    //Restart
     res.redirect("/" + req.params.module + "/q/")
 });
 
 app.get('/:module/q/:id', authUtils.basicAuth, function (req, res) {
+    //Send random question
     question(req.params.module, req.params.id, req, res);
 });
 
 app.get('/:module/q', authUtils.basicAuth, function (req, res) {
+    //Question id isn't defined. Pass -1
     question(req.params.module, -1, req, res);
 });
