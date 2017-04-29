@@ -14,7 +14,7 @@ function question(module, id = -1, req, res) {
     }
 
     fs.readdir("questions/" + module, function (err, files) {
-        if (err){
+        if (err) {
             res.redirect("/module")
             return;
         }
@@ -97,20 +97,25 @@ function question(module, id = -1, req, res) {
 }
 
 app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
-    if (!req.user.questions[req.params.module]){
+    if (!req.user.questions[req.params.module]) {
+        //This condition catches fake modules
         res.redirect("/" + req.params.module + "/q/")
-    }
-    console.log("Answered=", req.user.questions[req.params.module].answered.length)
-    console.log("Number of wsad", fs.readdirSync("questions/" + req.params.module).length)
-    if (req.user.questions[req.params.module].answered.length == fs.readdirSync("questions/" + req.params.module).length) {
-        console.log("End valid")
-        res.render("quizend", {
-            percent: Math.round(req.user.questions[req.params.module].right.length * 100 / fs.readdirSync('questions/' + req.params.module).length) + "%",
-            bracket: parseInt(10 * req.user.questions[req.params.module].right.length / fs.readdirSync("questions/" + req.params.module).length)
-        });
         return;
     }
-    res.redirect("/" + req.params.module + "/q/")
+    fs.readdir("questions/" + req.params.module, function (err, files) {
+        console.log("Answered=", req.user.questions[req.params.module].answered.length)
+        console.log("Number of wsad", files.length)
+        if (req.user.questions[req.params.module].answered.length == files.length) {
+            console.log("End valid")
+            res.render("quizend", {
+                percent: Math.round(req.user.questions[req.params.module].right.length * 100 / files.length) + "%",
+                bracket: parseInt(10 * req.user.questions[req.params.module].right.length / files.length)
+            });
+            return;
+        }
+        res.redirect("/" + req.params.module + "/q/")
+    })
+
 });
 
 
