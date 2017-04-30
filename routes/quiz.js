@@ -109,6 +109,21 @@ app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
                 percent: Math.round(req.user.questions[req.params.module].right.length * 100 / files.length) + "%",
                 bracket: parseInt(10 * req.user.questions[req.params.module].right.length / files.length)
             });
+
+            if (!req.user.questions[req.params.module].finished) {
+                req.user.questions[req.params.module].finished = true;
+                db.query('INSERT INTO verdicts VALUES (:user, :time, :set, :key, :right, :wrong, :wronglist, :rightlist, :grade)', {
+                    user: req.user.username,
+                    time: Date.now(),
+                    set: req.params.module,
+                    key: utils.newToken(),
+                    rightlist: req.user.questions[req.params.module].right.toString(),
+                    wronglist: req.user.questions[req.params.module].wrong.toString(),
+                    right: +req.user.questions[req.params.module].right.length,
+                    wrong: +req.user.questions[req.params.module].wrong.length,
+                    grade: +req.user.questions[req.params.module].right.length * 100 / +req.user.questions[req.params.module].answered.length
+                });
+            }
             return;
         }
         //You didn't. Go do it!
@@ -126,6 +141,7 @@ app.get('/:module/q/retake', authUtils.basicAuth, function (req, res) {
         req.user.questions[req.params.module].wrong = [];
     }
 
+    req.user.questions[req.params.module].finished = false;
     //Restart
     res.redirect("/" + req.params.module + "/q/")
 });
@@ -137,6 +153,8 @@ app.get('/:module/q/reset', authUtils.basicAuth, function (req, res) {
         req.user.questions[req.params.module].right = [];
         req.user.questions[req.params.module].wrong = [];
     }
+
+    req.user.questions[req.params.module].finished = false;
 
     //Restart
     res.redirect("/" + req.params.module + "/q/")
