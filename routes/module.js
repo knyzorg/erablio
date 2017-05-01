@@ -1,23 +1,24 @@
 /**
  * Get a list of module objects
- * @param {Function} callback 
+ * @param {Function} callback Function to callback with an array of JSON Objects describing modules
  */
 function getModules(callback) {
+    //Track module objects
     var modules = [];
+
+    //Get all modules
     fs.readdir("questions", function (err, files) {
         rejected = 0;
         files.forEach(function (fname, findex) {
+            //Reject all non-module files
             if (!fname.includes(".json")) {
-                //File is folder - Ignore
-                console.log("Rejecting folder", fname)
                 rejected++;
                 return;
             }
             fs.readFile("questions/" + fname, function (err, data) {
-                //
-                console.log("Parsing question", fname)
-                var json = JSON.parse(data);
-                modules.push(json)
+                //File is legit, push
+                modules.push(JSON.parse(data))
+                //Read all module files?
                 if (modules.length == files.length - rejected) {
                     callback(modules);
                 }
@@ -25,6 +26,7 @@ function getModules(callback) {
         });
     });
 }
+
 /**
  * Gets an array of a user's enabled modules
  * @param {String} user Username of user
@@ -50,9 +52,13 @@ function getUserModules(user, callback) {
  */
 app.get("/addmod/:modid", authUtils.basicAuth, function (req, res) {
     fs.readFile("userconfig/" + req.user.username, function (err, data) {
+        //If file doesn't exist, pretend it does and is empty. It will be created anyways.
         var json = err ? [] : JSON.parse(data)
+        //Abandon ship if exists already
         if (json.indexOf(req.params.modid) !== -1) return;
+        //Enable module
         json.push(req.params.modid)
+        //Save config
         fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), () => { })
     })
     res.send("OK")
@@ -60,10 +66,14 @@ app.get("/addmod/:modid", authUtils.basicAuth, function (req, res) {
 
 app.get("/remmod/:modid", authUtils.basicAuth, function (req, res) {
     fs.readFile("userconfig/" + req.user.username, function (err, data) {
+        //File doesn't exist?? Wtf how are you removing a module then go away
         if (err) return;
         var json = JSON.parse(data)
+        //Module isn't enabled?? Wtf how are you removing it then go away
         if (json.indexOf(req.params.modid) === -1) return;
+        //Remove module
         json.splice(json.indexOf(req.params.modid), 1)
+        //Save it
         fs.writeFile("userconfig/" + req.user.username, JSON.stringify(json), () => { })
     })
     res.send("OK")
@@ -72,7 +82,6 @@ app.get("/remmod/:modid", authUtils.basicAuth, function (req, res) {
 app.get("/module", authUtils.basicAuth, function (req, res) {
     var renderModules = [];
     getUserModules(req.user.username, function (enabled) {
-        //getUserModules("vknyazev", function (enabled) {
         getModules(function (modules) {
             modules.forEach(function (module) {
                 if (enabled.indexOf(module.id) !== -1) {
