@@ -5,6 +5,7 @@
         authUtils.adminAuth: Allows admin user connection and guarantees the req.user variable
 */
 
+//Inititionalize authentication stuff
 var passport = require('passport');
 app.use(passport.initialize());
 app.use(passport.session());
@@ -26,16 +27,22 @@ passport.deserializeUser(function (user, done) {
  *  @param {Function} callback Callback with a boolean value
  */
 module.exports.login = function login(username, password, callback) {
+    //Attempt local login first
     localLogin(username, password, function (valid) {
         if (valid) {
+            //Success
             callback(true)
             return;
         }
+        //Failed? Attempt a login via web interface
         webLogin(username, password, function (valid) {
             if (valid) {
+                //Success
                 callback(true);
+                //Update cache to make local login work next time
                 updateLoginCache(username, password);
             } else {
+                //Didn't work. Probably wrong password
                 callback(false);
             }
         });
@@ -127,24 +134,21 @@ passport.use(new LocalStrategy(
 
 //Authentication middleware
 
-//Basic login authentication
+//Basic login authentication, forces availability of req.user object
 module.exports.basicAuth = function (req, res, next) {
-    console.log(req.url);
-    console.log(JSON.stringify(req.user));
     if (!req.user) {
-        console.log("User not logged in");
+        //Save page to redirect to
         req.session.returnTo = req.url;
+        //Present login page
         res.render("login");
     } else {
-        if (req.cookies.username !== req.user.username) {
-            res.cookie('username', req.user.username, { maxAge: 315360000 })
-        }
-        console.log("User logged in as", req.user.username);
+        //Already logged in
         next();
     }
 };
 
-//Login authentication with white-listing
+//Login authentication with white-listing7
+//TODO: Rewrite this after standardizing groups
 module.exports.adminAuth = function (req, res, next) {
     var admins = ["vbellemare", "vknyazev"];
     if (!req.user || admins.indexOf(req.user.username) === -1) {
@@ -158,7 +162,7 @@ module.exports.adminAuth = function (req, res, next) {
 };
 
 
-
+//Handle login session destruction
 app.get("/logout.html", function (req, res) {
     req.logout();
     req.session.destroy();

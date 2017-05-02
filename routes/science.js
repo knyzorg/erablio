@@ -1,9 +1,8 @@
 app.post('/science', authUtils.basicAuth, function (req, res) {
-    console.log("Answered question", req.body.qid)
+
     //Result endpoint
     fs.readFile(appRoot + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' },
         function (err, data) {
-            //console.log("Reading", appRoot + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json")
             if (err) {
                 //console.log("Error could not read file for validation")
                 res.send("Error");
@@ -26,6 +25,8 @@ app.post('/science', authUtils.basicAuth, function (req, res) {
                     unshufa = i;
                 }
             });
+
+            //Define result set
             var results = {
                 qid: req.body.qid,
                 time: +req.body.timestart,
@@ -41,15 +42,18 @@ app.post('/science', authUtils.basicAuth, function (req, res) {
             };
 
 
-
+            //Make sure results are defined
             if (req.user.questions[results.set] == undefined) {
                 req.user.questions[results.set] = {};
             }
 
+            //Make REALLY fucking sure they are defined
             if (req.user.questions[results.set].wrong == undefined || req.user.questions[results.set].wrong == undefined) {
                 req.user.questions[results.set].wrong = [];
                 req.user.questions[results.set].right = [];
             }
+
+            //Modify session data for next questions
             if (req.user.questions[results.set].answered.indexOf(results.qid.toString()) === -1) {
                 req.user.questions[results.set].answered.push(results.qid.toString());
                 if (results.pass) {
@@ -59,16 +63,11 @@ app.post('/science', authUtils.basicAuth, function (req, res) {
                 }
             }
 
-            //console.log(req.user.questions[results.set].right);
 
 
             //Implement sqlite logger
-            // node dblite.test.js
             db.query('INSERT INTO quiz VALUES (:qid, :time, :set, :spent, :user, :alttab, :answer, :pass, :correct, :key, :agent)', results);
-
             res.send("Data Submitted for Analysis");
-            ////console.log(JSON.stringify(results));
-            //console.log("Did you pass?", results.pass);
 
         })
 
