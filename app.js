@@ -44,7 +44,7 @@ app.use(function (req, res, next) {
     res.header('Pragma', 'no-cache');
     next();
 });
-    
+
 //Use Pug rendering engine
 app.set('view engine', 'pug');
 
@@ -54,6 +54,25 @@ global.authUtils = require("./util/secure");
 
 //Just routing.. refer to files in the routes directory
 require('require-dir')("./routes");
+
+//Handle errors
+// Handle 404
+app.use(function (req, res) {
+    if (!req.xhr) res.status(404);
+    res.render("error", {
+        code: 404,
+        message: "Il semble que cette page n'existe pas!"
+    })
+});
+
+// Handle 500
+app.use(function (error, req, res, next) {
+    if (!req.xhr) res.status(500);
+    res.render("error", {
+        code: 500,
+        message: JSON.stringify(error)
+    })
+});
 
 //Launch application
 var PORT = process.env.PORT || 3000;
