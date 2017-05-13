@@ -16,10 +16,10 @@ app.post('/science', authUtils.basicAuth, function (req, res) {
                 //console.log("Not valid JSON");
                 return 0;
             }
-            var optionsShuffled = JSON.parse(utils.base64Decode(req.body.options));
+            let optionsShuffled = JSON.parse(utils.base64Decode(req.body.options));
             //console.log(optionsShuffled);
             //Get value of shuffled
-            var unshufa = -1;
+            let unshufa = -1;
             optionsShuffled.forEach(function (v, i, a) {
                 if (data.options[i] == optionsShuffled[req.body.answer]) {
                     unshufa = i;
@@ -27,7 +27,7 @@ app.post('/science', authUtils.basicAuth, function (req, res) {
             });
 
             //Define result set
-            var results = {
+            let results = {
                 qid: req.body.qid,
                 time: +req.body.timestart,
                 set: req.body.quiz,

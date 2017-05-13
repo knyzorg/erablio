@@ -30,7 +30,10 @@ global.appRoot = __dirname;
 app.use(require('body-parser').urlencoded({
     extended: true
 }));
-var tmpSecret = utils.newToken();
+
+//Setup random encryption token
+let tmpSecret = utils.newToken();
+
 app.use(require('express-session')({
     secret: tmpSecret,
     resave: true,
@@ -38,6 +41,8 @@ app.use(require('express-session')({
 }));
 
 app.use(require("cookie-parser")(tmpSecret));
+
+//Block all caching
 app.use(function (req, res, next) {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
@@ -49,7 +54,7 @@ app.use(function (req, res, next) {
 app.set('view engine', 'pug');
 
 //Import routes
-//Secure file carries routes as well as a few middlewares which guarantees the existance of req.user variable
+//Secure file carries routes as well as a few middlewares which guarantees the existance of req.user letiable
 global.authUtils = require("./util/secure");
 
 //Just routing.. refer to files in the routes directory
@@ -75,8 +80,8 @@ app.use(function (error, req, res, next) {
 });
 
 //Launch application
-var PORT = process.env.PORT || 3000;
-var server = app.listen(PORT, function () {
+let PORT = process.env.PORT || 3000;
+let server = app.listen(PORT, function () {
     console.log('App ready!');
     console.log('Listening on *:' + PORT);
 });

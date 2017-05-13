@@ -1,12 +1,12 @@
 /*
     Takes care of all login, logout and security needs
     Exposes 2 middlewares:
-        authUtils.basicAuth: Allows normal user connection and guarantees the req.user variable
-        authUtils.adminAuth: Allows admin user connection and guarantees the req.user variable
+        authUtils.basicAuth: Allows normal user connection and guarantees the req.user letiable
+        authUtils.adminAuth: Allows admin user connection and guarantees the req.user letiable
 */
 
 //Inititionalize authentication stuff
-var passport = require('passport');
+let passport = require('passport');
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -94,7 +94,7 @@ function webLogin(username, password, callback) {
     //  get locked after too many password attemps.
     //  Let's just hope it doesn't break in production!
 
-    var login = "https://portail.csdraveurs.qc.ca/Anonym/Login.aspx?" +
+    let login = "https://portail.csdraveurs.qc.ca/Anonym/Login.aspx?" +
         "lnrid=636091206172586869&_lnPageGuid=869878df-59f3-43c9-a5e3-5c54" +
         "a05e24ef&__EGClientState=&__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE=" +
         "&__EVENTVALIDATION=%2FwEWCAL%2BraDpAgKN1azYCQLr3en9AwLXgqWzDwLMwY" +
@@ -113,7 +113,7 @@ function webLogin(username, password, callback) {
     })
 }
 
-var LocalStrategy = require('passport-local').Strategy;
+let LocalStrategy = require('passport-local').Strategy;
 
 passport.use(new LocalStrategy(
     function (username, password, done) {
@@ -150,7 +150,7 @@ module.exports.basicAuth = function (req, res, next) {
 //Login authentication with white-listing7
 //TODO: Rewrite this after standardizing groups
 module.exports.adminAuth = function (req, res, next) {
-    var admins = ["vbellemare", "vknyazev"];
+    let admins = ["vbellemare", "vknyazev"];
     if (!req.user || admins.indexOf(req.user.username) === -1) {
         console.log("User not admin");
         req.session.returnTo = req.url;

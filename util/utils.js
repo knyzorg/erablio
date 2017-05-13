@@ -1,6 +1,6 @@
 //Utility functions
 
-var crypto = require('crypto')
+let crypto = require('crypto')
 
 /**
  * Get sha1 hash value of data
@@ -42,7 +42,7 @@ module.exports.newToken = function newToken(length = 8) {
  * @returns {Array} Shuffled array
  */
 module.exports.shuffleArray = function shuffleArray(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+    let currentIndex = array.length, temporaryValue, randomIndex;
 
     // While there remain elements to shuffle...
     while (0 !== currentIndex) {

@@ -52,11 +52,11 @@ function question(module, id = -1, req, res) {
                 return;
             };
 
-            var quizData = JSON.parse(quizJsonRaw);
+            let quizData = JSON.parse(quizJsonRaw);
             quizData.meta = { id: id, module: module };
 
             //Get correct answer text
-            var correct = quizData.options[quizData.answer];
+            let correct = quizData.options[quizData.answer];
 
             //Shuffle Options
             quizData.options = utils.shuffleArray(quizData.options);
@@ -75,7 +75,7 @@ function question(module, id = -1, req, res) {
             }
 
             //If non-zero, get random. If zero, set to end.        
-            var nextQuestion = availableQuestions.length ? utils.randomArray(availableQuestions) : "end";
+            let nextQuestion = availableQuestions.length ? utils.randomArray(availableQuestions) : "end";
 
             //Render Question page
             res.render("question", {
