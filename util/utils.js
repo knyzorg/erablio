@@ -89,8 +89,5 @@ module.exports.randomInt = function (min, max) {
  * @param {Array} array Array to get value from
  */
 module.exports.randomArray = function (array) {
-    if (array.length == 0){
-        return undefined;
-    }
-    return array[Math.floor(Math.random()*array.length)];
+    return array.length ? array[Math.floor(Math.random()*array.length)] : undefined
 }

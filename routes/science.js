@@ -3,19 +3,13 @@ app.post('/science', authUtils.basicAuth, function (req, res) {
     //Result endpoint
     fs.readFile(appRoot + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' },
         function (err, data) {
-            if (err) {
+            if (err || !utils.isJsonString(utils.base64Decode(req.body.options))) {
                 //console.log("Error could not read file for validation")
-                res.send("Error");
-                return 0;
+                return res.send("Error");
             }
             //console.log("OK");
             data = JSON.parse(data);
 
-            //Unshuffle results
-            if (!utils.isJsonString(utils.base64Decode(req.body.options))) {
-                //console.log("Not valid JSON");
-                return 0;
-            }
             let optionsShuffled = JSON.parse(utils.base64Decode(req.body.options));
             //console.log(optionsShuffled);
             //Get value of shuffled

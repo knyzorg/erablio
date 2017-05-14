@@ -18,7 +18,7 @@ function getModules(callback) {
                 modules.push(JSON.parse(data))
 
                 //Read all module files?
-                if (modules.length == moduleFiles.length) {
+                if (modules.length === moduleFiles.length) {
                     callback(modules);
                 }
             });
