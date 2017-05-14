@@ -8,7 +8,7 @@
     Generator system has been broken by project re-structuring as well as a new question module standard.
     Please do not spend any time fixing it,
     instead focus on a ground-up re-write of it while closely integrating it in the main application
-*/
+*
 app.get('/generator', authUtils.adminAuth, function (req, res) {
     console.log("Accessed admin panel")
     res.sendFile(appRoot + "/generator/menu.html")
