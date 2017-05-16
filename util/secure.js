@@ -118,7 +118,7 @@ passport.use(new LocalStrategy(
 //Authentication middleware
 
 //Basic login authentication, forces availability of req.user object
-module.exports.basicAuth = function (req, res, next) {
+module.exports.basicAuth = (req, res, next) => {
     if (req.user) {
         //Already logged in
         return next();
@@ -132,13 +132,13 @@ module.exports.basicAuth = function (req, res, next) {
 
 
 //Handle login session destruction
-app.get("/logout.html", function (req, res) {
+app.get("/logout.html", (req, res) => {
     req.logout();
     req.session.destroy();
     res.render("login");
 });
 
-app.post("/login.html", passport.authenticate('local'), function (req, res) {
+app.post("/login.html", passport.authenticate('local'), (req, res) => {
     if (req.session.returnTo) {
         req.session.returnTo += "?" + utils.newToken();
     }

@@ -14,11 +14,10 @@ function question(module, id = -1, req, res) {
         req.user.questions[module].answered = [];
     }
 
-    fs.readdir("questions/" + module, function (err, files) {
+    fs.readdir("questions/" + module, (err, files) => {
         if (err) {
             //Module does not exist, list all available
-            res.redirect("/module")
-            return;
+            return res.redirect("/module")
         }
 
         if (id == -1) {
@@ -26,8 +25,7 @@ function question(module, id = -1, req, res) {
 
             if (files.length == req.user.questions[module].answered.length) {
                 //All questions have been answered, redirect to quiz end
-                res.redirect("/" + module + "/q/end");
-                return;
+                return res.redirect("/" + module + "/q/end");
             }
 
             //Find unanswered questions
@@ -45,11 +43,10 @@ function question(module, id = -1, req, res) {
 
         //ID now has a real value, load question
 
-        fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, function (err, quizJsonRaw) {
+        fs.readFile("questions/" + module + "/" + id + ".json", { encoding: 'utf-8' }, (err, quizJsonRaw) => {
             if (err) {
                 //Requested question does not exist, redirect to random one
-                res.redirect("/" + module + "/q/");
-                return;
+                return res.redirect("/" + module + "/q/");
             };
 
             let quizData = JSON.parse(quizJsonRaw);
@@ -95,21 +92,15 @@ function question(module, id = -1, req, res) {
     });
 }
 
-app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
+app.get('/:module/q/end', authUtils.basicAuth, (req, res) => {
     if (!req.user.questions[req.params.module]) {
         //This condition catches fake/untouched modules
-        res.redirect("/" + req.params.module + "/q/")
-        return;
+        return res.redirect("/" + req.params.module + "/q/")
     }
-    fs.readdir("questions/" + req.params.module, function (err, files) {
+    fs.readdir("questions/" + req.params.module, (err, files) => {
         //Did you *really* finish?
         if (req.user.questions[req.params.module].answered.length == files.length) {
             //You did!
-            res.render("quizend", {
-                percent: Math.round(req.user.questions[req.params.module].right.length * 100 / files.length) + "%",
-                bracket: parseInt(10 * req.user.questions[req.params.module].right.length / files.length)
-            });
-
             if (!req.user.questions[req.params.module].finished) {
                 req.user.questions[req.params.module].finished = true;
                 db.query('INSERT INTO verdicts VALUES (:user, :time, :set, :key, :right, :wrong, :wronglist, :rightlist, :grade)', {
@@ -124,7 +115,10 @@ app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
                     grade: +req.user.questions[req.params.module].right.length * 100 / +req.user.questions[req.params.module].answered.length
                 });
             }
-            return;
+            return res.render("quizend", {
+                percent: Math.round(req.user.questions[req.params.module].right.length * 100 / files.length) + "%",
+                bracket: parseInt(10 * req.user.questions[req.params.module].right.length / files.length)
+            });
         }
         //You didn't. Go do it!
         res.redirect("/" + req.params.module + "/q/")
@@ -133,39 +127,42 @@ app.get('/:module/q/end', authUtils.basicAuth, function (req, res) {
 });
 
 
-app.get('/:module/q/retake', authUtils.basicAuth, function (req, res) {
-    if (req.user.questions[req.params.module] !== undefined) {
-        //Answered questions are right questions
-        req.user.questions[req.params.module].answered = req.user.questions[req.params.module].right;
-        //No more wrong questions
-        req.user.questions[req.params.module].wrong = [];
+app.get('/:module/q/retake', authUtils.basicAuth, (req, res) => {
+    if (req.user.questions[req.params.module] === undefined) {
+        req.user.questions[req.params.module] = {}
+        req.user.questions[req.params.module].right = []
     }
+
+    //Answered questions are right questions
+    req.user.questions[req.params.module].answered = req.user.questions[req.params.module].right;
+    //No more wrong questions
+    req.user.questions[req.params.module].wrong = [];
 
     req.user.questions[req.params.module].finished = false;
     //Restart
     res.redirect("/" + req.params.module + "/q/")
 });
 
-app.get('/:module/q/reset', authUtils.basicAuth, function (req, res) {
-    if (req.user.questions[req.params.module] !== undefined) {
-        //Reset module questions tbh
-        req.user.questions[req.params.module].answered = [];
-        req.user.questions[req.params.module].right = [];
-        req.user.questions[req.params.module].wrong = [];
-    }
+app.get('/:module/q/reset', authUtils.basicAuth, (req, res) => {
 
+
+
+    //Reset module questions tbh
+    req.user.questions[req.params.module].answered = [];
+    req.user.questions[req.params.module].right = [];
+    req.user.questions[req.params.module].wrong = [];
     req.user.questions[req.params.module].finished = false;
 
     //Restart
     res.redirect("/" + req.params.module + "/q/")
 });
 
-app.get('/:module/q/:id', authUtils.basicAuth, function (req, res) {
+app.get('/:module/q/:id', authUtils.basicAuth, (req, res) => {
     //Send random question
     question(req.params.module, req.params.id, req, res);
 });
 
-app.get('/:module/q', authUtils.basicAuth, function (req, res) {
+app.get('/:module/q', authUtils.basicAuth, (req, res) => {
     //Question id isn't defined. Pass -1
     question(req.params.module, -1, req, res);
 });

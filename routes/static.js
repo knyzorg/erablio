@@ -3,11 +3,11 @@
 */
 
 //Handle index page
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
     res.render("index");
 });
 
-app.get("/home", function (req, res) {
+app.get("/home", (req, res) => {
     res.render("index");
 });
 
@@ -17,13 +17,13 @@ app.use('/img', express.static('img'));
 app.use('/js', express.static('js'));
 
 //Handle normal pages
-app.get("/login.html", function (req, res) {
+app.get("/login.html", (req, res) => {
     res.render("login");
 });
 
-app.get("/about", function (req, res) {
-   res.render("about");
+app.get("/about", (req, res) => {
+    res.render("about");
 });
-app.get("/news", function (req, res) {
+app.get("/news", (req, res) => {
     res.render("news");
 });

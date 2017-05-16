@@ -9,10 +9,6 @@ global.app = express();
 //Same as fs but better
 global.fs = require('fs-extra');
 
-//For interaction with CLI
-global.sys = require('sys');
-global.exec = require('child_process').exec;
-
 //A few utility functions
 global.utils = require("./util/utils");
 
@@ -43,7 +39,7 @@ app.use(require('express-session')({
 app.use(require("cookie-parser")(tmpSecret));
 
 //Block all caching
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.header('Expires', '-1');
     res.header('Pragma', 'no-cache');
@@ -62,7 +58,7 @@ require('require-dir')("./routes");
 
 //Handle errors
 // Handle 404
-app.use(function (req, res) {
+app.use((req, res) => {
     if (!req.xhr) res.status(404);
     res.render("error", {
         code: 404,
@@ -71,7 +67,7 @@ app.use(function (req, res) {
 });
 
 // Handle 500
-app.use(function (error, req, res, next) {
+app.use((error, req, res, next) => {
     if (!req.xhr) res.status(500);
     res.render("error", {
         code: 500,
@@ -81,7 +77,4 @@ app.use(function (error, req, res, next) {
 
 //Launch application
 let PORT = process.env.PORT || 3000;
-let server = app.listen(PORT, function () {
-    console.log('App ready!');
-    console.log('Listening on *:' + PORT);
-});
+let server = app.listen(PORT, () => console.log('Listening on *:' + PORT));

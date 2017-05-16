@@ -4,26 +4,28 @@ let crypto = require('crypto')
 
 /**
  * Get sha1 hash value of data
- * Note: Sha1 is broken
+ * Note: Sha1 is broken, upgrade for real-world use
  * @param {*} data Data to sha1
  */
-module.exports.sha1 = function sha1(data) {
+function sha1(data) {
     return crypto.createHash('sha1').update(data.toString()).digest('hex')
 }
+
 
 /**
  * Converts a string to base64
  * @param {String} str Any string
  */
-module.exports.base64Encode = function base64Encode(str) {
+function base64Encode(str) {
     return new Buffer(str).toString('base64')
 }
+
 
 /**
  * Base64 encoding to a string
  * @param {String} str A base64-encoded string
  */
-module.exports.base64Decode = function base64Decode(str) {
+function base64Decode(str) {
     return new Buffer(str, 'base64').toString()
 }
 
@@ -32,7 +34,7 @@ module.exports.base64Decode = function base64Decode(str) {
  *  @param {Number} [length=8] Length of returned token 
  *  @returns {String} Random n-character long token
  */
-module.exports.newToken = function newToken(length = 8) {
+function newToken(length = 8) {
     return crypto.randomBytes(length).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/\=/g, '');
 }
 
@@ -41,7 +43,7 @@ module.exports.newToken = function newToken(length = 8) {
  * @param {Array} array Array to be shuffled 
  * @returns {Array} Shuffled array
  */
-module.exports.shuffleArray = function shuffleArray(array) {
+function shuffleArray(array) {
     let currentIndex = array.length, temporaryValue, randomIndex;
 
     // While there remain elements to shuffle...
@@ -65,7 +67,7 @@ module.exports.shuffleArray = function shuffleArray(array) {
  *  @param {String} str String to check
  *  @returns {Boolean} Whether the string is JSON or not
  */
-module.exports.isJsonString = function isJsonString(str) {
+function isJsonString(str) {
     try {
         JSON.parse(str);
     } catch (e) {
@@ -80,7 +82,7 @@ module.exports.isJsonString = function isJsonString(str) {
  *  @param {Number} max Maximium value of integer
  *  @returns {Number} Random integer value
  */
-module.exports.randomInt = function (min, max) {
+function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -88,6 +90,17 @@ module.exports.randomInt = function (min, max) {
  * Gets a random value of an array
  * @param {Array} array Array to get value from
  */
-module.exports.randomArray = function (array) {
-    return array.length ? array[Math.floor(Math.random()*array.length)] : undefined
+function randomArray(array) {
+    return array.length ? array[Math.floor(Math.random() * array.length)] : undefined
+}
+
+module.exports = {
+    shuffleArray: shuffleArray,
+    base64Encode: base64Encode,
+    sha1: sha1,
+    base64Decode: base64Decode,
+    randomArray: randomArray,
+    randomInt: randomInt,
+    isJsonString: isJsonString,
+    newToken: newToken
 }

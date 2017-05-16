@@ -1,8 +1,8 @@
-app.post('/science', authUtils.basicAuth, function (req, res) {
+app.post('/science', authUtils.basicAuth, (req, res) => {
 
     //Result endpoint
     fs.readFile(appRoot + "/questions/" + req.body.quiz + "/" + req.body.qid + ".json", { encoding: 'utf-8' },
-        function (err, data) {
+        (err, data) => {
             if (err || !utils.isJsonString(utils.base64Decode(req.body.options))) {
                 //console.log("Error could not read file for validation")
                 return res.send("Error");
@@ -14,7 +14,7 @@ app.post('/science', authUtils.basicAuth, function (req, res) {
             //console.log(optionsShuffled);
             //Get value of shuffled
             let unshufa = -1;
-            optionsShuffled.forEach(function (v, i, a) {
+            optionsShuffled.forEach((v, i, a) => {
                 if (data.options[i] == optionsShuffled[req.body.answer]) {
                     unshufa = i;
                 }
