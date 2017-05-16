@@ -50,11 +50,7 @@ app.post('/science', authUtils.basicAuth, function (req, res) {
             //Modify session data for next questions
             if (req.user.questions[results.set].answered.indexOf(results.qid.toString()) === -1) {
                 req.user.questions[results.set].answered.push(results.qid.toString());
-                if (results.pass) {
-                    req.user.questions[results.set].right.push(results.qid.toString());
-                } else {
-                    req.user.questions[results.set].wrong.push(results.qid.toString());
-                }
+                req.user.questions[results.set][results.pass ? "right" : "wrong"].push(results.qid.toString());
             }
 
 
