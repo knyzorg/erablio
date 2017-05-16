@@ -34,14 +34,21 @@ function getModules(callback) {
 //TODO: Requires refactoring. Current settings storage is deficient.
 function getUserModules(user, callback) {
     let path = "userconfig/" + user;
-    if (fs.existsSync(path)) {
+
+    fs.exists(path, (exists) => {
+        if (!exists) {
+            return callback([]);
+        }
+
         fs.readFile(path, (err, data) => {
             console.log(JSON.parse(data));
 
-            return callback(JSON.parse(data));
+            callback(JSON.parse(data));
         })
-        callback([]);
-    }
+
+
+    })
+
 }
 /**
  * Handles module enable/disable
