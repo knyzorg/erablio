@@ -1,26 +1,12 @@
 //Import dependencies
-
-//Most dependencies are declared globally to avoid code-duplication
-
+const passport = require('passport');
 //ExpressJS router app
-global.express = require('express');
-global.app = express();
-
-//Same as fs but better
-global.fs = require('fs-extra');
+const express = require('express');
+const app = express();
 
 //A few utility functions
-global.utils = require("./util/utils");
+const utils = require("./util/utils");
 
-//Database setup
-global.dblite = require('dblite');
-global.db = dblite("../data.sqlite");
-
-//For webrequests
-global.request = require('request');
-
-//__dirname is different for modules, required overriding
-global.appRoot = __dirname;
 
 //Setup ExpressJS
 app.use(require('body-parser').urlencoded({
@@ -38,6 +24,17 @@ app.use(require('express-session')({
 
 app.use(require("cookie-parser")(tmpSecret));
 
+app.use(passport.initialize());
+app.use(passport.session());
+//Setup passport
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+    done(null, user);
+});
+
 //Block all caching
 app.use((req, res, next) => {
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
@@ -49,13 +46,13 @@ app.use((req, res, next) => {
 //Use Pug rendering engine
 app.set('view engine', 'pug');
 
-//Import routes
-//Secure file carries routes as well as a few middlewares which guarantees the existance of req.user letiable
-global.authUtils = require("./util/secure");
+// Routing
+app.use("/", require("./routes/index"))
+app.use("/", require("./routes/static"))
+app.use("/auth", require("./routes/auth"))
+app.use("/module", require("./routes/module"))
 
-//Just routing.. refer to files in the routes directory
-require('require-dir')("./routes");
-
+/*
 //Handle errors
 // Handle 404
 app.use((req, res) => {
@@ -73,7 +70,7 @@ app.use((error, req, res, next) => {
         code: 500,
         message: JSON.stringify(error)
     })
-});
+});*/
 
 //Launch application
 let PORT = process.env.PORT || 3000;

@@ -9,7 +9,7 @@ block content
       li N&apos;utilisez pas de r&eacute;f&eacute;rences externes. Prenez ceci comme une situation d&apos;examen.
       li  Ne laissez jamais quelqu&apos;un autre utiliser votre session.
       li  Vous acceptez que nous fesont une collecte de donn&eacute;es sur vos activit&eacute;s.
-  form#login(action='/login.html', method='POST', onsubmit='login(); return false;')
+  form#login(action='/auth/login', method='POST', onsubmit='login(); return false;')
     .loader(style='display:none;')
     input(type='text', name='username', placeholder='Username', required='')
     input(type='password', name='password', placeholder='Password', required='')

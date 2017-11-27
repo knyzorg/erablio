@@ -1,7 +1,7 @@
 /*
  *  EtudieCA by Slava Knyazev
  *  Expo-Sciences 2016-2017
- *  Built from knyzorg/erablio
+ *  Built from viruzx/erablio
  */
 
 
@@ -21,7 +21,7 @@ String.prototype.isLatin = () => { return this == this.latinise() }
 
 
 function login() {
-    $('#login').attr('action', '/auth/login?' + Math.random().toString(36).substring(7));
+    $('#login').attr('action', '/login.html?' + Math.random().toString(36).substring(7));
     $("input, .login-btn").fadeOut(() => {
         $(".loader").fadeIn(() => {
 
@@ -84,7 +84,7 @@ $('body').on('click', '.science', function (event) {
     //firstLoad = true;
 });
 
-$('body').on('click', '[data-type="page-transition"]', function (event) {
+$('body').on('click', '[data-type="page-transition"]', function () {
     event.preventDefault();
     //detect which page has been selected
     var newPage = $(this).data('href');
@@ -101,12 +101,12 @@ $('body').on('click', '.plusminus', function () {
 
 function addMod(modid) {
     $.ajax({
-        url: "/module/add/" + modid
+        url: "/addmod/" + modid
     });
 }
 function remMod(modid) {
     $.ajax({
-        url: "/module/remove/" + modid
+        url: "/remmod/" + modid
     });
 }
 $('body').on('click', '.addmod', function () {
