@@ -69,7 +69,7 @@ function getActiveModules(): Promise<Array<QuestionModule>> {
 function getUserModules(username: string, filter: Object = {}): Promise<Array<QuestionModule>> {
 
     let whereFilter = filterToWhere(filter);
-    let userFilter = " `id` in (SELECT `module` from `user_modules` where `username` = ?)";
+    let userFilter = " AND `id` in (SELECT `module` from `user_modules` where `username` = ?)";
     let query = "SELECT * FROM `modules` " + whereFilter + userFilter;
     return moduleQuery(query, [username]);
 
@@ -134,7 +134,7 @@ function getQuestionAnswers(module: string, id: number): Promise<QuestionAnswers
     })
 }
 
-function getQuestions(module: string) {
+function getQuestions(module: string): Promise<QuestionList> {
     return new Promise((resolve, reject) => {
         db.query("SELECT * from `questions` where `module`=?",
             [module], {
@@ -147,7 +147,7 @@ function getQuestions(module: string) {
             }, (err, questions) => {
                 let questionList: QuestionList = [];
                 if (questions.length == 0) {
-                    resolve([]]);
+                    resolve([]);
                 }
                 questions.forEach((q) => {
                     let qObj = {

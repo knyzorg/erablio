@@ -49,6 +49,7 @@ app.set('view engine', 'pug');
 // Routing
 app.use("/", require("./routes/index"))
 app.use("/", require("./routes/static"))
+app.use("/admin", require("./routes/admin"))
 app.use("/auth", require("./routes/auth"))
 app.use("/module", require("./routes/module"))
 
