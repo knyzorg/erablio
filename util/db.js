@@ -117,6 +117,7 @@ function getQuestionData(module: string, id: number): Promise<QuestionData> {
                             title: question.title,
                             module: question.module,
                             id: question.id,
+                            type: question.type,
                             explain: {
                                 wrong: question["explain.wrong"],
                                 right: question["explain.right"]
@@ -126,6 +127,34 @@ function getQuestionData(module: string, id: number): Promise<QuestionData> {
                         resolve(questionData);
                     })
             })
+    })
+}
+
+function addQuestion(questionData: QuestionData): Promise<null> {
+    return new Promise((resolve, reject) => {
+
+        questionData.answers.forEach((answer, index) => {
+            db.query("INSERT into `questions_answers` (`module`, `id`, `text`, `code`) VALUES (?, ?, ?, ?)",
+                [questionData.module, questionData.id, answer.text, answer.code],
+                (err) => {
+                    if (err) {
+                        return reject(new Error(err))
+                    }
+                    if (index == questionData.answers.length - 1) {
+
+                        db.query("INSERT into `questions` (`title`, `module`, `id`, `explain.wrong`, `explain.right`, `type`) VALUES (?, ?, ?, ?, ?, ?)",
+                            [questionData.title, questionData.module, questionData.id, questionData.explain.wrong, questionData.explain.right, questionData.type],
+                            (err) => {
+                                if (err) {
+                                    return reject(new Error(err))
+                                }
+                                resolve(null)
+                            })
+
+                    }
+
+                })
+        })
     })
 }
 
@@ -163,5 +192,6 @@ module.exports = {
     getActiveModules,
     getAllModules,
     validateLogin,
+    addQuestion,
     getQuestionData
 }

@@ -30,6 +30,7 @@ declare type QuestionData = {|
     title: String,
     module: String,
     id: Number,
+    type: Number,
     explain: {
         wrong: String,
         right: String
