@@ -97,7 +97,7 @@ function removeUserModule(username: string, module: string): Promise<null> {
     })
 }
 
-function getQuestionData(module: string, id: number): Promise<QuestionData> {
+function getQuestionAnswers(module: string, id: number): Promise<QuestionAnswers> {
     return new Promise((resolve, reject) => {
         db.query("SELECT * from `questions` where `module`=? and id=?",
             [module, id], {
@@ -107,13 +107,17 @@ function getQuestionData(module: string, id: number): Promise<QuestionData> {
                 "explain.wrong": String,
                 "explain.right": String,
                 type: Number
-            }, (err, question) => {
+            }, (err, questions) => {
+                if (questions.length == 0) {
+                    return reject(new Error("No such module"))
+                }
+                const question = questions[0];
                 db.query("SELECT `text`,`code` from `questions_answers` where `module`=? and id=?",
                     [module, id], {
                         text: String,
                         code: Number
                     }, (err, answers) => {
-                        let questionData: QuestionData = {
+                        let questionData: QuestionAnswers = {
                             title: question.title,
                             module: question.module,
                             id: question.id,
@@ -130,7 +134,42 @@ function getQuestionData(module: string, id: number): Promise<QuestionData> {
     })
 }
 
-function addQuestion(questionData: QuestionData): Promise<null> {
+function getQuestions(module: string) {
+    return new Promise((resolve, reject) => {
+        db.query("SELECT * from `questions` where `module`=?",
+            [module], {
+                title: String,
+                module: String,
+                id: Number,
+                "explain.wrong": String,
+                "explain.right": String,
+                type: Number
+            }, (err, questions) => {
+                let questionList: QuestionList = [];
+                if (questions.length == 0) {
+                    resolve([]]);
+                }
+                questions.forEach((q) => {
+                    let qObj = {
+                        title: q.title,
+                        module: q.module,
+                        id: q.id,
+                        type: q.type,
+                        explain: {
+                            wrong: q["explain.wrong"],
+                            right: q["explain.right"]
+                        }
+                    }
+                    questionList.push(qObj);
+                    if (questionList.length == questions.length) {
+                        resolve(questionList);
+                    }
+                })
+            })
+    })
+}
+
+function addQuestion(questionData: QuestionAnswers): Promise<null> {
     return new Promise((resolve, reject) => {
 
         questionData.answers.forEach((answer, index) => {
@@ -193,5 +232,6 @@ module.exports = {
     getAllModules,
     validateLogin,
     addQuestion,
-    getQuestionData
+    getQuestionAnswers,
+    getQuestions
 }

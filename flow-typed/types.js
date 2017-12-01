@@ -26,7 +26,7 @@ declare type ModuleFilter = {|
     e?: any;
 |};
 
-declare type QuestionData = {|
+declare type QuestionData = {
     title: String,
     module: String,
     id: Number,
@@ -34,6 +34,11 @@ declare type QuestionData = {|
     explain: {
         wrong: String,
         right: String
-    },
+    }
+}
+
+declare type QuestionAnswers = QuestionData & {
     answers: Array<{text: string, code:Number}>
-|};
+}
+
+declare type QuestionList = Array<QuestionData>
