@@ -8,110 +8,88 @@ function validateLogin(username: string, password: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
         db.query("SELECT count(*) as 'exists' FROM `users_login` where `username`=? and `password`=?;",
             [username, password], { exists: Number },
-            (err, rows: Array<{| exists: Number |}>) => {
-                if (err) reject(new Error(err));
-                resolve(rows[0].exists === 1)
-            })
+            (err, rows: Array < {| exists: Number |}>) => {
+        if (err) reject(new Error(err));
+        resolve(rows[0].exists === 1)
     })
+})
 }
 
-
-
-function getAllModules(filter:Object = {}): Promise<Array<QuestionModule>> {
+function moduleQuery(query: string, substitute: Array<string> | Object = []): Promise<Array<QuestionModule>> {
+    const moduleTypings = {
+        name: String,
+        id: String,
+        member: String,
+        draft: Number,
+        description: String,
+        seo: String,
+        "owner.name": String,
+        "owner.group": String
+    }
     return new Promise((resolve, reject) => {
-        let whereFilter = "where";
-        let flatFilter = dotize.convert(filter);
-        Object.keys(flatFilter).forEach((key) => {
-            whereFilter += " `" + sqlesc(key) + "` = '" + sqlesc(flatFilter[key]) + "' AND ";
-        })
-        whereFilter += " 1=1;"
-
-        db.query("SELECT * FROM `modules`" + whereFilter,
-            {
-                name: String,
-                id: String,
-                member: String,
-                draft: Number,
-                description: String,
-                seo: String,
-                "owner.name": String,
-                "owner.group": String
-            },
+        db.query(query, substitute, moduleTypings,
             (err, rows: Array<Object>) => {
-                if (err) reject(new Error(err));
+                if (err) return reject(new Error(err));
                 rows.forEach((row: Object) => {
                     row.owner = {
                         name: row["owner.name"],
                         group: row["owner.group"]
                     }
                     row.member = row.member.split("|")
-                    delete row["owner.name"],
-                        delete row["owner.group"]
+                    delete row["owner.name"]
+                    delete row["owner.group"]
                 })
                 resolve(rows)
             })
     })
+}
+
+function filterToWhere(filter: ModuleFilter): string {
+    delete filter["e"];
+    let whereFilter = "where";
+    let flatFilter = dotize.convert(filter);
+    Object.keys(flatFilter).forEach((key) => {
+        whereFilter += " `" + sqlesc(key) + "` = '" + sqlesc(flatFilter[key]) + "' AND ";
+    })
+    whereFilter += " 1=1"
+    return whereFilter;
+}
+
+function getAllModules(filter: ModuleFilter = { e: 1 }): Promise<Array<QuestionModule>> {
+    let whereFilter = filterToWhere(filter);
+    let query = "SELECT * FROM `modules` " + whereFilter;
+    return moduleQuery(query)
 }
 
 
 function getActiveModules(): Promise<Array<QuestionModule>> {
-    return new Promise((resolve, reject) => {
-        getAllModules({ draft: 0 }).then((a) => resolve(a))
-    })
+    return getAllModules({ draft: 0 })
 }
 
-function getUserModules(username:string, filter:Object = {}): Promise<Array<QuestionModule>> {
-    return new Promise((resolve, reject) => {
-        let whereFilter: string = "where";
-        let flatFilter: Object = dotize.convert(filter);
+function getUserModules(username: string, filter: Object = {}): Promise<Array<QuestionModule>> {
 
-        Object.keys(flatFilter).forEach((key) => {
-            whereFilter += " `" + sqlesc(key) + "` = '" + sqlesc(flatFilter[key]) + "' AND ";
-        })
-        whereFilter += " `id` in (SELECT `module` from `user_modules` where `username` = ?);"
+    let whereFilter = filterToWhere(filter);
+    let userFilter = " `id` in (SELECT `module` from `user_modules` where `username` = ?)";
+    let query = "SELECT * FROM `modules` " + whereFilter + userFilter;
+    return moduleQuery(query, [username]);
 
-        db.query("SELECT * FROM `modules`" + whereFilter, [username],
-            {
-                name: String,
-                id: String,
-                member: String,
-                draft: Number,
-                description: String,
-                seo: String,
-                "owner.name": String,
-                "owner.group": String
-            },
-            (err, rows: Array<Object>) => {
-                if (err) reject(new Error(err));
-                rows.forEach((row: Object) => {
-                    row.owner = {
-                        name: row["owner.name"],
-                        group: row["owner.group"]
-                    }
-                    row.member = row.member.split("|")
-                    delete row["owner.name"],
-                        delete row["owner.group"]
-                })
-                resolve(rows)
-            })
-    })
 }
 
 function addUserModule(username: string, module: string): Promise<null> {
     return new Promise((resolve, reject) => {
-        db.query("INSERT into `user_modules` (`username`, `module`) VALUES (?, ?)", [ username, module ],
-        (err)=>{
-            if (err) {
-                return reject(new Error(err))
-            }
-            resolve(null)
-        })
+        db.query("INSERT into `user_modules` (`username`, `module`) VALUES (?, ?)", [username, module],
+            (err) => {
+                if (err) {
+                    return reject(new Error(err))
+                }
+                resolve(null)
+            })
     })
 }
 
 function removeUserModule(username: string, module: string): Promise<null> {
     return new Promise((resolve, reject) => {
-        db.query("DELETE from `user_modules` where `username` = ? and `module` = ?;", [username, module], (err: string | null, rows) => {            
+        db.query("DELETE from `user_modules` where `username` = ? and `module` = ?;", [username, module], (err: string | null, rows) => {
             if (err)
                 return reject(new Error(err))
             resolve(null);
@@ -119,12 +97,44 @@ function removeUserModule(username: string, module: string): Promise<null> {
     })
 }
 
+function getQuestionData(module: string, id: number): Promise<QuestionData> {
+    return new Promise((resolve, reject) => {
+        db.query("SELECT * from `questions` where `module`=? and id=?",
+            [module, id], {
+                title: String,
+                module: String,
+                id: Number,
+                "explain.wrong": String,
+                "explain.right": String,
+                type: Number
+            }, (err, question) => {
+                db.query("SELECT `text`,`code` from `questions_answers` where `module`=? and id=?",
+                    [module, id], {
+                        text: String,
+                        code: Number
+                    }, (err, answers) => {
+                        let questionData: QuestionData = {
+                            title: question.title,
+                            module: question.module,
+                            id: question.id,
+                            explain: {
+                                wrong: question["explain.wrong"],
+                                right: question["explain.right"]
+                            },
+                            answers: answers
+                        }
+                        resolve(questionData);
+                    })
+            })
+    })
+}
+
 function sqlesc(a: any): any {
-    if (typeof a != 'string') {
+    if (typeof a !== 'string') {
         return a;
     }
-    return a.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (a: string) {
-        switch (a) {
+    return a.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, (b) => {
+        switch (b) {
             case "\0":
                 return "\\0";
             case "\b":
@@ -152,5 +162,6 @@ module.exports = {
     getUserModules,
     getActiveModules,
     getAllModules,
-    validateLogin
+    validateLogin,
+    getQuestionData
 }
