@@ -24,11 +24,13 @@ body {
 
 .second-nav {
     padding: .5rem 1.5rem;
-    border-bottom-left-radius: 30px;
-    border-bottom-right-radius: 30px;
 }
 
 .module form {
     padding: 20px;
     width: 100%;
+}
+
+.navbar-nav .nav-item + .nav-item {
+    margin-left: 0;
 }

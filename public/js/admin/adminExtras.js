@@ -20,3 +20,7 @@ $("body").on("click", "#addAnswer", (event) => {
 $("body").on("click", ".removeAnswer", function (event) {
     $(this).parent().parent().remove();
 });
+
+$("body").on("change", ".hidefile input", function (event) {
+    $(this).parent().parent().submit()
+})

@@ -1,10 +1,12 @@
 // @flow
 
 const db = require("../util/db");
+const fs = require("fs");
 const secure = require("../util/secure");
 const express = require("express")
 const app = express.Router();
-
+const multer  = require('multer')
+const upload = multer({ dest: '/tmp/' })
 
 /* Modules */
 app.get("/", (req: express$Request, res: express$Response) => {
@@ -31,6 +33,13 @@ app.get("/modules/:module/edit", (req: express$Request, res: express$Response) =
     })
 })
 
+
+app.post("/upload/cover/:module", upload.single('cover'), (req: express$Request, res: express$Response) => {
+    console.log(req);
+    fs.rename("/tmp/" + req.file.filename, "public/img/" + req.params.module, (err)=>{
+        res.redirect("/admin/modules")
+    })
+})
 
 app.post("/modules/new", (req: express$Request, res: express$Response) => {
     let name = req.body.name;

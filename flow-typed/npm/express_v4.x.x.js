@@ -51,6 +51,17 @@ declare class express$Request extends http$IncomingMessage mixins express$Reques
   session: any;
   logout():void;
   user: any;
+  file: {|
+      fieldname: string,
+      originalname: string,
+      encoding: string,
+      mimetype: string,
+      size: number,
+      destination: string,
+      filename: string,
+      path: string,
+      buffer: any
+  |};
 }
 
 declare type express$CookieOptions = {
