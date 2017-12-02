@@ -1,0 +1,21 @@
+mixin navbar(title, id, links, active)
+  nav.navbar.navbar-expand-lg.navbar-dark.bg-primary
+    a.navbar-brand(href='#')=title
+    button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbar'+id, aria-controls='navbar'+id, aria-expanded='false', aria-label='Toggle navigation')
+      span.navbar-toggler-icon
+    .collapse.navbar-collapse(id="navbar"+id)
+      ul.navbar-nav.mr-auto
+        each link in links 
+          if link.name == active
+            +navItem(link.name, link.href, true)
+          else
+            +navItem(link.name, link.href, false)
+
+mixin navItem(name, href, active)
+  if active
+    li.nav-item.active
+      a.nav-link(href=href)=name
+      span.sr-only (current)
+  else
+    li.nav-item
+      a.nav-link(href=href)=name

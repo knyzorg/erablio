@@ -1,0 +1,30 @@
+extends ../../layout/modules 
+block subvar
+  - subActive = "Browse"
+block contents
+  each module in modules
+    .module.card.text-white.bg-primary
+        .row
+            .col-md-3
+                img(src='https://placehold.it/200x200', alt='Module Name')
+            .col-md-9.content
+                .row
+                h2.text-center=module.name
+                .row
+                    .col-md-4
+                        dl
+                        dt Description: 
+                        dd=module.description
+                        dt Keywords: 
+                        dd=module.seo.split(" ").join(", ")
+                        dt Groups: 
+                        dd=module.member.join(", ")
+                        dt Author: 
+                        dd=module.owner.name + " " + module.owner.group
+                    .col-md-4
+                        p [This space is reserved for future use]
+                    .col-md-4.text-right
+                        .btn-group-vertical
+                            a(href="/admin/modules/" + module.id).btn.btn-secondary.rounded Open
+                            a(href="/admin/modules/" + module.id + "/edit").btn.btn-secondary.rounded Edit
+                            a(href="/admin/modules/" + module.id + "/delete").btn.btn-secondary.rounded Delete

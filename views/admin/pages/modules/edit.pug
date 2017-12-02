@@ -1,0 +1,48 @@
+extends ../../layout/modules
+block subvar
+  - subActive = "Create New"
+block contents
+  .module.text-white.bg-primary
+    .col-sm-12
+      .row
+        form(method='POST', action="/admin/modules/new")
+          .form-group
+            label(for='name') Name: 
+            input.form-control(type='text',value=module.name, name='name', placeholder='Enter name')
+          .form-group
+            label(for='id') Unique ID
+            input#id.form-control(value=module.id, type='text', name='id', placeholder='Enter ID')
+            small.form-text.text-muted This ID is purely functional. Using an existing one will overwrite it.
+          .form-group
+            label(for='members') Member of
+            select#members.form-control(name='members', multiple='')
+              option(disabled='', selected='', value='')  -- select any that apply -- 
+              each option in moduleGroups
+                if module.member.indexOf(option.id) !== -1
+                  option(value=option.id)=option.name
+                else 
+                  option(value=option.id, selected)=option.name
+            small.form-text.text-muted Select all groups of which this module is part of
+          .form-check
+            label.form-check-label(for='description') Description
+            textarea(name="description").form-control=module.description
+            small.form-text.text-muted User-visible description of module
+          .form-group
+            label(for='seo') SEO: 
+            input.form-control(type='text', value=module.seo, name='seo', placeholder='Enter tags')
+            small.form-text.text-muted Enter searchable terms seperated by comas
+          .form-group
+            label(for='ownerName') Who is the author? 
+            input.form-control(type='text', value=module.owner.name, name='ownerName', placeholder='Enter name')
+          .form-group
+            label(for='ownerGroup') What is the author group? 
+            input.form-control(type='text', value=module.owner.group, name='ownerGroup', placeholder='Enter name')
+          .form-check
+            label.form-check-label
+              if module.draft
+                input.form-check-input(type='checkbox', checked='')
+              else
+                input.form-check-input(type='checkbox')
+                | Draft
+            small.form-text.text-muted Hides module from users
+          button.btn.btn-secondary(type='submit') Save

@@ -13,12 +13,12 @@ app.get("/", (req: express$Request, res: express$Response) => {
 
 app.get("/modules", (req: express$Request, res: express$Response) => {
     db.getAllModules().then((modules) => {
-        res.render("admin/modules", { modules });
+        res.render("admin/pages/modules/list", { modules });
     })
 })
 
 app.get("/modules/new", (req: express$Request, res: express$Response) => {
-    res.render("admin/module-new", { moduleGroups: [], module: { owner: {} } });
+    res.render("admin/pages/modules/edit", { moduleGroups: [], module: { owner: {} } });
 })
 
 app.get("/modules/:module/edit", (req: express$Request, res: express$Response) => {
@@ -26,7 +26,7 @@ app.get("/modules/:module/edit", (req: express$Request, res: express$Response) =
     db.getAllModules({ id: req.params.module }).then((modules) => {
         if (modules.length) {
             const module = modules[0]
-            res.render("admin/module-new", { moduleGroups: [], module });
+            res.render("admin/pages/modules/edit", { moduleGroups: [], module });
         }
     })
 })

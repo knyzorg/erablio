@@ -1,0 +1,9 @@
+extends master.pug
+block topvar
+  - topActive = "Modules"
+  - subPages = [{name: "Browse", href:"/admin/modules"}, {name: "Create New", href: "/admin/modules/new"}]
+  block subvar
+block inner
+  .container
+    +navbar("Modules", "modules", subPages, subActive)
+    block contents
