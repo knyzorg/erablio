@@ -1,0 +1,34 @@
+body {
+    background: rgb(29, 29, 29);
+}
+
+.module img {
+    width: 100%;
+}
+
+.module {
+    margin: 1em auto;
+}
+
+.module h2 {
+    width: 100%;
+    color: #ccc;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.module .btn.rounded {
+    margin: 5px auto;
+    border-top-left-radius: 25px !important;
+    border-bottom-left-radius: 25px !important;
+}
+
+.second-nav {
+    padding: .5rem 1.5rem;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+}
+
+.module form {
+    padding: 20px;
+    width: 100%;
+}

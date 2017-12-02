@@ -35,7 +35,7 @@ function moduleQuery(query: string, substitute: Array<string> | Object = []): Pr
                         name: row["owner.name"],
                         group: row["owner.group"]
                     }
-                    row.member = row.member.split("|")
+                    row.member = row.member.split("|").filter((a) => !!a)
                     delete row["owner.name"]
                     delete row["owner.group"]
                 })
@@ -197,6 +197,20 @@ function addQuestion(questionData: QuestionAnswers): Promise<null> {
     })
 }
 
+function addModule(module: QuestionModule): Promise<null> {
+    return new Promise((resolve, reject) => {
+        let a = db.query("insert or replace INTO `modules`(`name`,`id`,`member`,`draft`,`description`,`seo`,`owner.name`,`owner.group`) VALUES (?,?,?,?,?,?,?,?);",
+            [module.name, module.id, module.member.join("|") + "|", +module.draft, module.description, module.seo, module.owner.name, module.owner.group],
+            (err) => {
+                if (err) {
+                    return reject(new Error(err))
+                }
+                resolve(null)
+            })
+            console.log(a)
+    })
+}
+
 function sqlesc(a: any): any {
     if (typeof a !== 'string') {
         return a;
@@ -233,5 +247,6 @@ module.exports = {
     validateLogin,
     addQuestion,
     getQuestionAnswers,
+    addModule,
     getQuestions
 }

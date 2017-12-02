@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Hello, world!</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://bootswatch.com/4/lux/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/admin-panel.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Etudie CA! Admin</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Status
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Modules</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Settings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Critical</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary second-nav">
+            <a class="navbar-brand" href="#">Modules</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02"
+                aria-expanded="false" aria-label="Toggle navigation" style="">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarColor02">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Browse
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Create New
+                            <span class="sr-only">(current)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Import</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" placeholder="Search" type="text">
+                    <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </div>
+        </nav>
+        <div class="module text-white bg-primary">
+            <div class="col-sm-12">
+
+
+                <div class="row">
+                    <form>
+                        <div class="form-group" method="POST">
+                            <label for="name">Name: </label>
+                            <input type="text" class="form-control" name="name" placeholder="Enter name">
+                        </div>
+                        <div class="form-group">
+                            <label for="id">Unique ID</label>
+                            <input type="text" class="form-control" id="id" name="id" placeholder="Enter ID">
+                            <small class="form-text text-muted">This ID is purely functional. Using an existing one will overwrite it.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="members">Member of</label>
+                            <select class="form-control" name="members" id="members" multiple>
+                                <option disabled selected value> -- select any that apply -- </option>
+                                <option value="a">a</option>
+                                <option value="b">b</option>
+                                <option value="c">c</option>
+                                <option value="d">d</option>
+                            </select>
+                            <small class="form-text text-muted">Select all groups of which this module is part of</small>
+                        </div>
+                        <div class="form-check">
+                            <label for="description" class="form-check-label">Description</label>
+                            <textarea class="form-control"> </textarea>
+                            <small class="form-text text-muted">User-visible description of module</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="seo">SEO: </label>
+                            <input type="text" class="form-control" name="seo" placeholder="Enter tags">
+                            <small class="form-text text-muted">Enter searchable terms seperated by comas</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="ownerName">Who is the author? </label>
+                            <input type="text" class="form-control" name="ownerName" placeholder="Enter name">
+                        </div>
+                        <div class="form-group">
+                            <label for="ownerName">What is the author group? </label>
+                            <input type="text" class="form-control" name="ownerName" placeholder="Enter name">
+                        </div>
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input type="checkbox" class="form-check-input" checked> Draft
+                            </label>
+                            <small class="form-text text-muted">Hides module from users</small>
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

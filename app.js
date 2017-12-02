@@ -71,8 +71,8 @@ app.use((error, req, res, next) => {
         code: 500,
         message: JSON.stringify(error)
     })
-});*/
-
+});
+*/
 //Launch application
 let PORT = process.env.PORT || 3000;
 let server = app.listen(PORT, () => console.log('Listening on *:' + PORT));
