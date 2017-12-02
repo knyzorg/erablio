@@ -28,51 +28,33 @@ html(lang='en')
             a.nav-link(href='#') Logout
     .container
       nav.navbar.navbar-expand-lg.navbar-dark.bg-primary.second-nav
-        a.navbar-brand(href='#') Modules
+        a.navbar-brand(href='#') Questions for #{moduleName}
         button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarColor02', aria-controls='navbarColor02', aria-expanded='false', aria-label='Toggle navigation', style='')
           span.navbar-toggler-icon
         #navbarColor02.collapse.navbar-collapse
           ul.navbar-nav.mr-auto
             li.nav-item.active
-              a.nav-link(href='/admin/modules')
+              a.nav-link(href='/admin/modules/' + moduleName)
                 | Browse 
                 span.sr-only (current)
             li.nav-item
-              a.nav-link(href='/admin/modules/new') Create New
+              a.nav-link(href='/admin/modules/' + moduleName + '/new') Create New
             li.nav-item
               a.nav-link(href='#') Import
           form.form-inline.my-2.my-lg-0
             input.form-control.mr-sm-2(placeholder='Search', type='text')
-      each module in modules
+      each question in questions
         .module.card.text-white.bg-primary
             .row
-                .col-md-3
-                    img(src='https://placehold.it/200x200', alt='Module Name')
-                .col-md-9.content
-                    .row
-                    h2.text-center=module.name
-                    .row
-                        .col-md-4
-                            dl
-                            dt Description: 
-                            dd=module.description
-                            dt Keywords: 
-                            dd=module.seo.split(" ").join(", ")
-                            dt Groups: 
-                            dd=module.member.join(", ")
-                            dt Author: 
-                            dd=module.owner.name + " " + module.owner.group
-                        .col-md-4
-                            p [This space is reserved for future use]
-                        .col-md-4.text-right
-                            .btn-group-vertical
-                                a(href="/admin/modules/" + module.id).btn.btn-secondary.rounded Open
-                                a(href="/admin/modules/" + module.id + "/edit").btn.btn-secondary.rounded Edit
-                                a(href="/admin/modules/" + module.id + "/delete").btn.btn-secondary.rounded Delete
+              .col-md-12.content
+                h2.text-center=question.id + ": " + question.title
+                a(href='/admin/modules/' + moduleName + '/edit/' + question.id).btn.btn-secondary Edit
+                button.btn.btn-secondary Open
+                a(href='/admin/modules/' + moduleName + '/delete/' + question.id).btn.btn-secondary Delete
+                
     // Optional JavaScript
     // jQuery first, then Popper.js, then Bootstrap JS
     script(src='https://code.jquery.com/jquery-3.2.1.slim.min.js', integrity='sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN', crossorigin='anonymous')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js', integrity='sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh', crossorigin='anonymous')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js', integrity='sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ', crossorigin='anonymous')
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-confirmation/1.0.5/bootstrap-confirmation.min.js')
     script(src='/js/admin/adminExtras.js')

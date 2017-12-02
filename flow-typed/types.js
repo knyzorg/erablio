@@ -27,18 +27,18 @@ declare type ModuleFilter = {|
 |};
 
 declare type QuestionData = {
-    title: String,
-    module: String,
-    id: Number,
-    type: Number,
+    title: string,
+    module: string,
+    id: number,
+    type: number,
     explain: {
-        wrong: String,
-        right: String
+        wrong: string,
+        right: string
     }
 }
 
 declare type QuestionAnswers = QuestionData & {
-    answers: Array<{text: string, code:Number}>
+    answers: Array<{text: string, code:number}>
 }
 
 declare type QuestionList = Array<QuestionData>

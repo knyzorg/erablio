@@ -169,37 +169,71 @@ function getQuestions(module: string): Promise<QuestionList> {
     })
 }
 
+function removeQuestion(module: string, id: number): Promise<null> {
+    return new Promise((resolve, reject) => {
+        db.query("DELETE from `questions_answers` where `module`=? and `id`=?;", [module, id], (err) => {
+            if (err)
+                return reject(new Error(err));
+            db.query("DELETE from `questions` where `module`=? and `id`=?;", [module, id], (err) => {
+                if (err)
+                    return reject(new Error(err));
+                resolve(null);
+            })
+        })
+
+    })
+}
+
+function removeModule(module: string): Promise<null> {
+    return new Promise((resolve, reject) => {
+        db.query("DELETE from `questions_answers` where `module`=?;DELETE from `questions` where `module`=?;DELETE from `modules` where `id`=?;", [module,module,module], (err) => {
+            if (err)
+                return reject(new Error(err));
+            resolve(null);
+        })
+
+    })
+}
+
 function addQuestion(questionData: QuestionAnswers): Promise<null> {
     return new Promise((resolve, reject) => {
+        removeQuestion(questionData.module, questionData.id).then(() => {
 
-        questionData.answers.forEach((answer, index) => {
-            db.query("INSERT into `questions_answers` (`module`, `id`, `text`, `code`) VALUES (?, ?, ?, ?)",
-                [questionData.module, questionData.id, answer.text, answer.code],
+            db.query("INSERT into `questions` (`title`, `module`, `id`, `explain.wrong`, `explain.right`, `type`) VALUES (?, ?, ?, ?, ?, ?)",
+                [questionData.title, questionData.module, questionData.id, questionData.explain.wrong, questionData.explain.right, questionData.type],
                 (err) => {
                     if (err) {
                         return reject(new Error(err))
                     }
-                    if (index == questionData.answers.length - 1) {
-
-                        db.query("INSERT into `questions` (`title`, `module`, `id`, `explain.wrong`, `explain.right`, `type`) VALUES (?, ?, ?, ?, ?, ?)",
-                            [questionData.title, questionData.module, questionData.id, questionData.explain.wrong, questionData.explain.right, questionData.type],
+                    if (questionData.answers.length == 0) {
+                        return resolve(null)
+                    }
+                    questionData.answers.forEach((answer, index) => {
+                        db.query("INSERT into `questions_answers` (`module`, `id`, `text`, `code`) VALUES (?, ?, ?, ?)",
+                            [questionData.module, questionData.id, answer.text, answer.code],
                             (err) => {
                                 if (err) {
                                     return reject(new Error(err))
                                 }
-                                resolve(null)
+                                if (index == questionData.answers.length - 1) {
+
+
+                                    resolve(null)
+
+
+                                }
+
                             })
-
-                    }
-
+                    })
                 })
         })
+
     })
 }
 
 function addModule(module: QuestionModule): Promise<null> {
     return new Promise((resolve, reject) => {
-        let a = db.query("insert or replace INTO `modules`(`name`,`id`,`member`,`draft`,`description`,`seo`,`owner.name`,`owner.group`) VALUES (?,?,?,?,?,?,?,?);",
+        db.query("insert or replace INTO `modules`(`name`,`id`,`member`,`draft`,`description`,`seo`,`owner.name`,`owner.group`) VALUES (?,?,?,?,?,?,?,?);",
             [module.name, module.id, module.member.join("|") + "|", +module.draft, module.description, module.seo, module.owner.name, module.owner.group],
             (err) => {
                 if (err) {
@@ -207,7 +241,6 @@ function addModule(module: QuestionModule): Promise<null> {
                 }
                 resolve(null)
             })
-            console.log(a)
     })
 }
 
@@ -248,5 +281,7 @@ module.exports = {
     addQuestion,
     getQuestionAnswers,
     addModule,
-    getQuestions
+    getQuestions,
+    removeModule,
+    removeQuestion
 }
