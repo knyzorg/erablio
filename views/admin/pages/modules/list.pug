@@ -30,4 +30,4 @@ block contents
                         .btn-group-vertical
                             a(href="/admin/modules/" + module.id).btn.btn-secondary.rounded Open
                             a(href="/admin/modules/" + module.id + "/edit").btn.btn-secondary.rounded Edit
-                            a(href="/admin/modules/" + module.id + "/delete").btn.btn-secondary.rounded Delete
+                            confirm-link(href="/admin/modules/" + module.id + "/delete").btn.btn-secondary.rounded Delete

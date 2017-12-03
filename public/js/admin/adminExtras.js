@@ -24,3 +24,44 @@ $("body").on("click", ".removeAnswer", function (event) {
 $("body").on("change", ".hidefile input", function (event) {
     $(this).parent().parent().submit()
 })
+
+Vue.component("confirm-link", {
+    props: {
+        href: String
+    },
+    template: '<a :href="link" @click="confirm"><span v-if="!clicked"><slot></slot></span><span v-else>{{ inner }}</span></a>',
+    data: function () {
+        return {
+            clicked: false,
+            inner: "",
+            link: "#",
+            realLink: this.href
+        }
+    },
+    methods: {
+        confirm: function (event) {
+            if (!this.clicked) {
+                event.preventDefault();
+                this.inner = "Are you sure?"
+                this.clicked = true;
+                this.link = this.realLink
+                setTimeout(() => {
+                    this.inner = ""
+                    this.clicked = false;
+                    this.link = "#"
+                }, 3000)
+            }
+
+        }
+    }
+})
+
+let vm = new Vue({
+    el: '#app',
+    data: {
+        todo: {
+            text: 'Learn Vue',
+            isComplete: false
+        }
+    }
+})
