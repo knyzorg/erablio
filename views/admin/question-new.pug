@@ -49,7 +49,8 @@ html(lang='en')
             form(method='POST', action="/admin/modules/" + question.module + "/new")
               .form-group
                 label(for='title') Title: 
-                input.form-control(type='text',value=question.title, name='title', placeholder='Enter title')
+                textarea.form-control(type='text', name='title', placeholder='Enter title')=question.title
+                small.form-text.text-muted Markdown is supported
               .row.mx-auto
                 .form-group.col-md-6
                     label(for='id') Unique ID
