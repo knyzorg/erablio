@@ -22,6 +22,17 @@ body {
     border-bottom-left-radius: 25px !important;
 }
 
+.btn-group-vertical {
+    width: 100%;
+}
+
+@media screen and (max-width: 786px) {
+    .module .btn.rounded {
+        border-top-right-radius: 25px !important;
+        border-bottom-right-radius: 25px !important;
+    }
+}
+
 .second-nav {
     padding: .5rem 1.5rem;
 }
@@ -31,6 +42,6 @@ body {
     width: 100%;
 }
 
-.navbar-nav .nav-item + .nav-item {
+.navbar-nav .nav-item+.nav-item {
     margin-left: 0;
 }
