@@ -1,0 +1,13 @@
+extends ../../layout/questions 
+block subvar
+  - subActive = "Browse"
+  - modid = moduleName
+block contents
+    each question in questions
+        .module.card.text-white.bg-primary
+            .row
+              .col-md-12.content
+                h2.text-center=question.id + ": " + question.title
+                a(href='/admin/modules/' + moduleName + '/edit/' + question.id).btn.btn-secondary Edit
+                button.btn.btn-secondary Open
+                a(href='/admin/modules/' + moduleName + '/delete/' + question.id).btn.btn-secondary Delete

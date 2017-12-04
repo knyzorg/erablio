@@ -1,0 +1,49 @@
+extends ../../layout/questions
+block subvar
+  - subActive = "Create New"
+  - modid = question.module
+block contents
+  .module.text-white.bg-primary
+    .col-sm-12
+        .row
+        form(method='POST', action="/admin/modules/" + question.module + "/new")
+            .form-group
+                label(for='title') Title: 
+                textarea.form-control(type='text', name='title', placeholder='Enter title')=question.title
+                small.form-text.text-muted Markdown is supported
+            .row.mx-auto
+                .form-group.col-md-6
+                    label(for='id') Unique ID
+                    input#id.form-control(value=question.id, type='text', name='id', placeholder='Enter ID')
+                    small.form-text.text-muted This ID is purely functional. Using an existing one will overwrite it.
+                .form-group.col-md-6
+                    label(for='type') Type: 
+                    input.form-control(type='number', value=question.type, name='type', placeholder='Enter tags')
+                    small.form-text.text-muted Enter type number
+            fieldset#answers(data-count=question.answers.length)
+                legend Answer
+                each answer, index in question.answers
+                    .row
+                        .form-group.col-md-6
+                            label(for='answer' + index) Answer Text
+                            input.form-control(name="answer" + index, value=answer.text).form-contro
+                        .form-group.col-md-4
+                            label(for='code' + index) Answer Code
+                            input(type="number", name="code" + index, value=answer.code).form-control
+                        .form-group.col-md-2
+                            input.btn.btn-secondary.form-control(type="button", value="remove").removeAnswer
+            input#addAnswer.btn.btn-primary(type="button", value="Add Answer")
+            hr
+            fieldset.row.mx-auto
+                legend Explanations
+                .row
+                    .form-group.col-md-6
+                        label(for='wrong') Explain Wrong
+                        textarea(rows="9", name="wrong").form-control=question.explain.wrong
+                        small.form-text.text-muted If wrong, give explanation. Markdown is allowed.
+                    .form-group.col-md-6
+                        label(for='right') Explain Right
+                        textarea(rows="9", name="right").form-control=question.explain.right
+
+                        small.form-text.text-muted If right, give explanation. Markdown is allowed. If empty, will fallback to wrong explanation.
+            button.btn.btn-secondary(type='submit') Save

@@ -81,7 +81,7 @@ app.post("/modules/new", (req: express$Request, res: express$Response) => {
 app.get("/modules/:module", (req: express$Request, res: express$Response) => {
     const moduleName = req.params.module;
     db.getQuestions(moduleName)
-        .then((questions) => res.render("admin/questions", { moduleName, questions }))
+        .then((questions) => res.render("admin/pages/questions/list", { moduleName, questions }))
         .catch((a) => console.log(a))
 })
 
@@ -90,7 +90,7 @@ app.get("/modules/:module/edit/:qid", (req: express$Request, res: express$Respon
     const qid = isNaN(req.params.qid) ? 0 : +req.params.qid;
     db.getQuestionAnswers(moduleName, qid)
         .then((question) => {
-            res.render("admin/question-new", { question })
+            res.render("admin/pages/questions/edit", { question })
         })
 })
 
@@ -108,7 +108,7 @@ app.get("/modules/:module/new/:qid?", (req: express$Request, res: express$Respon
         title: "",
         type: 1
     }
-    res.render("admin/question-new", { question })
+    res.render("admin/pages/questions/edit", { question })
 
 })
 
