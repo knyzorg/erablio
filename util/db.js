@@ -15,6 +15,26 @@ function validateLogin(username: string, password: string): Promise<boolean> {
 })
 }
 
+function addUser(username, password): Promise<null> {
+    return new Promise((resolve, reject)=>{
+        db.query("INSERT INTO `users_login` (`username`, `password`, `created`) VALUES (?, ?)", [username, password, Date.now()], (err)=>{
+            if (err)
+                return reject()
+            resolve(null)
+        })
+    })
+}
+
+function removeUser(username): Promise<null> {
+    return new Promise((resolve, reject)=>{
+        db.query("DELETE FROM `users_login` WHERE `username` = ?", [username], (err)=>{
+            if (err)
+                return reject()
+            resolve(null)
+        })
+    })
+}
+
 function moduleQuery(query: string, substitute: Array<string> | Object = []): Promise<Array<QuestionModule>> {
     const moduleTypings = {
         name: String,
@@ -282,6 +302,7 @@ module.exports = {
     getQuestionAnswers,
     addModule,
     getQuestions,
-    removeModule,
+    addUser,
+    removeUser,
     removeQuestion
 }
