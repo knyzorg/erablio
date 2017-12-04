@@ -6,7 +6,7 @@ const secure = require("../util/secure");
 const express = require("express")
 const app = express.Router();
 const multer  = require('multer')
-const upload = multer({ dest: '/tmp/' })
+const upload = multer({ dest: './tmp/' })
 
 /* Modules */
 app.get("/", (req: express$Request, res: express$Response) => {

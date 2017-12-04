@@ -9,5 +9,4 @@ block contents
               .col-md-12.content
                 h2.text-center=question.id + ": " + question.title
                 a(href='/admin/modules/' + moduleName + '/edit/' + question.id).btn.btn-secondary Edit
-                button.btn.btn-secondary Open
-                a(href='/admin/modules/' + moduleName + '/delete/' + question.id).btn.btn-secondary Delete
+                confirm-link(href='/admin/modules/' + moduleName + '/delete/' + question.id).btn.btn-secondary Delete

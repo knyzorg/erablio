@@ -1,6 +1,6 @@
-mixin navbar(title, id, links, active)
+mixin navbar(title, navlink, id, links, active)
   nav.navbar.navbar-expand-lg.navbar-dark.bg-primary
-    a.navbar-brand(href='#')=title
+    a.navbar-brand(href=navlink)=title
     button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbar'+id, aria-controls='navbar'+id, aria-expanded='false', aria-label='Toggle navigation')
       span.navbar-toggler-icon
     .collapse.navbar-collapse(id="navbar"+id)

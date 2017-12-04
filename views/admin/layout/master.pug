@@ -1,6 +1,5 @@
-- var topPages = [{name: "Status", href:"/admin/"}, {name: "Modules", href: "/admin/modules"}, {name: "Users", href: "/admin/users"}, {name: "Settings", href: "/admin/settings"}, {name: "Logout", href: "/admin/logout"}]
 block topvar
-
+- var topPages = [{name: "Status", href:"/admin/"}, {name: "Modules", href: "/admin/modules"}, {name: "Users", href: "/admin/users"}, {name: "Settings", href: "/admin/settings"}, {name: "Logout", href: "/admin/logout"}]
 doctype html
 html(lang='en')
   head
@@ -13,7 +12,7 @@ html(lang='en')
     link(rel='stylesheet', href='/css/admin-panel.css')
   body
     include ../mixins/navbar
-    +navbar("Etudie CA! Admin", "topnav", topPages, topActive)
+    +navbar("Etudie CA! Admin","#", "topnav", topPages, topActive)
     .container#app
       block inner
     // Optional JavaScript
