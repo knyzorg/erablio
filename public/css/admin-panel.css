@@ -42,6 +42,13 @@ body {
     width: 100%;
 }
 
+.hidefile {
+    height: 0.1px;
+    opacity: 0.01;
+    overflow: none;
+    width: 0.1px;
+}
+
 .navbar-nav .nav-item+.nav-item {
     margin-left: 0;
 }

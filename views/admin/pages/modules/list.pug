@@ -7,9 +7,10 @@ block contents
         .row
             .col-md-3
                 form.cover(action="/admin/upload/cover/"+module.id, enctype="multipart/form-data", method="POST")
-                    img( onerror="if (this.src != 'https://placehold.it/200x200') this.src = 'https://placehold.it/200x200';", src='/img/'+module.id, alt=module.name)
-                    .hidefile
-                        input.selector(name="cover", type="file")
+                    label
+                        img( onerror="if (this.src != 'https://placehold.it/200x200') this.src = 'https://placehold.it/200x200';", src='/img/'+module.id, alt=module.name)
+                        .hidefile
+                            input.selector(name="cover", type="file")
             .col-md-9.content
                 .row
                 h2.text-center=module.name
