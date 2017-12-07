@@ -6,7 +6,7 @@
   "scripts": {
     "start": "flow-node app.js",
     "installdeps": "npm i -g flow-remove-types",
-    "postinstall": "cp -n install_files/data.sqlite.default data.sqlite || true",
+    "postinstall": "(cp -n install_files/data.sqlite.default data.sqlite || true) && (flow-node -v || npm run-script installdeps)",
     "test": "echo \"No tests yet...\""
   },
   "engines": {
